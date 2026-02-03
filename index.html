@@ -10,45 +10,32 @@
         h2 { text-align: center; color: #8e6d1c; border-bottom: 2px solid #d4af37; padding-bottom: 10px; }
         h3 { color: #555; border-right: 5px solid #d4af37; padding-right: 10px; margin-top: 25px; font-size: 18px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .fabric-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; }
-        .fabric-item { min-width: 140px; text-align: center; border: 1px solid #eee; padding: 10px; border-radius: 12px; cursor: pointer; background: #fff; transition: 0.3s; }
-        .fabric-item img { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; }
-        .fabric-item input { width: auto; margin-top: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background-color: #fff; font-size: 16px; }
+        
+        /* تنسيق معاينة القماش والوصف */
+        .fabric-section { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-top: 10px; }
+        .fabric-preview { display: flex; align-items: flex-start; gap: 15px; }
+        #fabric_img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; border: 2px solid #d4af37; flex-shrink: 0; }
+        #fabric_desc { font-size: 14px; color: #555; line-height: 1.6; margin-top: 5px; }
+        
         .payment-box { background: #fff9eb; padding: 20px; border-radius: 15px; border: 1px dashed #d4af37; margin-top: 25px; }
         .bank-details { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 4px solid #8e6d1c; }
-        .total-box { text-align: center; font-size: 22px; font-weight: bold; color: #8e6d1c; margin: 20px 0; background: #fdfbf7; padding: 15px; border-radius: 10px; }
-        button { width: 100%; padding: 18px; background: #8e6d1c; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .total-box { text-align: center; font-size: 22px; font-weight: bold; color: #8e6d1c; margin: 20px 0; background: #fdfbf7; padding: 15px; border-radius: 10px; border: 1px solid #d4af37; }
+        button { width: 100%; padding: 18px; background: #8e6d1c; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px; }
         button:hover { background: #d4af37; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        label { font-weight: bold; font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>محل اليرموك للخياطة الرجالية</h2>
         <form id="yarmoukFinalForm">
+            
             <h3>بيانات العميل</h3>
             <div class="grid">
                 <input type="text" name="customer_name" required placeholder="الاسم الكامل">
                 <input type="tel" name="customer_phone" required placeholder="رقم الجوال">
-            </div>
-
-            <h3>اختر نوع القماش واللون</h3>
-            <div class="fabric-scroll">
-                <label class="fabric-item">
-                    <img src="https://via.placeholder.com/150?text=Japanese" alt="ياباني">
-                    <div>ياباني</div>
-                    <input type="radio" name="fabric_choice" value="ياباني" checked>
-                </label>
-                <label class="fabric-item">
-                    <img src="https://via.placeholder.com/150?text=Richy" alt="ريتشي">
-                    <div>ريتشي</div>
-                    <input type="radio" name="fabric_choice" value="ريتشي">
-                </label>
-                <label class="fabric-item">
-                    <img src="https://via.placeholder.com/150?text=Korean" alt="كوري">
-                    <div>كوري لماع</div>
-                    <input type="radio" name="fabric_choice" value="كوري_لما">
-                </label>
             </div>
 
             <h3>المقاسات (هنش)</h3>
@@ -60,49 +47,151 @@
                 <div><label>الرقبة</label><input type="number" step="0.1" name="m_neck" placeholder="0.0"></div>
                 <div><label>وسط اليد</label><input type="number" step="0.1" name="m_mid_arm" placeholder="0.0"></div>
                 <div><label>طول الكبك</label><input type="number" step="0.1" name="m_cuff" placeholder="0.0"></div>
-                <div><label>وسع الخطوة</label><input type="number" step="0.1" name="m_step" placeholder="0.0"></div>
+                <div><label>وسع الخطوة (تحت)</label><input type="number" step="0.1" name="m_step" placeholder="0.0"></div>
+            </div>
+
+            <h3>تفاصيل التصميم</h3>
+            <div class="grid">
+                <div>
+                    <label>نوع الرقبة</label>
+                    <select name="neck_style">
+                        <option value="قلاب ملكي">قلاب ملكي</option>
+                        <option value="قلاب فرنسي">قلاب فرنسي</option>
+                        <option value="قلاب دائري">قلاب دائري</option>
+                        <option value="سادة مربع">سادة مربع</option>
+                        <option value="سادة دائري">سادة دائري</option>
+                        <option value="صيني">صيني</option>
+                    </select>
+                </div>
+                <div>
+                    <label>نوع الكبك</label>
+                    <select name="cuff_style">
+                        <option value="كبك قماش">كبك قماش</option>
+                        <option value="كبك حشو مربع">كبك حشو مربع</option>
+                        <option value="كبك حشو دائري">كبك حشو دائري</option>
+                        <option value="سادة بدون زرار">سادة بدون زرار</option>
+                    </select>
+                </div>
+                <div>
+                    <label>جبزور الصدر</label>
+                    <select name="chest_style">
+                        <option value="كبس ظاهر">كبس ظاهر</option>
+                        <option value="كبس مخفي">كبس مخفي</option>
+                        <option value="زرار مخفي">زرار مخفي</option>
+                        <option value="سحاب">سحاب</option>
+                    </select>
+                </div>
+                <div>
+                    <label>نوع الخياط</label>
+                    <select name="tailor_style">
+                        <option value="قطري">قطري</option>
+                        <option value="سعودي">سعودي</option>
+                        <option value="حجازي">حجازي</option>
+                        <option value="عماني">عماني</option>
+                        <option value="كويتي">كويتي</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3>نوع القماش واللون</h3>
+            <div class="fabric-section">
+                <label>اختر نوع القماش</label>
+                <select name="fabric_type" id="fabric_type" onchange="updateFabricInfo()">
+                    <option value="ياباني" data-price="20000" data-img="https://via.placeholder.com/150?text=Japanese" data-desc="قماش ياباني فاخر، يمتاز بالنعومة والبرودة على الجسم، مثالي للاستخدام اليومي والمناسبات الرسمية.">ياباني (20,000 ريال)</option>
+                    <option value="ياباني تتركس" data-price="25000" data-img="https://via.placeholder.com/150?text=Tetrex" data-desc="تتركس ياباني أصلي، وقفة رسمية قوية، مقاوم للتجعد، يعطي مظهراً حاداً وفخماً جداً.">ياباني تتركس (25,000 ريال)</option>
+                    <option value="تيلاندي خيوط يابانية" data-price="18000" data-img="https://via.placeholder.com/150?text=Thai" data-desc="مزيج متقن بين المتانة التايلاندية ونعومة الخيوط اليابانية، عملي جداً ويدوم طويلاً.">تيلاندي خيوط يابانية (18,000 ريال)</option>
+                    <option value="كوري لماع تتركس" data-price="17000" data-img="https://via.placeholder.com/150?text=Korean" data-desc="قماش كوري بلمعة خفيفة وجذابة، خفيف الوزن ومريح جداً في الأجواء الحارة.">كوري لماع تتركس (17,000 ريال)</option>
+                    <option value="أندنوسي" data-price="15000" data-img="https://via.placeholder.com/150?text=Indo" data-desc="قماش أندونيسي عالي الجودة، ناعم الملمس واقتصادي، مناسب جداً للدوام والعمل.">أندنوسي (15,000 ريال)</option>
+                    <option value="رتشي اسبان" data-price="14000" data-img="https://via.placeholder.com/150?text=Richy" data-desc="خيوط ريتشي بلمسة إسبانية، وقفة متوسطة وشكل أنيق يناسب مختلف الأذواق.">رتشي اسبان (14,000 ريال)</option>
+                    <option value="رتشي صيني" data-price="12000" data-img="https://via.placeholder.com/150?text=Chinese" data-desc="قماش ريتشي صيني درجة أولى، يجمع بين السعر المناسب والمظهر الحسن.">رتشي صيني (12,000 ريال)</option>
+                    <option value="شتوي صيني" data-price="12000" data-img="https://via.placeholder.com/150?text=Winter" data-desc="قماش دافئ بوزن مثالي لفصل الشتاء، ملمس ناعم يمنحك الدفء والأناقة.">شتوي صيني (12,000 ريال)</option>
+                </select>
+                <div class="fabric-preview">
+                    <img id="fabric_img" src="https://via.placeholder.com/150?text=Japanese" alt="صورة القماش">
+                    <div>
+                        <strong>وصف القماش:</strong>
+                        <div id="fabric_desc">قماش ياباني فاخر، يمتاز بالنعومة والبرودة على الجسم، مثالي للاستخدام اليومي والمناسبات الرسمية.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label>لون القماش المطلوب</label>
+                <textarea name="fabric_color" rows="2" placeholder="اكتب اللون المطلوب هنا (مثلاً: أبيض، أسود، بيج، رصاصي...)"></textarea>
             </div>
 
             <h3>الكمية والتكلفة</h3>
             <div class="grid">
                 <div><label>عدد الثياب</label><input type="number" name="qty" id="qty" value="1" min="1" oninput="recalc()"></div>
-                <div><label>السعر للثوب</label><input type="number" name="u_price" id="u_price" value="200" oninput="recalc()"></div>
+                <div><label>سعر الثوب الواحد</label><input type="number" name="u_price" id="u_price" value="20000" readonly style="background-color: #eee;"></div>
             </div>
-            <div class="total-box">الإجمالي: <span id="display_total">200</span> ريال</div>
-            <input type="hidden" name="total_price" id="hidden_total" value="200">
+            <div class="total-box">الإجمالي الكلي: <span id="display_total">20,000</span> ريال</div>
+            <input type="hidden" name="total_price" id="hidden_total" value="20000">
 
-            <h3>تفاصيل الحوالة البنكية</h3>
+            <h3>التوثيق والدفع</h3>
             <div class="payment-box">
                 <div class="bank-details">
                     <strong>بنك الكريمي:</strong> 3005374854 <br>
                     <strong>محفظة جيب:</strong> 80617
                 </div>
-                <label>إرفاق صورة إيصال التحويل (ضروري لاتمام العملية):</label>
+                <label>إرفاق صورة إيصال التحويل (ضروري):</label>
                 <input type="file" name="receipt" accept="image/*" required>
             </div>
 
-            <button type="submit">تأكيد الطلب وإرسال</button>
+            <button type="submit" id="submitBtn">تأكيد طلب التفصيل</button>
         </form>
     </div>
 
     <script>
+        function updateFabricInfo() {
+            const select = document.getElementById('fabric_type');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            // تحديث السعر
+            const price = selectedOption.getAttribute('data-price');
+            document.getElementById('u_price').value = price;
+            
+            // تحديث الصورة والوصف
+            const imgPath = selectedOption.getAttribute('data-img');
+            const description = selectedOption.getAttribute('data-desc');
+            
+            document.getElementById('fabric_img').src = imgPath;
+            document.getElementById('fabric_desc').innerText = description;
+            
+            recalc();
+        }
+
         function recalc() {
-            const q = document.getElementById('qty').value;
-            const p = document.getElementById('u_price').value;
+            const q = document.getElementById('qty').value || 0;
+            const p = document.getElementById('u_price').value || 0;
             const total = q * p;
-            document.getElementById('display_total').innerText = total;
+            document.getElementById('display_total').innerText = total.toLocaleString();
             document.getElementById('hidden_total').value = total;
         }
 
         document.getElementById('yarmoukFinalForm').onsubmit = async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = 'جاري إرسال الطلب والمقاسات...';
+            btn.disabled = true;
+
             const formData = new FormData(e.target);
             const webhook = 'https://ali991278.app.n8n.cloud/webhook-test/e4bcc169-93c0-42c5-8226-528f3c6a72e3';
+            
             try {
-                await fetch(webhook, { method: 'POST', body: formData });
-                alert('تم استلام طلبك ومقاساتك بنجاح في محل اليرموك. شكراً لك!');
+                const response = await fetch(webhook, { method: 'POST', body: formData });
+                if (response.ok) {
+                    alert('تم استلام طلبك ومقاساتك بنجاح في محل اليرموك. شكراً لثقتكم!');
+                    e.target.reset();
+                    updateFabricInfo();
+                } else {
+                    alert('عذراً، حدث خطأ في الاتصال بالخادم.');
+                }
             } catch (err) {
                 alert('تم إرسال الطلب بنجاح!');
+            } finally {
+                btn.innerText = 'تأكيد طلب التفصيل';
+                btn.disabled = false;
             }
         };
     </script>
