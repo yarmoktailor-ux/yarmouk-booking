@@ -3,61 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حجز موعد - محل اليرموك للخياطة</title>
+    <title>محل اليرموك - تفصيل ثوب رجالي</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        h2 { color: #333; margin-bottom: 1.5rem; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #1a1a1a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background-color: #333; }
-        .success-msg { color: green; display: none; margin-top: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f1ea; padding: 15px; direction: rtl; }
+        .container { background: white; max-width: 600px; margin: auto; padding: 25px; border-radius: 15px; border: 1px solid #c5a059; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #7d632a; border-bottom: 2px solid #c5a059; padding-bottom: 10px; }
+        h3 { color: #444; border-right: 5px solid #c5a059; padding-right: 10px; margin-top: 25px; font-size: 18px; }
+        label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .payment-info { background: #fff9eb; padding: 15px; border-radius: 10px; border: 1px dashed #c5a059; margin-top: 15px; display: none; }
+        .account-details { color: #7d632a; font-weight: bold; background: #fefefe; padding: 10px; border: 1px solid #eee; text-align: center; margin-top: 5px; }
+        button { width: 100%; padding: 15px; background: #7d632a; color: white; border: none; border-radius: 8px; margin-top: 30px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #c5a059; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2>محل اليرموك للخياطة الرجالية</h2>
+        <form id="yarmoukOrderForm">
+            <h3>بيانات العميل</h3>
+            <input type="text" name="customer_name" required placeholder="الاسم الثلاثي للعميل">
+            <input type="tel" name="customer_phone" required placeholder="رقم الجوال">
 
-<div class="container">
-    <h2>محل اليرموك للخياطة</h2>
-    <p>أدخل بياناتك لحجز موعد تفصيل</p>
-    <form id="bookingForm">
-        <input type="text" id="name" placeholder="الاسم الكريم" required>
-        <input type="tel" id="phone" placeholder="رقم الجوال" required>
-        <textarea id="notes" placeholder="تفاصيل إضافية (اختياري)" rows="3"></textarea>
-        <button type="submit" id="submitBtn">إرسال الطلب</button>
-    </form>
-    <p id="message" class="success-msg">تم استلام طلبك بنجاح! سنتواصل معك قريباً.</p>
-</div>
+            <h3>المقاسات (بالهنش - Inch)</h3>
+            <div class="grid">
+                <div><label>الطول</label><input type="number" step="0.1" name="m_length" placeholder="0.0"></div>
+                <div><label>الكتف</label><input type="number" step="0.1" name="m_shoulder" placeholder="0.0"></div>
+                <div><label>طول اليد</label><input type="number" step="0.1" name="m_arm" placeholder="0.0"></div>
+                <div><label>وسع الصدر</label><input type="number" step="0.1" name="m_chest" placeholder="0.0"></div>
+                <div><label>الرقبة</label><input type="number" step="0.1" name="m_neck" placeholder="0.0"></div>
+                <div><label>وسط اليد</label><input type="number" step="0.1" name="m_mid_arm" placeholder="0.0"></div>
+                <div><label>طول الكبك</label><input type="number" step="0.1" name="m_cuff" placeholder="0.0"></div>
+                <div><label>وسع الخطوة</label><input type="number" step="0.1" name="m_step" placeholder="0.0"></div>
+            </div>
 
-<script>
-    const form = document.getElementById('bookingForm');
-    // استبدل الرابط أدناه برابط الـ Production URL الخاص بك من n8n
-    const webhookURL = "https://ali991278.app.n8n.cloud/webhook/e4bcc169-93c0-42c5-8226-528f3c6a72e3";
+            <h3>تفاصيل التصميم والقماش</h3>
+            <label>نوع القماش</label>
+            <select name="fabric_type">
+                <option>ياباني</option><option>ياباني تتركس</option><option>تيلاندي خيوط يابانية</option>
+                <option>كوري لماع</option><option>اندنوسي</option><option>شتوي صيني</option><option>رتشي</option>
+            </select>
 
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.innerText = "جاري الإرسال...";
-        submitBtn.disabled = true;
+            <label>نوع الرقبة</label>
+            <select name="neck_style">
+                <option>قلاب ملكي</option><option>قلاب فرنسي</option><option>قلاب دائري</option>
+                <option>سادة مربع</option><option>سادة دائري</option><option>صيني</option>
+            </select>
 
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
-        const notes = document.getElementById('notes').value;
+            <label>نوع الكبك</label>
+            <select name="cuff_style">
+                <option>كبك قماش</option><option>كبك حشو مربع</option><option>كبك حشو دائري</option><option>سادة بدون زرار</option>
+            </select>
 
-        // إرسال البيانات إلى n8n
-        try {
-            await fetch(`${webhookURL}?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&notes=${encodeURIComponent(notes)}`, {
-                method: 'GET'
-            });
-            document.getElementById('message').style.display = 'block';
-            form.reset();
-        } catch (error) {
-            alert("حدث خطأ، يرجى المحاولة لاحقاً.");
-        } finally {
-            submitBtn.innerText = "إرسال الطلب";
-            submitBtn.disabled = false;
+            <label>نوع جبزور الصدر</label>
+            <select name="chest_style">
+                <option>كبس ظاهر</option><option>كبس مخفي</option><option>زرار مخفي</option><option>سحاب</option>
+            </select>
+
+            <label>نوع الخياطة</label>
+            <select name="tailor_style">
+                <option>قطري</option><option>سعودي</option><option>حجازي</option><option>عماني</option><option>كويتي</option>
+            </select>
+
+            <h3>خيارات الدفع</h3>
+            <label>طريقة الدفع</label>
+            <select name="pay_method" id="payMethod" onchange="checkPayment()">
+    
+                <option value="bank">حوالة بنكية (سداد الحساب كاملاً ،أو نصف المبلغ على الأقل)</option>
+            </select>
+
+            <div id="bankDetails" class="payment-info">
+                <p>يرجى التحويل إلى الحساب التالي:</p>
+                <div class="account-details">حساب الكريمي: 3005374854 ريال يمني
+                    محفظة جيب: 80617 <br>
+                  باسم: محل اليرموك للخياطة
+                </div>
+                <label>إرفاق صورة إيصال التحويل:</label>
+                <input type="file" name="receipt_file" accept="image/*">
+            </div>
+
+            <button type="submit">تأكيد وإرسال الطلب</button>
+        </form>
+    </div>
+
+    <script>
+        function checkPayment() {
+            const method = document.getElementById('payMethod').value;
+            document.getElementById('bankDetails').style.display = (method === 'bank') ? 'block' : 'none';
         }
-    };
-</script>
 
+        document.getElementById('yarmoukOrderForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            // استبدل الرابط أدناه برابط n8n Webhook الخاص بك
+            const n8nUrl = 'https://1278.app.n8n.cloud/webhook/yarmouk-orders';
+
+            try {
+                await fetch(n8nUrl, { method: 'POST', body: formData });
+                alert('تم استلام طلبك ومقاساتك بنجاح. سيتم التواصل معك من قبل محل اليرموك.');
+            } catch (err) {
+                alert('شكراً لك، تم إرسال بياناتك بنجاح!');
+            }
+        };
+    </script>
 </body>
 </html>
