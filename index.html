@@ -3,30 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محل اليرموك - تفصيل ثوب رجالي</title>
+    <title>خياطة اليرموك - طلب تفصيل</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f1ea; padding: 15px; direction: rtl; }
-        .container { background: white; max-width: 600px; margin: auto; padding: 25px; border-radius: 15px; border: 1px solid #c5a059; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #7d632a; border-bottom: 2px solid #c5a059; padding-bottom: 10px; }
-        h3 { color: #444; border-right: 5px solid #c5a059; padding-right: 10px; margin-top: 25px; font-size: 18px; }
-        label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fdfbf7; direction: rtl; padding: 15px; color: #333; }
+        .container { background: white; max-width: 650px; margin: auto; padding: 25px; border-radius: 20px; border: 1px solid #d4af37; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #8e6d1c; border-bottom: 2px solid #d4af37; padding-bottom: 10px; }
+        h3 { color: #555; border-right: 5px solid #d4af37; padding-right: 10px; margin-top: 25px; font-size: 18px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .payment-info { background: #fff9eb; padding: 15px; border-radius: 10px; border: 1px dashed #c5a059; margin-top: 15px; display: none; }
-        .account-details { color: #7d632a; font-weight: bold; background: #fefefe; padding: 10px; border: 1px solid #eee; text-align: center; margin-top: 5px; }
-        button { width: 100%; padding: 15px; background: #7d632a; color: white; border: none; border-radius: 8px; margin-top: 30px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #c5a059; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .fabric-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; }
+        .fabric-item { min-width: 140px; text-align: center; border: 1px solid #eee; padding: 10px; border-radius: 12px; cursor: pointer; background: #fff; transition: 0.3s; }
+        .fabric-item img { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; }
+        .fabric-item input { width: auto; margin-top: 5px; }
+        .payment-box { background: #fff9eb; padding: 20px; border-radius: 15px; border: 1px dashed #d4af37; margin-top: 25px; }
+        .bank-details { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 4px solid #8e6d1c; }
+        .total-box { text-align: center; font-size: 22px; font-weight: bold; color: #8e6d1c; margin: 20px 0; background: #fdfbf7; padding: 15px; border-radius: 10px; }
+        button { width: 100%; padding: 18px; background: #8e6d1c; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #d4af37; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>محل اليرموك للخياطة الرجالية</h2>
-        <form id="yarmoukOrderForm">
+        <form id="yarmoukFinalForm">
             <h3>بيانات العميل</h3>
-            <input type="text" name="customer_name" required placeholder="الاسم الثلاثي للعميل">
-            <input type="tel" name="customer_phone" required placeholder="رقم الجوال">
+            <div class="grid">
+                <input type="text" name="customer_name" required placeholder="الاسم الكامل">
+                <input type="tel" name="customer_phone" required placeholder="رقم الجوال">
+            </div>
 
-            <h3>المقاسات (بالهنش - Inch)</h3>
+            <h3>اختر نوع القماش واللون</h3>
+            <div class="fabric-scroll">
+                <label class="fabric-item">
+                    <img src="https://via.placeholder.com/150?text=Japanese" alt="ياباني">
+                    <div>ياباني</div>
+                    <input type="radio" name="fabric_choice" value="ياباني" checked>
+                </label>
+                <label class="fabric-item">
+                    <img src="https://via.placeholder.com/150?text=Richy" alt="ريتشي">
+                    <div>ريتشي</div>
+                    <input type="radio" name="fabric_choice" value="ريتشي">
+                </label>
+                <label class="fabric-item">
+                    <img src="https://via.placeholder.com/150?text=Korean" alt="كوري">
+                    <div>كوري لماع</div>
+                    <input type="radio" name="fabric_choice" value="كوري_لما">
+                </label>
+            </div>
+
+            <h3>المقاسات (هنش)</h3>
             <div class="grid">
                 <div><label>الطول</label><input type="number" step="0.1" name="m_length" placeholder="0.0"></div>
                 <div><label>الكتف</label><input type="number" step="0.1" name="m_shoulder" placeholder="0.0"></div>
@@ -38,73 +63,46 @@
                 <div><label>وسع الخطوة</label><input type="number" step="0.1" name="m_step" placeholder="0.0"></div>
             </div>
 
-            <h3>تفاصيل التصميم والقماش</h3>
-            <label>نوع القماش</label>
-            <select name="fabric_type">
-                <option>ياباني</option><option>ياباني تتركس</option><option>تيلاندي خيوط يابانية</option>
-                <option>كوري لماع</option><option>اندنوسي</option><option>شتوي صيني</option><option>رتشي</option>
-            </select>
+            <h3>الكمية والتكلفة</h3>
+            <div class="grid">
+                <div><label>عدد الثياب</label><input type="number" name="qty" id="qty" value="1" min="1" oninput="recalc()"></div>
+                <div><label>السعر للثوب</label><input type="number" name="u_price" id="u_price" value="200" oninput="recalc()"></div>
+            </div>
+            <div class="total-box">الإجمالي: <span id="display_total">200</span> ريال</div>
+            <input type="hidden" name="total_price" id="hidden_total" value="200">
 
-            <label>نوع الرقبة</label>
-            <select name="neck_style">
-                <option>قلاب ملكي</option><option>قلاب فرنسي</option><option>قلاب دائري</option>
-                <option>سادة مربع</option><option>سادة دائري</option><option>صيني</option>
-            </select>
-
-            <label>نوع الكبك</label>
-            <select name="cuff_style">
-                <option>كبك قماش</option><option>كبك حشو مربع</option><option>كبك حشو دائري</option><option>سادة بدون زرار</option>
-            </select>
-
-            <label>نوع جبزور الصدر</label>
-            <select name="chest_style">
-                <option>كبس ظاهر</option><option>كبس مخفي</option><option>زرار مخفي</option><option>سحاب</option>
-            </select>
-
-            <label>نوع الخياطة</label>
-            <select name="tailor_style">
-                <option>قطري</option><option>سعودي</option><option>حجازي</option><option>عماني</option><option>كويتي</option>
-            </select>
-
-            <h3>خيارات الدفع</h3>
-            <label>طريقة الدفع</label>
-            <select name="pay_method" id="payMethod" onchange="checkPayment()">
-    
-                <option value="bank">حوالة بنكية (سداد الحساب كاملاً ،أو نصف المبلغ على الأقل)</option>
-            </select>
-
-            <div id="bankDetails" class="payment-info">
-                <p>يرجى التحويل إلى الحساب التالي:</p>
-                <div class="account-details">حساب الكريمي: 3005374854 ريال يمني
-                    محفظة جيب: 80617 <br>
-                  باسم: محل اليرموك للخياطة
+            <h3>تفاصيل الحوالة البنكية</h3>
+            <div class="payment-box">
+                <div class="bank-details">
+                    <strong>بنك الكريمي:</strong> 3005374854 <br>
+                    <strong>محفظة جيب:</strong> 80617
                 </div>
-                <label>إرفاق صورة إيصال التحويل:</label>
-                <input type="file" name="receipt_file" accept="image/*">
+                <label>إرفاق صورة إيصال التحويل (ضروري):</label>
+                <input type="file" name="receipt" accept="image/*" required>
             </div>
 
-            <button type="submit">تأكيد وإرسال الطلب</button>
+            <button type="submit">تأكيد الطلب وإرسال</button>
         </form>
     </div>
 
     <script>
-        function checkPayment() {
-            const method = document.getElementById('payMethod').value;
-            document.getElementById('bankDetails').style.display = (method === 'bank') ? 'block' : 'none';
+        function recalc() {
+            const q = document.getElementById('qty').value;
+            const p = document.getElementById('u_price').value;
+            const total = q * p;
+            document.getElementById('display_total').innerText = total;
+            document.getElementById('hidden_total').value = total;
         }
 
-        document.getElementById('yarmoukOrderForm').onsubmit = async (e) => {
+        document.getElementById('yarmoukFinalForm').onsubmit = async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            
-            // استبدل الرابط أدناه برابط n8n Webhook الخاص بك
-            const n8nUrl = 'https://1278.app.n8n.cloud/webhook/yarmouk-orders';
-
+            const webhook = 'https://1278.app.n8n.cloud/webhook/yarmouk-orders';
             try {
-                await fetch(n8nUrl, { method: 'POST', body: formData });
-                alert('تم استلام طلبك ومقاساتك بنجاح. سيتم التواصل معك من قبل محل اليرموك.');
+                await fetch(webhook, { method: 'POST', body: formData });
+                alert('تم استلام طلبك ومقاساتك بنجاح في محل اليرموك. شكراً لك!');
             } catch (err) {
-                alert('شكراً لك، تم إرسال بياناتك بنجاح!');
+                alert('تم إرسال الطلب بنجاح!');
             }
         };
     </script>
