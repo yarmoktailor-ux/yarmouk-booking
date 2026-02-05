@@ -77,15 +77,62 @@
 
     <script>
         const fabricsData = [
-            { name: "ياباني", price: 20000, img: "https://via.placeholder.com/150?text=Japanese", desc: "قماش ياباني فاخر، نعومة وبرودة." },
-            { name: "ياباني تتركس", price: 25000, img: "https://via.placeholder.com/150?text=Tetrex", desc: "وقفة رسمية قوية ومقاوم للتجعد." },
-            { name: "تيلاندي خيوط يابانية", price: 18000, img: "https://via.placeholder.com/150?text=Thai", desc: "متانة تايلاندية ونعومة يابانية." },
-            { name: "كوري لماع تتركس", price: 17000, img: "https://via.placeholder.com/150?text=Korean", desc: "لمعة خفيفة وجذابة، خفيف ومريح." },
-            { name: "أندنوسي", price: 15000, img: "https://via.placeholder.com/150?text=Indo", desc: "ناعم الملمس واقتصادي للدوام." },
-            { name: "رتشي اسبان", price: 14000, img: "https://via.placeholder.com/150?text=Richy", desc: "لمسة إسبانية، وقفة متوسطة." },
-            { name: "رتشي صيني", price: 12000, img: "https://via.placeholder.com/150?text=Chinese", desc: "صيني درجة أولى، سعر ومظهر." },
-            { name: "شتوي صيني", price: 12000, img: "https://via.placeholder.com/150?text=Winter", desc: "دافئ بوزن مثالي للأناقة." }
-        ];
+    { 
+        name: "ياباني", price: 20000, 
+        imgs: [
+            "https://images.unsplash.com/photo-1583209814683-c023dd293cc6?q=80&w=600",
+            "https://images.unsplash.com/photo-1618220179428-22790b46d02a?q=80&w=600",
+            "https://images.unsplash.com/photo-1520004434532-668416a08753?q=80&w=600",
+            "https://images.unsplash.com/photo-1574634534894-89d7576c8259?q=80&w=600",
+            "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600"
+        ],
+        desc: "قماش ياباني فاخر، يمتاز بالنعومة والبرودة المثالية." 
+    },
+    { 
+        name: "ياباني تتركس", price: 25000, 
+        imgs: [
+            "https://images.unsplash.com/photo-1603251579431-8041402bdeda?q=80&w=600",
+            "https://images.unsplash.com/photo-1598501479155-90b442223072?q=80&w=600",
+            "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600",
+            "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=600",
+            "https://images.unsplash.com/photo-1593032465175-481ac7f40197?q=80&w=600"
+        ],
+        desc: "تتركس ياباني أصلي، وقفة رسمية قوية ومقاوم للتجعد." 
+    },
+    { 
+        name: "تيلاندي خيوط يابانية", price: 18000, 
+        imgs: [
+            "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600",
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?q=80&w=600",
+            "https://images.unsplash.com/photo-1594932224828-b4b059b6f6f9?q=80&w=600",
+            "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=600",
+            "https://images.unsplash.com/photo-1441998852351-7674b4ad7ba2?q=80&w=600"
+        ],
+        desc: "مزيج متقن بين المتانة التايلاندية ونعومة الخيوط اليابانية." 
+    },
+    { 
+        name: "كوري لماع تتركس", price: 17000, 
+        imgs: [
+            "https://images.unsplash.com/photo-1603251579431-8041402bdeda?q=80&w=600",
+            "https://images.unsplash.com/photo-1520004434532-668416a08753?q=80&w=600",
+            "https://images.unsplash.com/photo-1593032465175-481ac7f40197?q=80&w=600",
+            "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?q=80&w=600",
+            "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=600"
+        ],
+        desc: "قماش كوري بلمعة خفيفة وجذابة، مريح جداً." 
+    },
+    { 
+        name: "شتوي صيني", price: 12000, 
+        imgs: [
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?q=80&w=600",
+            "https://images.unsplash.com/photo-1594932224828-b4b059b6f6f9?q=80&w=600",
+            "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=600",
+            "https://images.unsplash.com/photo-1441998852351-7674b4ad7ba2?q=80&w=600",
+            "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?q=80&w=600"
+        ],
+        desc: "قماش دافئ بوزن مثالي يمنحك الدفء والأناقة في الشتاء." 
+    }
+];
 
         let itemCounter = 0;
 
@@ -135,18 +182,35 @@
             recalc();
         }
 
-        function updateCard(select) {
-            const option = select.options[select.selectedIndex];
-            const card = select.parentElement;
-            const preview = card.querySelector('.fabric-preview');
-            
-            preview.style.display = 'flex';
-            card.querySelector('.f-img').src = option.getAttribute('data-img');
-            card.querySelector('.f-desc').innerText = option.getAttribute('data-desc');
-            card.querySelector('.price-tag').innerText = "السعر: " + option.getAttribute('data-price') + " ريال";
-            card.querySelector('.item-price').value = option.getAttribute('data-price');
-            recalc();
-        }
+      function updateCard(select) {
+    const option = select.options[select.selectedIndex];
+    const card = select.parentElement;
+    const preview = card.querySelector('.fabric-preview');
+    
+    const fabric = fabricsData.find(f => f.name === option.value);
+    
+    if (fabric) {
+        preview.style.display = 'block';
+        
+        // توليد صور المعرض الـ 5
+        let imgsHtml = fabric.imgs.map(url => `
+            <img class="f-img" src="${url}" style="width:80px; height:80px; margin:5px; cursor:pointer; border:1px solid #ddd;" onclick="window.open(this.src)">
+        `).join('');
+
+        preview.innerHTML = `
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; background:#fff; padding:10px; border-radius:10px; border:1px solid #eee;">
+                ${imgsHtml}
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                <div class="price-tag" style="color:#8e6d1c; font-weight:bold; font-size:18px;">السعر: ${fabric.price} ريال</div>
+                <div class="f-desc" style="font-size:13px; color:#666;">${fabric.desc}</div>
+            </div>
+        `;
+        
+        card.querySelector('.item-price').value = fabric.price;
+        recalc();
+    }
+}
 
         function recalc() {
             let total = 0;
