@@ -60,6 +60,56 @@
         .btn-add-more { width: 100%; padding: 12px; background: #fff; color: var(--gold); border: 2px dashed var(--gold); border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
         .settings-btn { position: fixed; bottom: 20px; left: 20px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; }
+   /* نافذة اختيار القماش المنبثقة */
+.fabric-modal { 
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.8); 
+    z-index: 9999; 
+    overflow-y: auto; 
+    padding: 20px; 
+    box-sizing: border-box; 
+}
+.modal-content { 
+    background: white; 
+    border-radius: 20px; 
+    max-width: 500px; 
+    margin: auto; 
+    padding: 20px; 
+}
+.fabric-grid-modal { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    margin-top: 15px; 
+}
+
+/* بطاقة الثوب المختار بعد التأكيد */
+.selected-thobe-card { 
+    background: #fff9eb; 
+    border: 1px solid var(--gold); 
+    border-radius: 15px; 
+    padding: 15px; 
+    margin-bottom: 15px; 
+    position: relative; 
+    animation: fadeIn 0.3s;
+}
+.btn-open-fabrics { 
+    width: 100%; 
+    padding: 15px; 
+    background: var(--white); 
+    border: 2px dashed var(--gold); 
+    color: var(--gold); 
+    border-radius: 12px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    margin: 20px 0; 
+}
+
     </style>
 </head>
 <body>
@@ -84,10 +134,33 @@
 
     <form id="masterForm">
         <div id="section_tailor" class="section active">
-            <div id="tailor_list">
-                </div>
-            <button type="button" class="btn-add-more" onclick="addNewTailor()">+ إضافة ثوب تفصيل آخر</button>
-        </div>
+    <h4 style="margin:0 0 10px 0; color:var(--brown)">أولاً: أدخل مقاساتك (بالهنش)</h4>
+    <div class="measure-grid">
+        <div><label>الطول</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>الكتف</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>اليد</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>الصدر</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>الرقبة</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>وسط يد</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>الكبك</label><input type="number" step="0.1" class="m-input"></div>
+        <div><label>الخطوة</label><input type="number" step="0.1" class="m-input"></div>
+    </div>
+
+    <button type="button" class="btn-open-fabrics" onclick="openFabricModal()">
+        + اضغط هنا لاختيار القماش وتفاصيل خياطة الثوب
+    </button>
+
+    <div id="tailor_list"></div>
+</div>
+
+<div id="fabricModal" class="fabric-modal">
+    <div class="modal-content">
+        <h3 style="text-align:center; color:var(--brown);">اختر نوع القماش</h3>
+        <div id="modal_fabric_list" class="fabric-grid-modal"></div>
+        <button type="button" onclick="closeFabricModal()" style="width:100%; margin-top:20px; padding:12px; background:#f0f0f0; border:none; border-radius:8px; cursor:pointer;">إغلاق المعرض</button>
+    </div>
+</div>
+        
 
         <div id="section_ready" class="section">
             <div class="ready-nav">
@@ -227,7 +300,23 @@
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
                 <select><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>قلاب دائري</option><option>صيني</option></select>
-                <select><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
+                <select><option>كبك قماش</option><option>كبك حشو</option><option>سادة بدون زرار</option></select>
+                <select class="design-select">
+    <option disabled selected>نوع الجبزور</option>
+    <option>كبس ظاهر</option>
+    <option>كبس مخفي</option>
+    <option>زرار مخفي</option>
+    <option>سحاب VIP</option>
+</select>
+
+<select class="design-select">
+    <option disabled selected>نوع الخياط</option>
+    <option>قطري</option>
+    <option>سعودي</option>
+    <option>كويتي</option>
+    <option>عماني</option>
+</select>
+
             </div>
             <input type="hidden" class="item-price" value="0">
         `;
@@ -257,6 +346,72 @@
     }
 
     window.onload = addNewTailor;
+// 1. وظيفة فتح نافذة المعرض وملؤها بالأقمشة المرفوعة
+function openFabricModal() {
+    const list = document.getElementById('modal_fabric_list');
+    // نتحقق أولاً إذا كان هناك أقمشة مرفوعة في الذاكرة (db.fabrics)
+    if(!window.db || !db.fabrics || db.fabrics.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:red; grid-column:1/-1; padding:20px;">لا توجد أقمشة مرفوعة حالياً. ارفعها من لوحة التحكم (⚙️) أولاً.</p>';
+    } else {
+        list.innerHTML = db.fabrics.map(f => `
+            <div class="fab-item" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')" style="cursor:pointer; border:1px solid #eee; border-radius:10px; text-align:center; background:#fff;">
+                <img src="${f.img}" style="width:100%; height:110px; object-fit:cover; border-radius:10px 10px 0 0;">
+                <div style="padding:8px; font-size:12px;">
+                    <b style="display:block; color:#5d4037;">${f.title}</b>
+                    <span style="color:#28a745; font-weight:bold;">${f.newPrice} ريال</span>
+                </div>
+            </div>
+        `).join('');
+    }
+    document.getElementById('fabricModal').style.display = 'block';
+}
+
+// 2. إغلاق النافذة
+function closeFabricModal() { 
+    document.getElementById('fabricModal').style.display = 'none'; 
+}
+
+// 3. إنشاء كرت الثوب المختار مع خيارات الخياطة الأربعة
+function confirmFabricSelection(name, price, img) {
+    const id = Date.now();
+    const container = document.getElementById('tailor_list');
+    
+    const thobeCard = document.createElement('div');
+    thobeCard.className = 'selected-thobe-card';
+    thobeCard.id = `thobe_${id}`;
+    thobeCard.innerHTML = `
+        <button type="button" class="remove-card" onclick="removeThobe(${id})" style="position:absolute; left:10px; top:10px; background:red; color:white; border:none; border-radius:50%; cursor:pointer;">×</button>
+        
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+            <img src="${img}" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid #d4af37;">
+            <div>
+                <b style="color:#5d4037; font-size:15px;">قماش: ${name}</b><br>
+                <span style="color:#28a745; font-weight:bold;">${price} ريال</span>
+            </div>
+        </div>
+        
+        <label style="font-size:11px; font-weight:bold; color:#777; display:block; margin-bottom:8px;">تفاصيل خياطة هذا الثوب:</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <select class="thobe-detail-opt"><option disabled selected>الرقبة</option><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option></select>
+            <select class="thobe-detail-opt"><option disabled selected>الكبك</option><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
+            <select class="thobe-detail-opt"><option disabled selected>الجبزور</option><option>كبس ظاهر</option><option>كبس مخفي</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
+            <select class="thobe-detail-opt"><option disabled selected>نوع الخياط</option><option>قطري</option><option>سعودي</option><option>كويتي</option><option>عماني</option></select>
+        </div>
+        <input type="hidden" class="item-price" value="${price}">
+    `;
+    
+    container.appendChild(thobeCard);
+    calcGrandTotal(); // لتحديث المبلغ الإجمالي فوراً
+    closeFabricModal();
+}
+
+// 4. حذف الثوب وتحديث السعر
+function removeThobe(id) {
+    document.getElementById(`thobe_${id}`).remove();
+    calcGrandTotal();
+}
+
+
 </script>
 
 </body>
