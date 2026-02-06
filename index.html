@@ -3,182 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة - المتجر المتكامل</title>
+    <title>خياطة اليرموك - المتجر الذكي</title>
     <style>
-        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); direction: rtl; padding: 15px; margin: 0; }
-        .container { background: white; max-width: 700px; margin: auto; padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--gold); }
+        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --green: #28a745; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); direction: rtl; margin: 0; padding: 15px; }
+        .container { background: white; max-width: 800px; margin: auto; padding: 20px; border-radius: 25px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        .nav-icons { display: flex; justify-content: space-around; margin-bottom: 25px; background: #fff; padding: 10px; border-radius: 15px; border: 1px solid #eee; }
-        .nav-item { text-align: center; cursor: pointer; transition: 0.3s; padding: 12px; border-radius: 12px; flex: 1; color: #777; }
-        .nav-item.active { background: var(--gold); color: white; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
-        .nav-item span { display: block; font-size: 28px; margin-bottom: 5px; }
+        /* الهيدر والشعار */
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo { width: 120px; cursor: pointer; }
+
+        /* التنقل */
+        .nav-icons { display: flex; justify-content: space-around; margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 15px; border: 1px solid #eee; }
+        .nav-item { text-align: center; cursor: pointer; padding: 10px; border-radius: 12px; flex: 1; transition: 0.3s; opacity: 0.5; }
+        .nav-item.active { opacity: 1; background: #fff9eb; border: 1px solid var(--gold); }
+        .nav-item img { width: 35px; height: 35px; display: block; margin: auto; }
+        .nav-item div { font-size: 12px; font-weight: bold; margin-top: 5px; color: var(--brown); }
 
         .section { display: none; animation: fadeIn 0.4s; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ستايل المنتجات الجاهزة */
-        .ready-product { border: 1px solid #f0f0f0; border-radius: 15px; padding: 15px; margin-bottom: 12px; background: #fff; display: flex; align-items: center; justify-content: space-between; }
-        .qty-controls { display: flex; align-items: center; gap: 10px; background: #f9f9f9; padding: 5px 10px; border-radius: 8px; }
-        .qty-btn { background: var(--gold); color: white; border: none; width: 25px; height: 25px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        /* كروت المنتجات الجاهزة */
+        .product-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .ready-card { border: 1px solid #eee; border-radius: 15px; overflow: hidden; background: #fff; position: relative; }
+        .ready-card img { width: 100%; height: 220px; object-fit: cover; }
+        .ready-info { padding: 15px; }
+        .ready-price { color: var(--gold); font-weight: bold; font-size: 18px; display: block; margin-bottom: 10px; }
+        
+        /* التحكم في الكمية */
+        .qty-box { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; padding: 8px; border-radius: 10px; }
+        .qty-btn { background: var(--green); color: white; border: none; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-size: 20px; }
 
-        /* صناديق الإجمالي المستقلة */
-        .bill-box { padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; }
-        .bill-tailor { background: #efebe9; border: 1px solid #d7ccc8; color: #5d4037; }
-        .bill-ready { background: #fffde7; border: 1px solid #fff59d; color: #f57f17; }
-        .total-amount { font-size: 22px; font-weight: bold; display: block; }
+        /* كرت التفصيل والمقاسات */
+        .tailor-card { background: #fff; border: 2px solid #e9e9e9; border-top: 5px solid var(--brown); padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .grid-measure { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .grid-measure input { padding: 8px; font-size: 12px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
 
-        input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        .payment-zone { background: #333; color: white; padding: 20px; border-radius: 20px; margin-top: 25px; }
-        .btn-submit { width: 100%; padding: 18px; background: var(--gold); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        /* لوحة التحكم السرية */
+        #adminPanel { display: none; background: #333; color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        .admin-btn { position: fixed; bottom: 20px; left: 20px; background: rgba(0,0,0,0.2); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; z-index: 1000; }
+
+        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-gold { background: var(--gold); color: white; font-size: 18px; }
+        .btn-brown { background: var(--brown); color: white; }
+
+        input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2 style="text-align: center; color: var(--brown);">اليرموك للخياطة والملابس الرجالية</h2>
+<button class="admin-btn" onclick="checkAdmin()">⚙️</button>
 
-    <div class="nav-icons">
-        <div class="nav-item active" onclick="openSection('tailor_section')">
-            <span>🧵</span>
-            <div>قسم التفصيل</div>
-        </div>
-        <div class="nav-item" onclick="openSection('ready_section')">
-            <span>👔</span>
-            <div>الملابس الجاهزة</div>
-        </div>
+<div class="container">
+    <div class="header">
+        <img src="https://i.imgur.com/eBfP6XG.png" class="logo" alt="شعار اليرموك">
+        <p style="font-size: 12px; color: #888;">773463560 | 776090624</p>
     </div>
 
-    <form id="combinedOrderForm">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-            <input type="text" name="c_name" required placeholder="الاسم الكامل">
-            <input type="tel" name="c_phone" required placeholder="رقم الجوال">
-        </div>
-        <input type="text" name="c_loc" placeholder="عنوان التوصيل (اختياري)">
+    <div id="adminPanel">
+        <h4>لوحة تحديث الصور والمنتجات</h4>
+        <select id="upCat"><option value="thobe">ثياب جاهزة</option><option value="shawl">شيلان</option><option value="coat">أكوات</option></select>
+        <input type="file" id="upImg" accept="image/*" onchange="handleImg(this)" style="margin:10px 0;">
+        <input type="text" id="upName" placeholder="اسم المنتج">
+        <input type="number" id="upPrice" placeholder="السعر">
+        <button class="btn-main" style="background:var(--green); color:white" onclick="uploadData()">تحديث الموقع للجميع</button>
+    </div>
 
-        <div id="tailor_section" class="section active">
-            <h3 style="color: var(--brown); border-bottom: 2px solid #eee; padding-bottom: 10px;">تفصيل أثواب جديدة</h3>
-            <div id="tailor_list"></div>
-            <button type="button" onclick="addTailorItem()" style="width:100%; padding:10px; background:#f5f5f5; border:1px dashed #ccc; border-radius:10px; cursor:pointer; margin-top:10px;">+ إضافة ثوب تفصيل</button>
-            
-            <div class="bill-box bill-tailor">
-                <span style="font-size: 14px;">إجمالي قسم التفصيل فقط:</span>
-                <span class="total-amount"><span id="t_final">0</span> ريال</span>
-            </div>
-        </div>
+    <div class="nav-icons">
+        <div class="nav-item active" onclick="openTab('tailor_sec')"><img src="https://i.imgur.com/eBfP6XG.png"><div>التفصيل</div></div>
+        <div class="nav-item" onclick="openTab('ready_sec')"><img src="https://i.imgur.com/eBfP6XG.png"><div>الجاهز</div></div>
+        <div class="nav-item" onclick="openTab('help_sec')"><img src="https://i.imgur.com/eBfP6XG.png"><div>استفسار</div></div>
+    </div>
 
-        <div id="ready_section" class="section">
-            <h3 style="color: #f57f17; border-bottom: 2px solid #eee; padding-bottom: 10px;">المعرض الجاهز (ثياب - أكوات - شيلان)</h3>
-            <div id="ready_items">
-                <div class="ready-product">
-                    <div>
-                        <strong>كوت ملكي فاخر</strong><br>
-                        <small style="color:var(--gold)">السعر: 35,000 ريال</small>
-                    </div>
-                    <div class="qty-controls">
-                        <button type="button" class="qty-btn" onclick="updateQty('coat', -1)">-</button>
-                        <span id="qty_coat">0</span>
-                        <button type="button" class="qty-btn" onclick="updateQty('coat', 1)">+</button>
-                    </div>
-                </div>
-                <div class="ready-product">
-                    <div>
-                        <strong>شال كشميري</strong><br>
-                        <small style="color:var(--gold)">السعر: 12,000 ريال</small>
-                    </div>
-                    <div class="qty-controls">
-                        <button type="button" class="qty-btn" onclick="updateQty('shawl', -1)">-</button>
-                        <span id="qty_shawl">0</span>
-                        <button type="button" class="qty-btn" onclick="updateQty('shawl', 1)">+</button>
-                    </div>
-                </div>
-            </div>
+    <div id="tailor_sec" class="section active">
+        <div id="tailor_list"></div>
+        <button type="button" class="btn-main btn-brown" onclick="addTailor()">+ إضافة ثوب تفصيل ومقاسات</button>
+        <div style="text-align:center; padding:15px; font-weight:bold;">إجمالي التفصيل: <span id="t_total">0</span> ريال</div>
+    </div>
 
-            <div class="bill-box bill-ready">
-                <span style="font-size: 14px;">إجمالي قسم الجاهز فقط:</span>
-                <span class="total-amount"><span id="r_final">0</span> ريال</span>
+    <div id="ready_sec" class="section">
+        <div class="product-grid" id="ready_display">
             </div>
-        </div>
+        <div style="text-align:center; padding:15px; font-weight:bold; background:#fff9eb; margin-top:10px;">إجمالي الجاهز: <span id="r_total">0</span> ريال</div>
+    </div>
 
-        <div class="payment-zone">
-            <h4 style="margin-top:0; color:var(--gold)">إتمام الطلب والدفع</h4>
-            <p style="font-size: 14px; margin-bottom: 15px;">يرجى تحويل المبلغ الإجمالي للقسمين (أو أحدهما) عبر الكريمي: <strong>3005374854</strong></p>
-            
-            <label style="font-size: 13px;">إرفاق صورة إيصال التحويل:</label>
-            <input type="file" name="receipt" accept="image/*" required>
-            
-            <div style="margin-top: 15px; border-top: 1px solid #555; padding-top: 15px; text-align: center;">
-                <span style="font-size: 14px; color: #aaa;">الإجمالي الكلي المستحق:</span>
-                <div style="font-size: 26px; color: var(--gold); font-weight: bold;"><span id="all_total">0</span> ريال</div>
-            </div>
-            
-            <button type="submit" class="btn-submit">تأكيد إرسال الطلب</button>
+    <div id="help_sec" class="section">
+        <h3 style="text-align:center">الحجز والاستفسار المباشر</h3>
+        <a href="https://wa.me/967773463560?text=استفسار من عميل" class="btn-main btn-brown" style="text-align:center; text-decoration:none; display:block; background:#25D366">واتساب 773463560</a>
+        <a href="https://wa.me/967776090624?text=استفسار من عميل" class="btn-main btn-brown" style="text-align:center; text-decoration:none; display:block; background:#128C7E">واتساب 776090624</a>
+    </div>
+
+    <div style="margin-top:30px; border-top:2px solid #eee; padding-top:20px;">
+        <p style="font-size:13px;"><b>الدفع:</b> الكريمي 3005374854 | جيب 80617</p>
+        <input type="file" placeholder="صورة الإيصال" style="background:#f0f0f0; margin-bottom:10px;">
+        <div style="background:var(--brown); color:white; padding:15px; border-radius:15px; text-align:center; font-size:22px;">
+            الإجمالي: <span id="grand_total">0</span> ريال
         </div>
-    </form>
+        <button class="btn-main btn-gold" onclick="sendOrder()">تأكيد وإرسال الطلب (صامت)</button>
+    </div>
 </div>
 
 <script>
-    // بيانات الجاهز
-    let readyData = {
-        coat: { price: 35000, qty: 0 },
-        shawl: { price: 12000, qty: 0 }
-    };
+    const n8n_url = 'https://ali991278.app.n8n.cloud/webhook/e4bcc169-93c0-42c5-8226-528f3c6a72e3';
+    let base64 = "";
+    let cart = {};
 
-    function openSection(id) {
+    function checkAdmin() {
+        if(prompt("رمز الإدارة:") === "1234") document.getElementById('adminPanel').style.display = 'block';
+    }
+
+    function handleImg(input) {
+        let reader = new FileReader();
+        reader.onload = (e) => base64 = e.target.result;
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    async function uploadData() {
+        let data = { type: "update_store", cat: id('upCat').value, name: id('upName').value, price: id('upPrice').value, img: base64 };
+        await fetch(n8n_url, { method: 'POST', body: JSON.stringify(data) });
+        alert("تم تحديث المتجر بنجاح!");
+        location.reload();
+    }
+
+    function openTab(t) {
         document.querySelectorAll('.section, .nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        document.getElementById(t).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    // إدارة الجاهز بالكميات
-    function updateQty(item, change) {
-        readyData[item].qty = Math.max(0, readyData[item].qty + change);
-        document.getElementById('qty_' + item).innerText = readyData[item].qty;
-        calculate();
-    }
-
-    // إدارة التفصيل
-    function addTailorItem() {
-        const container = document.getElementById('tailor_list');
-        const div = document.createElement('div');
-        div.className = 'ready-product';
+    function addTailor() {
+        let div = document.createElement('div');
+        div.className = 'tailor-card';
         div.innerHTML = `
-            <select name="t_price[]" onchange="calculate()" style="flex:1; margin:0">
-                <option value="0">-- اختر نوع القماش --</option>
-                <option value="20000">ياباني (20,000)</option>
-                <option value="25000">ياباني تتركس (25,000)</option>
-            </select>
-            <button type="button" onclick="this.parentElement.remove(); calculate();" style="color:red; background:none; border:none; cursor:pointer; margin-right:10px;">✖</button>
+            <h4 style="margin:0">ثوب تفصيل</h4>
+            <select class="tp" onchange="calc()"><option value="0">نوع القماش</option><option value="20000">ياباني (20,000)</option><option value="25000">ياباني تتركس (25,000)</option></select>
+            <div class="grid-measure">
+                <input type="number" placeholder="طول" class="m"><input type="number" placeholder="كتف" class="m"><input type="number" placeholder="يد" class="m">
+                <input type="number" placeholder="صدر" class="m"><input type="number" placeholder="رقبة" class="m"><input type="number" placeholder="خطوة" class="m">
+                <input type="number" placeholder="وسط" class="m"><input type="number" placeholder="كبك" class="m">
+            </div>
+            <button onclick="this.parentElement.remove(); calc()" style="color:red; background:none; border:none; margin-top:5px; cursor:pointer;">حذف</button>
         `;
-        container.appendChild(div);
+        document.getElementById('tailor_list').appendChild(div);
+        calc();
     }
 
-    // الحسابات المستقلة
-    function calculate() {
-        // 1. حساب الجاهز
-        let rTotal = (readyData.coat.qty * readyData.coat.price) + (readyData.shawl.qty * readyData.shawl.price);
-        document.getElementById('r_final').innerText = rTotal.toLocaleString();
-
-        // 2. حساب التفصيل
-        let tTotal = 0;
-        document.querySelectorAll('select[name="t_price[]"]').forEach(s => {
-            tTotal += parseInt(s.value);
-        });
-        document.getElementById('t_final').innerText = tTotal.toLocaleString();
-
-        // 3. الإجمالي الكلي
-        document.getElementById('all_total').innerText = (rTotal + tTotal).toLocaleString();
+    function calc() {
+        let tt = 0; document.querySelectorAll('.tp').forEach(s => tt += parseInt(s.value));
+        document.getElementById('t_total').innerText = tt.toLocaleString();
+        document.getElementById('grand_total').innerText = tt.toLocaleString(); // تبسيط للبروفة
     }
 
-    window.onload = addTailorItem;
+    async function sendOrder() {
+        let order = { name: id('cust_name').value, total: id('grand_total').innerText };
+        await fetch(n8n_url, { method: 'POST', body: JSON.stringify(order) });
+        alert("تم استلام طلبك، شكراً لك!");
+    }
 
-    document.getElementById('combinedOrderForm').onsubmit = (e) => {
-        e.preventDefault();
-        alert('شكراً لثقتكم بمحل اليرموك! تم إرسال طلبك بنجاح.');
-        location.reload();
-    };
+    function id(i) { return document.getElementById(i); }
+    window.onload = addTailor;
 </script>
-
 </body>
 </html>
