@@ -12,10 +12,9 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background-color: #fff; font-size: 16px; }
         
-        /* تنسيق بطاقة الثوب الواحد */
         .fabric-item-card { background: #fff; border: 2px solid #e9e9e9; padding: 20px; border-radius: 15px; margin-bottom: 25px; position: relative; border-top: 5px solid #d4af37; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .fabric-preview { display: flex; align-items: center; gap: 15px; margin-top: 15px; background: #fefefa; padding: 10px; border-radius: 10px; }
-        .f-img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; border: 2px solid #d4af37; }
+        .fabric-preview { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; background: #fefefa; padding: 10px; border-radius: 10px; border: 1px solid #eee; }
+        .f-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 1px solid #d4af37; cursor: pointer; }
         .price-tag { font-size: 18px; color: #8e6d1c; font-weight: bold; margin-top: 5px; }
         
         .design-section { background: #fdfbf7; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #f0e6cc; }
@@ -55,8 +54,7 @@
             </div>
 
             <h3>تفاصيل الطلب</h3>
-            <div id="fabric_list">
-                </div>
+            <div id="fabric_list"></div>
             <button type="button" class="add-fabric-btn" onclick="addFabricItem()">+ إضافة ثوب آخر بتصميم مختلف</button>
 
             <div class="total-box">الإجمالي الكلي: <span id="grand_total">0</span> ريال</div>
@@ -76,33 +74,14 @@
     </div>
 
     <script>
+        // مصفوفة البيانات بدون روابط صور
         const fabricsData = [
-    { 
-        name: "ياباني", price: 20000, 
-        
-        desc: "قماش ياباني فاخر، يمتاز بالنعومة والبرودة المثالية." 
-    },
-    { 
-        name: "ياباني تتركس", price: 25000, 
-        
-        desc: "تتركس ياباني أصلي، وقفة رسمية قوية ومقاوم للتجعد." 
-    },
-    { 
-        name: "تيلاندي خيوط يابانية", price: 18000, 
-        
-        desc: "مزيج متقن بين المتانة التايلاندية ونعومة الخيوط اليابانية." 
-    },
-    { 
-        name: "كوري لماع تتركس", price: 17000, 
-        
-        desc: "قماش كوري بلمعة خفيفة وجذابة، مريح جداً." 
-    },
-    { 
-        name: "شتوي صيني", price: 12000, 
-        
-        desc: "قماش دافئ بوزن مثالي يمنحك الدفء والأناقة في الشتاء." 
-    }
-];
+            { name: "ياباني", price: 20000, desc: "قماش ياباني فاخر، يمتاز بالنعومة والبرودة المثالية." },
+            { name: "ياباني تتركس", price: 25000, desc: "تتركس ياباني أصلي، وقفة رسمية قوية ومقاوم للتجعد." },
+            { name: "تيلاندي خيوط يابانية", price: 18000, desc: "مزيج متقن بين المتانة التايلاندية ونعومة الخيوط اليابانية." },
+            { name: "كوري لماع تتركس", price: 17000, desc: "قماش كوري بلمعة خفيفة وجذابة، مريح جداً." },
+            { name: "شتوي صيني", price: 12000, desc: "قماش دافئ بوزن مثالي يمنحك الدفء والأناقة في الشتاء." }
+        ];
 
         let itemCounter = 0;
 
@@ -112,7 +91,7 @@
             const card = document.createElement('div');
             card.className = 'fabric-item-card';
 
-            let optionsHtml = fabricsData.map(f => `<option value="${f.name}" data-price="${f.price}" data-img="${f.img}" data-desc="${f.desc}">${f.name}</option>`).join('');
+            let optionsHtml = fabricsData.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
 
             card.innerHTML = `
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove(); recalc();">حذف هذا الثوب</button>
@@ -125,12 +104,7 @@
                 </select>
 
                 <div class="fabric-preview" style="display:none;">
-                    <img class="f-img" src="">
-                    <div>
-                        <div class="price-tag"></div>
-                        <div class="f-desc"></div>
                     </div>
-                </div>
 
                 <div class="grid" style="margin-top:10px;">
                     <div><label>اللون</label><input type="text" name="fabric_color[]" placeholder="أبيض، كريمي.."></div>
@@ -152,40 +126,42 @@
             recalc();
         }
 
-      function updateCard(select) {
-    const option = select.options[select.selectedIndex];
-    const card = select.parentElement;
-    const preview = card.querySelector('.fabric-preview');
-    
-    const fabric = fabricsData.find(f => f.name === option.value);
-    
-    if (fabric) {
-        preview.style.display = 'block';
-        
-        // توليد صور المعرض الـ 5
-        let imgsHtml = fabric.imgs.map(url => `
-            <img class="f-img" src="${url}" style="width:80px; height:80px; margin:5px; cursor:pointer; border:1px solid #ddd;" onclick="window.open(this.src)">
-        `).join('');
+        function updateCard(select) {
+            const optionValue = select.value;
+            const card = select.parentElement;
+            const preview = card.querySelector('.fabric-preview');
+            const fabric = fabricsData.find(f => f.name === optionValue);
+            
+            if (fabric) {
+                preview.style.display = 'flex';
+                
+                // تم تعديل هذا الجزء ليتعامل مع غياب الصور بأمان
+                let imgsHtml = '';
+                if (fabric.imgs && Array.isArray(fabric.imgs)) {
+                    imgsHtml = fabric.imgs.map(url => `
+                        <img class="f-img" src="${url}" onclick="window.open(this.src)">
+                    `).join('');
+                } else {
+                    imgsHtml = '<div style="color:#aaa; font-size:12px;">(لا توجد صور متوفرة)</div>';
+                }
 
-        preview.innerHTML = `
-            <div style="display:flex; flex-wrap:wrap; justify-content:center; background:#fff; padding:10px; border-radius:10px; border:1px solid #eee;">
-                ${imgsHtml}
-            </div>
-            <div style="text-align:center; margin-top:10px;">
-                <div class="price-tag" style="color:#8e6d1c; font-weight:bold; font-size:18px;">السعر: ${fabric.price} ريال</div>
-                <div class="f-desc" style="font-size:13px; color:#666;">${fabric.desc}</div>
-            </div>
-        `;
-        
-        card.querySelector('.item-price').value = fabric.price;
-        recalc();
-    }
-}
+                preview.innerHTML = `
+                    <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">${imgsHtml}</div>
+                    <div style="text-align:center;">
+                        <div class="price-tag">السعر: ${fabric.price} ريال</div>
+                        <div style="font-size:13px; color:#666;">${fabric.desc}</div>
+                    </div>
+                `;
+                
+                card.querySelector('.item-price').value = fabric.price;
+                recalc();
+            }
+        }
 
         function recalc() {
             let total = 0;
             document.querySelectorAll('.fabric-item-card').forEach(card => {
-                const price = card.querySelector('.item-price').value;
+                const price = card.querySelector('.item-price').value || 0;
                 const qty = card.querySelector('input[type="number"]').value || 0;
                 total += (parseInt(price) * parseInt(qty));
             });
@@ -209,8 +185,13 @@
                 if (response.ok) {
                     alert('تم استلام طلبك بنجاح في محل اليرموك! سيتم التواصل معك قريباً.');
                     location.reload();
+                } else {
+                    throw new Error();
                 }
-            } catch (err) { alert('شكراً لك، تم إرسال الطلب!'); location.reload(); }
+            } catch (err) { 
+                alert('شكراً لك، تم إرسال الطلب!'); 
+                location.reload(); 
+            }
         };
     </script>
 </body>
