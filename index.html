@@ -186,11 +186,13 @@
     <div class="admin-content">
         <h3 style="text-align:center; margin-top:0; color:var(--gold);">إدارة اليرموك</h3>
         <select id="adm_cat">
-            <option value="fabric">قماش جديد (لقسم التفصيل)</option>
-            <option value="thobe">ثوب جاهز</option>
-            <option value="coat">كوت جاهز</option>
-            <option value="shawl">شال جاهز</option>
-        </select>
+            <select id="adm_cat">
+    <option value="logo">شعار رأس الصفحة (Logo)</option> <option value="fabric">قماش (لقسم التفصيل)</option>
+    <option value="thobe">ثوب جاهز</option>
+    <option value="coat">كوت جاهز</option>
+    <option value="shawl">شال جاهز</option>
+</select>
+
         <input type="file" id="adm_file" onchange="encodeImg(this)">
         <input type="text" id="adm_title" placeholder="اسم المنتج/القماش">
         <input type="text" id="adm_desc" placeholder="وصف موجز">
@@ -217,24 +219,39 @@
     }
 
     function saveProduct() {
-        const cat = document.getElementById('adm_cat').value;
-        const item = {
-            id: Date.now(),
-            cat: cat,
-            img: tempImg,
-            title: document.getElementById('adm_title').value,
-            desc: document.getElementById('adm_desc').value,
-            oldPrice: document.getElementById('adm_old').value,
-            newPrice: document.getElementById('adm_new').value
-        };
-
-        if(cat === 'fabric') db.fabrics.push(item);
-        else db.ready.push(item);
-
-        alert("تمت الإضافة بنجاح!");
-        renderAll();
+    const cat = document.getElementById('adm_cat').value;
+    
+    // إذا كان المختار هو الشعار
+    if (cat === 'logo') {
+        if (tempImg) {
+            document.querySelector('.logo').src = tempImg; // تغيير الصورة في رأس الصفحة فوراً
+            alert("تم تغيير شعار المحل بنجاح!");
+        } else {
+            alert("يرجى اختيار صورة أولاً");
+        }
         closeAdmin();
+        return; // إنهاء الوظيفة هنا
     }
+
+    // الكود القديم لبقية المنتجات (لا نلمسه)
+    const item = {
+        id: Date.now(),
+        cat: cat,
+        img: tempImg,
+        title: document.getElementById('adm_title').value,
+        desc: document.getElementById('adm_desc').value,
+        oldPrice: document.getElementById('adm_old').value,
+        newPrice: document.getElementById('adm_new').value
+    };
+    
+    if(cat === 'fabric') db.fabrics.push(item);
+    else db.ready.push(item);
+    
+    alert("تم التحديث بنجاح!");
+    renderAll();
+    closeAdmin();
+}
+
 
     function renderAll() {
         // تحديث قسم الجاهز
@@ -372,6 +389,7 @@ function closeFabricModal() {
 }
 
 // 3. إنشاء كرت الثوب المختار مع خيارات الخياطة الأربعة
+// وظيفة إنشاء كرت الثوب المختار (بدون تكرار المقاسات)
 function confirmFabricSelection(name, price, img) {
     const id = Date.now();
     const container = document.getElementById('tailor_list');
@@ -379,37 +397,36 @@ function confirmFabricSelection(name, price, img) {
     const thobeCard = document.createElement('div');
     thobeCard.className = 'selected-thobe-card';
     thobeCard.id = `thobe_${id}`;
+    
+    // تصميم الكرت الجديد: يحتوي فقط على معلومات القماش وخيارات الخياطة
     thobeCard.innerHTML = `
-        <button type="button" class="remove-card" onclick="removeThobe(${id})" style="position:absolute; left:10px; top:10px; background:red; color:white; border:none; border-radius:50%; cursor:pointer;">×</button>
+        <button type="button" class="remove-card" onclick="removeThobe(${id})" style="position:absolute; left:10px; top:10px; background:#ff4d4d; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; font-weight:bold;">×</button>
         
-        <div style="display:flex; gap:12px; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
-            <img src="${img}" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid #d4af37;">
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:15px; border-bottom:1px dotted var(--gold); padding-bottom:10px;">
+            <img src="${img}" style="width:55px; height:55px; border-radius:10px; object-fit:cover; border:1px solid var(--gold);">
             <div>
-                <b style="color:#5d4037; font-size:15px;">قماش: ${name}</b><br>
-                <span style="color:#28a745; font-weight:bold;">${price} ريال</span>
+                <b style="color:var(--brown); font-size:14px;">قماش: ${name}</b><br>
+                <span style="color:#28a745; font-weight:bold; font-size:13px;">${price} ريال</span>
             </div>
         </div>
         
-        <label style="font-size:11px; font-weight:bold; color:#777; display:block; margin-bottom:8px;">تفاصيل خياطة هذا الثوب:</label>
+        <p style="font-size:11px; font-weight:bold; color:#555; margin:0 0 10px 0;">حدد تفاصيل خياطة هذا الثوب:</p>
+        
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <select class="thobe-detail-opt"><option disabled selected>الرقبة</option><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option></select>
-            <select class="thobe-detail-opt"><option disabled selected>الكبك</option><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
-            <select class="thobe-detail-opt"><option disabled selected>الجبزور</option><option>كبس ظاهر</option><option>كبس مخفي</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
-            <select class="thobe-detail-opt"><option disabled selected>نوع الخياط</option><option>قطري</option><option>سعودي</option><option>كويتي</option><option>عماني</option></select>
+            <select class="thobe-opt"><option disabled selected>نوع الرقبة</option><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option></select>
+            <select class="thobe-opt"><option disabled selected>نوع الكبك</option><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
+            <select class="thobe-opt"><option disabled selected>نوع الجبزور</option><option>كبس ظاهر</option><option>كبس مخفي</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
+            <select class="thobe-opt"><option disabled selected>نوع الخياط</option><option>قطري</option><option>سعودي</option><option>كويتي</option><option>عماني</option></select>
         </div>
+        
         <input type="hidden" class="item-price" value="${price}">
     `;
     
     container.appendChild(thobeCard);
-    calcGrandTotal(); // لتحديث المبلغ الإجمالي فوراً
-    closeFabricModal();
+    calcGrandTotal(); // لتحديث الإجمالي أسفل الصفحة
+    closeFabricModal(); // إغلاق نافذة الأقمشة بعد الاختيار
 }
-
-// 4. حذف الثوب وتحديث السعر
-function removeThobe(id) {
-    document.getElementById(`thobe_${id}`).remove();
-    calcGrandTotal();
-}
+    
 
 
 </script>
