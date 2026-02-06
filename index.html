@@ -8,43 +8,48 @@
         :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --white: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; direction: rtl; }
         
-        .main-container { max-width: 600px; margin: auto; background: var(--white); border-radius: 20px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .main-container { max-width: 600px; margin: auto; background: var(--white); border-radius: 25px; border: 1px solid rgba(212,175,55,0.3); box-shadow: 0 15px 40px rgba(0,0,0,0.05); overflow: hidden; }
         
-        .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); }
-        .logo { width: 150px; margin-bottom: 10px; }
-        .cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #fff9eb; }
-        .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; width: 100%; box-sizing: border-box;}
+        /* تنسيق رأس الصفحة مع الشعار الجديد الشفاف */
+        .header { text-align: center; padding: 30px 20px; background: transparent; position: relative; }
+        .logo { width: 180px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); transition: 0.3s; }
+        .store-title { margin-top: 10px; color: var(--brown); font-size: 22px; font-weight: bold; letter-spacing: 1px; }
 
-        .main-tabs { display: flex; background: #eee; }
-        .tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: #eee; color: #666; transition: 0.3s; }
-        .tab-btn.active { background: var(--gold); color: white; }
+        .cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #fff9eb; border-top: 1px solid #f0e6cc; }
+        .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; width: 100%; box-sizing: border-box; background: white;}
 
-        .section { display: none; padding: 15px; }
-        .section.active { display: block; }
+        .main-tabs { display: flex; background: #f0f0f0; padding: 5px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; cursor: pointer; font-weight: bold; background: transparent; color: #777; transition: 0.3s; border-radius: 15px; }
+        .tab-btn.active { background: var(--gold); color: white; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
 
-        .fabric-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: white; border-radius: 20px; max-width: 500px; margin: auto; padding: 20px; }
-        .fabric-grid-modal { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .section { display: none; padding: 20px; }
+        .section.active { display: block; animation: fadeIn 0.5s; }
 
-        .selected-thobe-card { background: #fff9eb; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 15px; position: relative; }
-        .remove-card { position: absolute; top: 10px; left: 10px; background: #ff4d4d; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+        /* تنسيق قسم الجاهز */
+        .ready-nav { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .ready-type-btn { padding: 8px 20px; border: 1px solid var(--gold); border-radius: 25px; background: white; white-space: nowrap; cursor: pointer; font-size: 13px; color: var(--brown); font-weight: bold; }
+        .ready-type-btn.active { background: var(--brown); color: white; border-color: var(--brown); }
         
-        .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
-        .measure-grid div { text-align: center; }
-        .measure-grid label { font-size: 11px; color: #777; font-weight: bold; }
-        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; }
+        .items-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .product-card { border: 1px solid #f0f0f0; border-radius: 20px; overflow: hidden; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s; padding-bottom: 12px; }
+        .product-card img { width: 100%; height: 160px; object-fit: cover; }
+        .old-price { text-decoration: line-through; color: #bbb; font-size: 12px; margin-left: 5px; }
+        .new-price { color: #2e7d32; font-weight: bold; font-size: 16px; }
 
-        .thobe-opt { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd; font-size: 12px; margin-top: 5px; }
-
-        .pay-card { border: 1px solid #ddd; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; background: #fff; transition: 0.3s; }
+        .selected-thobe-card { background: #fffdf7; border: 1px solid var(--gold); border-radius: 20px; padding: 15px; margin-bottom: 15px; position: relative; box-shadow: 0 4px 10px rgba(212,175,55,0.1); }
+        .remove-card { position: absolute; top: 10px; left: 10px; background: #ff5252; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
         
-        .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; }
-        .admin-content { background: #222; color: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; border: 2px solid var(--gold); }
-        .admin-content input, .admin-content select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: none; }
+        .pay-card { border: 1px solid #eee; padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; background: #fff; transition: 0.3s; border-bottom: 3px solid #eee; }
+        .pay-card:hover { transform: translateY(-2px); }
+        
+        .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .admin-content { background: #1a1a1a; color: white; padding: 25px; border-radius: 25px; width: 90%; max-width: 400px; border: 1px solid var(--gold); }
+        .admin-content input, .admin-content select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #333; background: #222; color: white; box-sizing: border-box; }
 
-        .btn-open-fabrics { width: 100%; padding: 15px; background: var(--white); border: 2px dashed var(--gold); color: var(--gold); border-radius: 12px; font-weight: bold; cursor: pointer; margin: 20px 0; }
-        .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-        .settings-btn { position: fixed; bottom: 20px; left: 20px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 24px; z-index: 1000; }
+        .btn-send { width: 100%; padding: 20px; background: var(--brown); color: white; border: none; border-radius: 18px; font-size: 18px; font-weight: bold; margin-top: 25px; cursor: pointer; box-shadow: 0 8px 20px rgba(93,64,55,0.3); }
+        .settings-btn { position: fixed; bottom: 25px; left: 25px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 55px; height: 55px; cursor: pointer; font-size: 26px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -53,114 +58,102 @@
 
 <div class="main-container" id="app_body">
     <div class="header">
-        <img src="https://i.imgur.com/eBfP6XG.png" class="logo" id="store_logo" alt="اليرموك">
-        <h2 style="margin:0; color:var(--brown)">اليرموك للخياطة الرجالية</h2>
+        <img src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="logo" id="store_logo" alt="اليرموك للخياطة">
+        <div class="store-title">اليرموك للخياطة الرجالية</div>
     </div>
 
     <div class="cust-info">
-        <input type="text" id="c_name" placeholder="إسم العميل الكامل">
-        <input type="tel" id="c_phone" placeholder="رقم الهاتف">
+        <input type="text" id="c_name" placeholder="إسم العميل">
+        <input type="tel" id="c_phone" placeholder="رقم الجوال">
     </div>
 
     <div class="main-tabs">
-        <button class="tab-btn active" onclick="switchMainTab('tailor')">التفصيل والأقمشة</button>
+        <button class="tab-btn active" onclick="switchMainTab('tailor')">التفصيل</button>
         <button class="tab-btn" onclick="switchMainTab('ready')">الملابس الجاهزة</button>
     </div>
 
     <div id="section_tailor" class="section active">
-        <h4 style="margin:0 0 10px 0; color:var(--brown)">أولاً: أدخل مقاساتك (بالهنش)</h4>
-        <div class="measure-grid">
-            <div><label>الطول</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الكتف</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>اليد</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الصدر</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الرقبة</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>وسط يد</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الكبك</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الخطوة</label><input type="number" step="0.1" class="m-input"></div>
-        </div>
-
-        <button type="button" class="btn-open-fabrics" onclick="openFabricModal()">+ إضافة ثوب تفصيل جديد</button>
-        <div id="tailor_list"></div>
+        <button type="button" style="width:100%; padding:18px; background:#fff; border:2px dashed var(--gold); border-radius:15px; color:var(--gold); font-weight:bold; cursor:pointer;" onclick="openFabricModal()">+ تفصيل ثوب جديد</button>
+        <div id="tailor_list" style="margin-top:20px;"></div>
     </div>
 
     <div id="section_ready" class="section">
-        <p style="text-align:center; color:#888;">قسم الملابس الجاهزة سيظهر هنا عند إضافة منتجات.</p>
+        <div class="ready-nav">
+            <button class="ready-type-btn active" onclick="filterReady('all', this)">الكل</button>
+            <button class="ready-type-btn" onclick="filterReady('thobe_r', this)">ثياب</button>
+            <button class="ready-type-btn" onclick="filterReady('coat_r', this)">أكوات</button>
+            <button class="ready-type-btn" onclick="filterReady('shawl_r', this)">شيلان</button>
+        </div>
+        <div id="ready_display" class="items-grid">
+            <p style="text-align:center; grid-column:1/-1; color:#999; padding:40px 0;">لا توجد منتجات جاهزة حالياً</p>
+        </div>
     </div>
 
-    <div style="padding:15px; background:#fff; border-top:5px solid #eee;">
-        <h4 style="margin:0 0 10px 0; color:var(--brown); font-size:14px;">اختر طريقة الدفع:</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+    <div style="padding:20px; background:#fff; border-top:8px solid #f9f9f9;">
+        <h4 style="margin:0 0 15px 0; color:var(--brown);">طريقة الدفع:</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div class="pay-card" onclick="selectPayment('الكريمي', 'حساب ريال يمني: 3005374854', this)">
-                <div style="font-size:12px; font-weight:bold; color:#1a5eb8;">بنك الكريمي</div>
+                <div style="font-weight:bold; color:#1a5eb8; font-size:14px;">بنك الكريمي</div>
             </div>
             <div class="pay-card" onclick="selectPayment('محفظة جيب', 'رقم النقطة: 595720', this)">
-                <div style="font-size:12px; font-weight:bold; color:#f39c12;">محفظة جيب</div>
+                <div style="font-weight:bold; color:#f39c12; font-size:14px;">محفظة جيب</div>
             </div>
         </div>
         
-        <div id="account_display" style="display:none; background:#fdfbf7; border:1px dashed var(--gold); padding:10px; border-radius:10px; text-align:center; margin-top:10px;">
+        <div id="account_display" style="display:none; background:#fff9eb; border:1px dashed var(--gold); padding:15px; border-radius:12px; text-align:center; margin-top:15px;">
             <div id="account_number" style="font-size:18px; font-weight:bold; color:var(--brown);"></div>
         </div>
 
-        <div id="receipt_section" style="display:none; margin-top:15px; padding:12px; border:1px solid #ddd; border-radius:10px; background:#fafafa;">
-            <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:5px;">📸 إرفاق صورة إيصال التحويل:</label>
-            <input type="file" id="receipt_file" accept="image/*" onchange="encodeReceipt(this)" style="font-size:12px;">
-            <div id="receipt_msg" style="display:none; color:green; font-size:11px; margin-top:5px;">✅ تم اختيار الصورة</div>
+        <div id="receipt_section" style="display:none; margin-top:15px; padding:15px; border:1px solid #eee; border-radius:12px; background:#fafafa;">
+            <label style="font-size:13px; font-weight:bold; color:#555; display:block; margin-bottom:8px;">📸 إرفاق صورة الإيصال:</label>
+            <input type="file" id="receipt_file" accept="image/*" onchange="encodeReceipt(this)">
         </div>
-
         <input type="hidden" id="selected_payment" value="لم يتم التحديد">
     </div>
 
-    <div style="background:var(--brown); color:white; padding:20px; text-align:center;">
-        <div style="font-size:14px; opacity:0.8;">الإجمالي المستحق</div>
-        <div style="font-size:28px; font-weight:bold;"><span id="final_total">0</span> ريال</div>
+    <div style="background:var(--brown); color:white; padding:25px; text-align:center;">
+        <div style="font-size:14px; opacity:0.8; margin-bottom:5px;">الإجمالي الكلي</div>
+        <h2 style="margin:0; font-size:32px;"><span id="final_total">0</span> <small style="font-size:14px;">ريال</small></h2>
     </div>
-
-    <button type="button" class="btn-send" onclick="submitOrder()">تأكيد الطلب النهائي</button>
-</div>
-
-<div id="fabricModal" class="fabric-modal">
-    <div class="modal-content">
-        <h3 style="text-align:center; color:var(--brown);">اختر نوع القماش</h3>
-        <div id="modal_fabric_list" class="fabric-grid-modal"></div>
-        <button type="button" onclick="closeFabricModal()" style="width:100%; margin-top:20px; padding:12px; background:#f0f0f0; border:none; border-radius:8px;">إغلاق</button>
-    </div>
+    <button type="button" class="btn-send" onclick="submitOrder()">إرسال الطلب الآن</button>
 </div>
 
 <div id="adminPanel" class="admin-panel">
     <div class="admin-content">
-        <h3>إدارة اليرموك</h3>
+        <h3 style="text-align:center; color:var(--gold);">إدارة اليرموك</h3>
         <select id="adm_cat">
+            <option value="fabric">إضافة قماش جديد</option>
+            <option value="thobe_r">إضافة ثوب جاهز</option>
+            <option value="coat_r">إضافة كوت جاهز</option>
+            <option value="shawl_r">إضافة شال جاهز</option>
             <option value="logo">تغيير الشعار</option>
-            <option value="fabric">إضافة قماش</option>
         </select>
         <input type="file" id="adm_file" onchange="encodeImg(this)">
-        <input type="text" id="adm_title" placeholder="الاسم">
-        <input type="number" id="adm_new" placeholder="السعر">
-        <button onclick="saveProduct()" style="width:100%; padding:15px; background:var(--gold); border:none; color:white; font-weight:bold; border-radius:10px;">تحديث المتجر</button>
-        <button onclick="closeAdmin()" style="width:100%; background:none; border:none; color:#ccc; margin-top:10px;">إغلاق</button>
+        <input type="text" id="adm_title" placeholder="اسم المنتج / القماش">
+        <input type="number" id="adm_old" placeholder="السعر السابق (للخصم)">
+        <input type="number" id="adm_new" placeholder="السعر الحالي">
+        <button onclick="saveProduct()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">تحديث المتجر</button>
+        <button onclick="closeAdmin()" style="width:100%; background:none; border:none; color:#999; margin-top:12px; cursor:pointer;">إلغاء</button>
+    </div>
+</div>
+
+<div id="fabricModal" class="admin-panel" style="background:rgba(0,0,0,0.8);">
+    <div style="background:white; width:90%; max-width:450px; padding:25px; border-radius:25px;">
+        <h3 style="text-align:center; color:var(--brown);">اختر نوع القماش</h3>
+        <div id="modal_fabric_list" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:15px;"></div>
+        <button onclick="document.getElementById('fabricModal').style.display='none'" style="width:100%; margin-top:20px; padding:12px; border:none; border-radius:12px; background:#f0f0f0;">إغلاق</button>
     </div>
 </div>
 
 <script>
     let db = { fabrics: [], ready: [] };
-    let tempImg = "";
-    let receiptImg = ""; // متغير لحفظ صورة الإيصال
+    let tempImg = ""; let receiptImg = "";
+    let readyCartTotal = 0;
 
     function openAdmin() { if(prompt("كلمة مرور الإدارة:") === "1234") document.getElementById('adminPanel').style.display='flex'; }
     function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
     function encodeImg(i) { let r = new FileReader(); r.onload = (e) => tempImg = e.target.result; r.readAsDataURL(i.files[0]); }
-
-    // وظيفة معالجة صورة الإيصال
-    function encodeReceipt(i) { 
-        let r = new FileReader(); 
-        r.onload = (e) => { 
-            receiptImg = e.target.result; 
-            document.getElementById('receipt_msg').style.display = 'block';
-        }; 
-        r.readAsDataURL(i.files[0]); 
-    }
+    function encodeReceipt(i) { let r = new FileReader(); r.onload = (e) => receiptImg = e.target.result; r.readAsDataURL(i.files[0]); }
 
     function switchMainTab(t) {
         document.querySelectorAll('.section, .tab-btn').forEach(el => el.classList.remove('active'));
@@ -170,33 +163,32 @@
 
     function saveProduct() {
         const cat = document.getElementById('adm_cat').value;
+        const title = document.getElementById('adm_title').value;
+        const oldP = document.getElementById('adm_old').value || 0;
+        const newP = document.getElementById('adm_new').value;
+
         if (cat === 'logo') {
             document.getElementById('store_logo').src = tempImg;
-            alert("تم تغيير الشعار");
+        } else if (cat === 'fabric') {
+            db.fabrics.push({ title, newPrice: newP, img: tempImg });
         } else {
-            db.fabrics.push({ title: document.getElementById('adm_title').value, newPrice: document.getElementById('adm_new').value, img: tempImg });
-            alert("تم الإضافة");
+            db.ready.push({ cat, title, oldPrice: oldP, newPrice: newP, img: tempImg });
         }
+        alert("تم الحفظ بنجاح");
+        filterReady('all');
         closeAdmin();
     }
 
     function openFabricModal() {
         const list = document.getElementById('modal_fabric_list');
-        if(db.fabrics.length === 0) {
-            list.innerHTML = '<p style="text-align:center; grid-column:1/-1;">لا توجد أقمشة، ارفعها من الإدارة أولاً.</p>';
-        } else {
-            list.innerHTML = db.fabrics.map(f => `
-                <div class="pay-card" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
-                    <img src="${f.img}" style="width:100%; height:80px; object-fit:cover; border-radius:8px;">
-                    <div style="font-size:12px; margin-top:5px;">${f.title}</div>
-                    <div style="color:green; font-weight:bold;">${f.newPrice} ريال</div>
-                </div>
-            `).join('');
-        }
-        document.getElementById('fabricModal').style.display = 'block';
+        list.innerHTML = db.fabrics.length ? db.fabrics.map(f => `
+            <div class="pay-card" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
+                <img src="${f.img}" style="width:100%; height:80px; object-fit:cover; border-radius:10px;">
+                <div style="font-size:12px; margin-top:8px; font-weight:bold;">${f.title}</div>
+            </div>
+        `).join('') : '<p style="grid-column:1/-1; text-align:center; color:red;">يرجى رفع أقمشة من لوحة التحكم أولاً</p>';
+        document.getElementById('fabricModal').style.display = 'flex';
     }
-
-    function closeFabricModal() { document.getElementById('fabricModal').style.display = 'none'; }
 
     function confirmFabricSelection(name, price, img) {
         const id = Date.now();
@@ -205,39 +197,58 @@
         card.id = `thobe_${id}`;
         card.innerHTML = `
             <button type="button" class="remove-card" onclick="removeThobe(${id})">×</button>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <img src="${img}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
-                <div><b>قماش: ${name}</b><br><span style="color:green;">${price} ريال</span></div>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <img src="${img}" style="width:50px; height:50px; border-radius:10px; object-fit:cover; border:1px solid #eee;">
+                <div><b style="color:var(--brown)">ثوب: ${name}</b><br><span style="color:#2e7d32; font-weight:bold;">${price} ريال</span></div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">
-                <select class="thobe-opt"><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option></select>
-                <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
-                <select class="thobe-opt"><option>كبس ظاهر</option><option>كبس مخفي</option><option>زرار مخفي</option></select>
-                <select class="thobe-opt"><option>قطري</option><option>سعودي</option><option>كويتي</option></select>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
+                <select class="admin-content select" style="background:white; color:#333; padding:8px; border:1px solid #ddd;"><option>قلاب ملكي</option><option>صيني</option><option>فرنسي</option></select>
+                <select class="admin-content select" style="background:white; color:#333; padding:8px; border:1px solid #ddd;"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
+                <select class="admin-content select" style="background:white; color:#333; padding:8px; border:1px solid #ddd;"><option>كبس ظاهر</option><option>سحاب VIP</option><option>زرار مخفي</option></select>
+                <select class="admin-content select" style="background:white; color:#333; padding:8px; border:1px solid #ddd;"><option>خياط قطري</option><option>سعودي</option><option>كويتي</option></select>
             </div>
             <input type="hidden" class="item-price" value="${price}">
         `;
         document.getElementById('tailor_list').appendChild(card);
         calcGrandTotal();
-        closeFabricModal();
+        document.getElementById('fabricModal').style.display = 'none';
     }
 
+    function filterReady(type, btn) {
+        if(btn) {
+            document.querySelectorAll('.ready-type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        const display = document.getElementById('ready_display');
+        const items = type === 'all' ? db.ready : db.ready.filter(i => i.cat === type);
+        display.innerHTML = items.length ? items.map(i => `
+            <div class="product-card">
+                <img src="${i.img}">
+                <div style="padding:10px; font-size:14px; font-weight:bold; color:var(--brown);">${i.title}</div>
+                <div style="padding-bottom:10px;">
+                    ${i.oldPrice > 0 ? `<span class="old-price">${i.oldPrice}</span>` : ''}
+                    <span class="new-price">${i.newPrice} ريال</span>
+                </div>
+                <button onclick="addReadyToCart(${i.newPrice})" style="width:90%; background:var(--gold); border:none; color:white; border-radius:8px; padding:8px; cursor:pointer; font-weight:bold;">إضافة للطلب</button>
+            </div>
+        `).join('') : '<p style="grid-column:1/-1; text-align:center; padding:40px 0; color:#999;">لا توجد منتجات</p>';
+    }
+
+    function addReadyToCart(p) { readyCartTotal += parseInt(p); calcGrandTotal(); alert("تمت إضافة المنتج الجاهز"); }
     function removeThobe(id) { document.getElementById(`thobe_${id}`).remove(); calcGrandTotal(); }
 
     function calcGrandTotal() {
-        let t = 0;
+        let t = readyCartTotal;
         document.querySelectorAll('.item-price').forEach(i => t += parseInt(i.value || 0));
         document.getElementById('final_total').innerText = t.toLocaleString();
     }
 
     function selectPayment(m, d, el) {
-        document.querySelectorAll('.pay-card').forEach(c => { c.style.borderColor = '#ddd'; c.style.background = '#fff'; });
+        document.querySelectorAll('.pay-card').forEach(c => { c.style.borderColor = '#eee'; c.style.background = '#fff'; });
         el.style.borderColor = 'var(--gold)'; el.style.background = '#fff9eb';
         document.getElementById('account_display').style.display = 'block';
         document.getElementById('account_number').innerText = d;
         document.getElementById('selected_payment').value = m + " (" + d + ")";
-        
-        // إظهار خانة إرفاق الإيصال عند اختيار الدفع
         document.getElementById('receipt_section').style.display = 'block';
     }
 
@@ -247,18 +258,17 @@
         const total = document.getElementById('final_total').innerText;
         if(!name || pay === "لم يتم التحديد" || total === "0") return alert("يرجى إكمال البيانات واختيار طريقة الدفع");
 
-        const orderID = "#" + Math.floor(1000 + Math.random() * 9000);
         document.getElementById('app_body').innerHTML = `
-            <div style="text-align:center; padding:50px 20px;">
-                <h2 style="color:green;">✅ تم استلام طلبك!</h2>
-                <p>العميل: <b>${name}</b></p>
-                <p>رقم الطلب: <b style="color:red;">${orderID}</b></p>
-                <div style="border:1px solid var(--gold); padding:20px; border-radius:15px; background:#fff9eb; margin:20px 0;">
-                    <p>المبلغ: ${total} ريال</p>
-                    <p>طريقة الدفع: ${pay}</p>
-                    ${receiptImg ? `<div style="margin-top:10px;"><small>تم إرفاق الإيصال بنجاح</small><br><img src="${receiptImg}" style="width:80px; border-radius:5px; margin-top:5px;"></div>` : ''}
+            <div style="text-align:center; padding:60px 20px;">
+                <div style="font-size:60px; color:green; margin-bottom:20px;">✅</div>
+                <h2 style="color:var(--brown);">تم استلام طلبك بنجاح!</h2>
+                <p>عزيزي <b>${name}</b>، شكراً لثقتك باليرموك.</p>
+                <div style="border:1px solid var(--gold); padding:25px; border-radius:20px; background:#fffdf7; margin:30px 0; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+                    <p style="margin:5px 0;">إجمالي المبلغ: <b>${total} ريال</b></p>
+                    <p style="margin:5px 0;">طريقة الدفع: <b>${pay}</b></p>
+                    ${receiptImg ? `<div style="margin-top:15px;"><small>صورة الإيصال:</small><br><img src="${receiptImg}" style="width:120px; border-radius:10px; border:1px solid #ddd; margin-top:10px;"></div>` : ''}
                 </div>
-                <button onclick="location.reload()" style="padding:15px 30px; background:var(--brown); color:white; border:none; border-radius:10px;">العودة للمتجر</button>
+                <button onclick="location.reload()" style="padding:15px 40px; background:var(--brown); color:white; border:none; border-radius:15px; font-weight:bold; cursor:pointer;">العودة للمتجر</button>
             </div>
         `;
     }
