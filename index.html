@@ -11,7 +11,7 @@
         .main-container { max-width: 600px; margin: auto; background: var(--white); border-radius: 20px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
         
         .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); }
-        .logo { width: 150px; margin-bottom: 10px; }
+        .logo { width: 160px; margin-bottom: 10px; }
         .cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #fff9eb; }
         .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; width: 100%; box-sizing: border-box;}
 
@@ -22,7 +22,12 @@
         .section { display: none; padding: 15px; }
         .section.active { display: block; }
 
-        /* تنسيق قسم الجاهز */
+        /* شبكة المقاسات */
+        .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 10px; }
+        .measure-grid div { text-align: center; }
+        .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; margin-bottom: 4px; }
+        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; font-size: 13px; }
+
         .ready-nav { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .ready-type-btn { padding: 8px 15px; border: 1px solid var(--gold); border-radius: 20px; background: white; white-space: nowrap; cursor: pointer; font-size: 12px; }
         .ready-type-btn.active { background: var(--brown); color: white; }
@@ -36,6 +41,8 @@
         .selected-thobe-card { background: #fff9eb; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 15px; position: relative; }
         .remove-card { position: absolute; top: 10px; left: 10px; background: #ff4d4d; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
         
+        .thobe-opt { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd; font-size: 12px; margin-top: 5px; background: white; }
+
         .pay-card { border: 1px solid #ddd; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; background: #fff; transition: 0.3s; }
         
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; }
@@ -52,7 +59,7 @@
 
 <div class="main-container" id="app_body">
     <div class="header">
-        <img src="https://i.imgur.com/eBfP6XG.png" class="logo" id="store_logo" alt="اليرموك">
+        <img src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="logo" id="store_logo" alt="اليرموك">
         <h2 style="margin:0; color:var(--brown)">اليرموك للخياطة الرجالية</h2>
     </div>
 
@@ -67,6 +74,18 @@
     </div>
 
     <div id="section_tailor" class="section active">
+        <h4 style="margin:0 0 10px 0; color:var(--brown)">أولاً: مقاسات العميل (بالهنش)</h4>
+        <div class="measure-grid">
+            <div><label>الطول</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>الكتف</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>اليد</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>الصدر</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>الرقبة</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>وسط يد</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>الكبك</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>الخطوة</label><input type="number" step="0.1" class="m-input"></div>
+        </div>
+
         <button type="button" style="width:100%; padding:15px; background:#fff; border:2px dashed var(--gold); border-radius:12px; color:var(--gold); font-weight:bold; cursor:pointer;" onclick="openFabricModal()">+ إضافة ثوب تفصيل جديد</button>
         <div id="tailor_list" style="margin-top:15px;"></div>
     </div>
@@ -173,11 +192,12 @@
     function openFabricModal() {
         const list = document.getElementById('modal_fabric_list');
         list.innerHTML = db.fabrics.length ? db.fabrics.map(f => `
-            <div style="border:1px solid #eee; padding:5px; text-align:center; cursor:pointer;" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
-                <img src="${f.img}" style="width:100%; height:60px; object-fit:cover;">
-                <div style="font-size:10px;">${f.title}</div>
+            <div class="pay-card" style="padding:5px;" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
+                <img src="${f.img}" style="width:100%; height:60px; object-fit:cover; border-radius:5px;">
+                <div style="font-size:10px; margin-top:5px;">${f.title}</div>
+                <div style="font-size:10px; color:green;">${f.newPrice} ريال</div>
             </div>
-        `).join('') : '<p>ارفع أقمشة من الإدارة</p>';
+        `).join('') : '<p style="grid-column:1/-1;">ارفع أقمشة من الإدارة</p>';
         document.getElementById('fabricModal').style.display = 'flex';
     }
 
@@ -190,13 +210,13 @@
             <button type="button" class="remove-card" onclick="removeThobe(${id})">×</button>
             <div style="display:flex; gap:10px; align-items:center;">
                 <img src="${img}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">
-                <div><b>${name}</b> - ${price} ريال</div>
+                <div><b>قماش: ${name}</b><br><span style="color:green;">${price} ريال</span></div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:10px;">
-                <select><option>قلاب ملكي</option><option>صيني</option></select>
-                <select><option>كبك قماش</option><option>سادة</option></select>
-                <select><option>كبس ظاهر</option><option>سحاب VIP</option></select>
-                <select><option>قطري</option><option>سعودي</option></select>
+                <select class="thobe-opt"><option>قلاب ملكي</option><option>فرنسي</option><option>صيني</option></select>
+                <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
+                <select class="thobe-opt"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
+                <select class="thobe-opt"><option>قطري</option><option>سعودي</option><option>كويتي</option></select>
             </div>
             <input type="hidden" class="item-price" value="${price}">
         `;
