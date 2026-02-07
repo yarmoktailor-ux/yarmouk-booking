@@ -1,67 +1,68 @@
-{
-  "project_name": "Al-Yarmouk Tailoring 2026",
-  "vision": "Blending 2002 Heritage with Future Tech",
-  "nodes": [
-    {
-      "step": "1. واجهة العميل (The Perfect Fit Journey)",
-      "ui_elements": {
-        "identity_icons": ["جسم نحيف", "جسم متوسط", "جسم ممتلئ"],
-        "smart_inputs": ["الطول", "الوزن"],
-        "measurement_table": [
-          { "field": "طول الثوب", "instruction": "من أعلى الكتف وحتى الكعبين" },
-          { "field": "عرض الكتف", "instruction": "من عظمة الكتف اليمنى إلى اليسرى" },
-          { "field": "طول اليد", "instruction": "من عظمة الكتف إلى مفصل المعصم" },
-          { "field": "محيط الرقبة", "instruction": "دوران الرقبة مع فراغ إصبع واحد" },
-          { "field": "محيط الصدر", "instruction": "دوران الصدر من تحت الإبطين" },
-          { "field": "دوران الكبك", "instruction": "قياس دوران معصم اليد" }
-        ]
-      }
-    },
-    {
-      "step": "2. تفاصيل الأناقة (Customization)",
-      "options": {
-        "collars": ["قلاب ملكي", "قلاب فرنسي", "قلاب دائري", "سادة"],
-        "sleeves": ["سادة", "كبك قماش", "كبك حشو"],
-        "buttons": ["كبس معدني ظاهر", "أزرار صدف طبيعي", "سحاب VIP"]
-      }
-    },
-    {
-      "step": "3. الأتمتة والربط (n8n & Google Sheets)",
-      "logic": {
-        "on_submit": "إرسال البيانات إلى Webhook",
-        "data_storage": "Google Sheets (طلبات اليرموك)",
-        "automation_rules": [
-          {
-            "condition": "دفع 100%",
-            "action": "خصم 30% تلقائي + إضافة هدية شال"
-          },
-          {
-            "condition": "فاتورة > 100,000",
-            "action": "تفعيل عربون 20%"
-          }
-        ]
-      }
-    },
-    {
-      "step": "4. نظام التنبيهات (Automated Messaging)",
-      "messages": {
-        "welcome": "أهلاً بك في مجموعة اليرموك، إرث الوالد يرحب بك.",
-        "processing": "بشرى سارة! مقص اليرموك بدأ العمل على قماشك الآن، ثوبك في أيدٍ أمينة.",
-        "ready": "تعطر وتجهز.. ثوبك جاهز ليزيدك هيبة، وهو الآن في طريقه إليك."
-      }
-    },
-    {
-      "step": "5. لوحة التحكم للمالك (The Tailor's Dashboard)",
-      "output_format": {
-        "header": "[ فاتورة تفصيل - محل اليرموك ]",
-        "fields": ["رقم الطلب", "نوع القماش", "المقاسات بالهنش", "المواصفات الفنية"],
-        "status_tracker": ["بانتظار التأكيد", "قيد القص", "تحت الخياطة", "جاهز للاستلام"]
-      }
-    }
-  ],
-  "marketing_features": {
-    "stylist": "The Smart Stylist (تنسيق الطقم الآلي)",
-    "loyalty": "مجلس العائلة (Family Account)",
-    "referral": "رابط سفير اليرموك (ثوب مجاني عند دعوة 10 عملاء)"
-  }
-}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اليرموك للخياطة | إرث الأناقة</title>
+    <style>
+        :root { --gold: #d4af37; --dark: #1a1a1a; --light: #f9f9f9; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--light); color: var(--dark); margin: 0; line-height: 1.6; }
+        .header { background: var(--dark); color: white; text-align: center; padding: 40px 20px; border-bottom: 4px solid var(--gold); }
+        .heritage-section { max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .section-title { color: var(--gold); font-size: 1.5rem; margin-bottom: 15px; border-bottom: 2px solid #eee; display: inline-block; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: white; border: 1px solid #ddd; padding: 20px; border-radius: 12px; text-align: center; transition: 0.3s; cursor: pointer; }
+        .card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card i { font-size: 2rem; color: var(--gold); display: block; margin-bottom: 10px; }
+        .input-group { margin: 15px 0; text-align: right; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; }
+        .btn-order { background: var(--dark); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 1.2rem; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px; border: 1px solid var(--gold); }
+        .btn-order:hover { background: var(--gold); color: var(--dark); }
+        .guarantee { background: #fffdf5; border: 1px dashed var(--gold); padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>اليرموك للخياطة</h1>
+    <p>خيطٌ من الماضي.. ونسيجٌ للمستقبل</p>
+</div>
+
+<div class="heritage-section">
+    <span class="section-title">قصة اليرموك</span>
+    <p>"في عام 2002، وضع الوالد -رحمه الله- الحجر الأساس لمحل اليرموك، ليصيغ بمقصّه وخبرته مفهوماً جديداً للأناقة الرجالية. اليوم نواصل المسيرة، نصنع هيبتك بدقة الإرث وتكنولوجيا المستقبل."</p>
+</div>
+
+<div class="heritage-section">
+    <span class="section-title">صمّم ثوبك (مشغل اليرموك الذكي)</span>
+    
+    <div class="input-group">
+        <label>اسم العميل</label>
+        <input type="text" placeholder="أدخل اسمك الكريم">
+    </div>
+
+    <div class="grid">
+        <div class="card">👔<br>ياقة قلاب</div>
+        <div class="card">👔<br>ياقة سعودي</div>
+        <div class="card">🔗<br>أكمام كبك</div>
+        <div class="card">🧵<br>أكمام سادة</div>
+    </div>
+
+    <div class="input-group">
+        <label>المقاسات (بالهنش)</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" placeholder="الطول">
+            <input type="number" placeholder="الكتف">
+            <input type="number" placeholder="الصدر">
+        </div>
+    </div>
+
+    <div class="guarantee">
+        📌 <strong>ضمان اليرموك:</strong> نضمن لك المقاس بالملي، وفي حال وجود أي اختلاف، نتحمل التعديل أو الاستبدال فوراً.
+    </div>
+
+    <button class="btn-order">تأكيد الطلب (خصم 25% للدفع الكامل)</button>
+</div>
+
+</body>
+</html>
