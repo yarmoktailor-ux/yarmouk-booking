@@ -66,7 +66,7 @@
 
 <div class="heritage-box">
     <strong>اليرموك.. خيطٌ من الماضي، ونسيجٌ للمستقبل</strong><br>
-    منذ 2002، نصنع هيبتك بدقة المقص وخبرة السنين. نحن لا نخيط أثواباً، نحن نصنع حضورك.
+    منذ 2002، نصنع هيبتك بدقة القياس وخبرة السنين. نحن لا نخيط أثواباً، نحن نصنع حضورك.
 </div>
 
 <button class="settings-btn" onclick="openAdmin()">⚙️</button>
@@ -89,7 +89,7 @@
     </div>
 
     <div class="cust-info">
-        <input type="text" id="c_name" placeholder="إسم العميل الكامل">
+        <input type="text" id="c_name" placeholder="إسم العميل الثلاثي">
         <input type="tel" id="c_phone" placeholder="رقم الهاتف">
     </div>
 
@@ -199,7 +199,7 @@
         if(type === 'policy') {
             text.innerHTML = "<b>ياقوت:</b> نضمن لك المقاس 100%، وفي حال الخطأ التعديل مجاني تماماً خلال 3 أيام من الاستلام.";
         } else if(type === 'offer') {
-            text.innerHTML = "<b>ياقوت:</b> ادفع الآن كامل المبلغ واحصل على شال فاخر هدية مع طلبك!";
+            text.innerHTML = "<b>ياقوت:</b> ادفع الآن كامل المبلغ واحصل على هدية مع طلبك!";
         }
     }
 
@@ -250,7 +250,7 @@
                 <div><b>قماش: ${name}</b><br><span style="color:green;">${price} ريال</span></div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:10px;">
-                <select class="thobe-opt"><option>قلاب ملكي</option><option>فرنسي</option><option>صيني</option></select>
+                <select class="thobe-opt"><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option><option>سادةمربع</option></select>
                 <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
                 <select class="thobe-opt"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
                 <select class="thobe-opt"><option>قطري</option><option>سعودي</option><option>كويتي</option></select>
@@ -302,7 +302,29 @@
         
         alert("بشرى سارة يا " + name + "! تم استلام طلبك ومقص اليرموك بدأ العمل الآن.");
         // هنا يمكنك إضافة كود الإرسال إلى n8n
-        location.reload();
+      const webhookUrl = 'https://ali991278.app.n8n.cloud/webhook-test/yarmok-orders';
+
+fetch(webhookUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        name: name,
+        total: total,
+        phone: document.getElementById('c_phone').value,
+        details: document.getElementById('selected_fabrics').innerText,
+        sizes: document.getElementById('final_sizes_summary').innerText,
+        payment: document.getElementById('selected_payment').value,
+        date: new Date().toLocaleString('ar-YE')
+    })
+}).then(() => {
+    alert("اكتمل طلبك وتم استلامه بنجاح.\n\nسنصنع أناقتك في اليرموك للخياطة بدقة تليق بك.");
+
+    
+    location.reload();
+});
+        
+    
     }
 </script>
 </body>
