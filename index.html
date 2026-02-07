@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة - المتجر السحابي المتكامل</title>
+    <title>اليرموك للخياطة - نظام المخزون السحابي</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -13,24 +13,33 @@
         .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); }
         .logo { width: 140px; }
         .cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #fff9eb; }
-        .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; }
         .main-tabs { display: flex; background: #eee; }
         .tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; color: #666; }
         .tab-btn.active { background: var(--gold); color: white; }
         .section { display: none; padding: 15px; }
         .section.active { display: block; }
+        
         .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 10px; }
-        .measure-grid div { text-align: center; }
-        .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; margin-bottom: 4px; }
-        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; font-size: 13px; }
+        .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; }
+        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; }
+
+        .ready-nav { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; }
+        .cat-btn { padding: 8px 15px; border: 1px solid var(--gold); border-radius: 20px; background: white; white-space: nowrap; cursor: pointer; font-size: 11px; }
+        .cat-btn.active { background: var(--brown); color: white; }
+
         .items-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .product-card { border: 1px solid #eee; border-radius: 15px; overflow: hidden; background: white; text-align: center; padding-bottom: 10px; }
-        .product-card img { width: 100%; height: 120px; object-fit: cover; }
-        .selected-item { background: #fff9eb; border: 1px solid var(--gold); padding: 10px; border-radius: 10px; margin-bottom: 10px; position: relative; }
+        .product-card { border: 1px solid #eee; border-radius: 15px; overflow: hidden; background: white; text-align: center; padding-bottom: 10px; position: relative; }
+        .product-card img { width: 100%; height: 140px; object-fit: cover; }
+        .stock-tag { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        .out-of-stock { filter: grayscale(1); opacity: 0.6; pointer-events: none; }
+        
+        .cart-item { background: #fff9eb; border: 1px solid var(--gold); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 13px; }
         .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
         .settings-btn { position: fixed; bottom: 20px; left: 20px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 1000; }
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; }
         .admin-content { background: #222; color: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; }
+        .admin-content input, .admin-content select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -39,7 +48,7 @@
 
 <div class="main-container" id="app_body">
     <div class="header">
-        <img src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="logo" id="store_logo">
+        <img src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="logo">
         <h2 style="margin:0; color:var(--brown)">اليرموك للخياطة الرجالية</h2>
     </div>
 
@@ -49,56 +58,57 @@
     </div>
 
     <div class="main-tabs">
-        <button class="tab-btn active" onclick="switchTab('tailor')">التفصيل</button>
-        <button class="tab-btn" onclick="switchTab('ready')">الجاهز</button>
+        <button class="tab-btn active" onclick="switchTab('tailor')">التفصيل والأقمشة</button>
+        <button class="tab-btn" onclick="switchTab('ready')">الملابس الجاهزة</button>
     </div>
 
     <div id="section_tailor" class="section active">
-        <h4 style="margin:0 0 10px 0; color:var(--brown)">المقاسات (بالهنش):</h4>
+        <h4 style="margin:0 0 10px 0;">المقاسات (بالهنش):</h4>
         <div class="measure-grid">
-            <div><label>الطول</label><input type="number" step="0.1" class="m-val" id="m_height"></div>
-            <div><label>الكتف</label><input type="number" step="0.1" class="m-val" id="m_shoulder"></div>
-            <div><label>اليد</label><input type="number" step="0.1" class="m-val" id="m_hand"></div>
-            <div><label>الصدر</label><input type="number" step="0.1" class="m-val" id="m_chest"></div>
-            <div><label>الرقبة</label><input type="number" step="0.1" class="m-val" id="m_neck"></div>
-            <div><label>وسط يد</label><input type="number" step="0.1" class="m-val" id="m_midhand"></div>
-            <div><label>الكبك</label><input type="number" step="0.1" class="m-val" id="m_cuff"></div>
-            <div><label>الخطوة</label><input type="number" step="0.1" class="m-val" id="m_step"></div>
+            <div><label>طول</label><input type="number" step="0.1" id="m_t"></div>
+            <div><label>كتف</label><input type="number" step="0.1" id="m_k"></div>
+            <div><label>يد</label><input type="number" step="0.1" id="m_y"></div>
+            <div><label>صدر</label><input type="number" step="0.1" id="m_s"></div>
+            <div><label>رقبة</label><input type="number" step="0.1" id="m_r"></div>
+            <div><label>وسط</label><input type="number" step="0.1" id="m_wy"></div>
+            <div><label>كبك</label><input type="number" step="0.1" id="m_kb"></div>
+            <div><label>خطوة</label><input type="number" step="0.1" id="m_kh"></div>
         </div>
-        <button onclick="openFabricModal()" style="width:100%; padding:15px; border:2px dashed var(--gold); background:none; color:var(--gold); border-radius:12px; font-weight:bold; cursor:pointer;">+ اختر قماش للتفصيل</button>
-        <div id="selected_fabrics_list" style="margin-top:15px;"></div>
+        <button onclick="openModal('fabric')" style="width:100%; padding:15px; border:2px dashed var(--gold); background:none; color:var(--gold); border-radius:12px; font-weight:bold; cursor:pointer;">+ اختر قماش للتفصيل</button>
+        <div id="tailor_cart" style="margin-top:15px;"></div>
     </div>
 
     <div id="section_ready" class="section">
+        <div class="ready-nav">
+            <button class="cat-btn active" onclick="filterReady('all', this)">الكل</button>
+            <button class="cat-btn" onclick="filterReady('thobe', this)">ثياب</button>
+            <button class="cat-btn" onclick="filterReady('coat', this)">أكوات</button>
+            <button class="cat-btn" onclick="filterReady('shawl', this)">شيلان</button>
+        </div>
         <div id="ready_display" class="items-grid"></div>
     </div>
 
     <div style="background:var(--brown); color:white; padding:20px; text-align:center;">
         <h3 style="margin:0;">الإجمالي: <span id="final_total">0</span> ريال</h3>
     </div>
-    <button class="btn-send" onclick="submitOrder()">إرسال الطلب عبر واتساب</button>
-</div>
-
-<div id="fabricModal" class="admin-panel" style="z-index:9999;">
-    <div style="background:white; width:90%; max-width:400px; padding:20px; border-radius:15px; max-height:80vh; overflow-y:auto;">
-        <h3 style="text-align:center;">اختر نوع القماش</h3>
-        <div id="modal_fabric_list" class="items-grid"></div>
-        <button onclick="document.getElementById('fabricModal').style.display='none'" style="width:100%; margin-top:15px; padding:10px; border:none; background:#eee; border-radius:8px;">إغلاق</button>
-    </div>
+    <button class="btn-send" onclick="submitOrder()">تأكيد الطلب عبر واتساب</button>
 </div>
 
 <div id="adminPanel" class="admin-panel">
     <div class="admin-content">
-        <h3>إدارة متجر اليرموك</h3>
-        <select id="adm_cat" style="width:100%; padding:10px; margin-bottom:10px;">
+        <h3>إدارة المنتجات والمخزون</h3>
+        <select id="adm_cat">
             <option value="fabric">قماش تفصيل</option>
-            <option value="thobe_r">ثوب جاهز</option>
+            <option value="thobe">ثوب جاهز</option>
+            <option value="coat">كوت جاهز</option>
+            <option value="shawl">شال جاهز</option>
         </select>
-        <input type="file" id="adm_file" onchange="encodeImg(this)" style="margin-bottom:10px;">
-        <input type="text" id="adm_title" placeholder="الاسم" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="number" id="adm_new" placeholder="السعر" style="width:100%; padding:10px; margin-bottom:10px;">
-        <button onclick="saveToFirebase()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:10px;">حفظ في السحابة</button>
-        <button onclick="closeAdmin()" style="width:100%; margin-top:10px; background:none; border:none; color:white;">إلغاء</button>
+        <input type="file" onchange="encodeImg(this)">
+        <input type="text" id="adm_title" placeholder="اسم الصنف">
+        <input type="number" id="adm_new" placeholder="السعر">
+        <input type="number" id="adm_stock" placeholder="الكمية المتوفرة (المخزون)">
+        <button onclick="saveToFirebase()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:8px;">حفظ في السحابة</button>
+        <button onclick="closeAdmin()" style="width:100%; margin-top:10px; background:none; color:white; border:none;">إغلاق</button>
     </div>
 </div>
 
@@ -108,16 +118,15 @@
         databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
 
     let tempImg = "";
-    let grandTotal = 0;
-    let selectedTailorItems = [];
+    let cart = [];
+    let allProducts = {};
 
-    // جلب البيانات من السحابة
-    database.ref('products').on('value', (snapshot) => {
-        const data = snapshot.val();
-        renderStore(data);
+    db.ref('products').on('value', (snap) => {
+        allProducts = snap.val() || {};
+        renderProducts();
     });
 
     function encodeImg(i) {
@@ -130,64 +139,56 @@
         const cat = document.getElementById('adm_cat').value;
         const title = document.getElementById('adm_title').value;
         const price = document.getElementById('adm_new').value;
-        if(!tempImg || !title || !price) return alert("أكمل البيانات");
-        database.ref('products').push({ cat, title, price, img: tempImg }).then(() => {
+        const stock = document.getElementById('adm_stock').value || 1;
+        if(!title || !price || !tempImg) return alert("أكمل البيانات");
+        db.ref('products').push({ cat, title, price, stock: parseInt(stock), img: tempImg }).then(() => {
             alert("تم الحفظ!"); closeAdmin();
         });
     }
 
-    function renderStore(data) {
+    function renderProducts() {
         const readyDiv = document.getElementById('ready_display');
-        const modalFabricDiv = document.getElementById('modal_fabric_list');
-        readyDiv.innerHTML = ""; modalFabricDiv.innerHTML = "";
-        
-        for(let id in data) {
-            const item = data[id];
-            if(item.cat === 'thobe_r') {
-                readyDiv.innerHTML += `
-                    <div class="product-card">
-                        <img src="${item.img}">
-                        <div style="font-size:12px; padding:5px;">${item.title}</div>
-                        <div style="color:green; font-weight:bold;">${item.price} ريال</div>
-                        <button onclick="addReady('${item.title}', ${item.price})" style="width:90%; background:var(--gold); border:none; color:white; border-radius:5px; padding:5px; cursor:pointer;">إضافة</button>
-                    </div>`;
-            } else {
-                modalFabricDiv.innerHTML += `
-                    <div class="product-card" onclick="addTailor('${item.title}', ${item.price})">
-                        <img src="${item.img}">
-                        <div style="font-size:11px;">${item.title}</div>
-                        <div style="color:green; font-weight:bold;">${item.price} ريال</div>
-                    </div>`;
-            }
+        readyDiv.innerHTML = "";
+        for(let id in allProducts) {
+            const item = allProducts[id];
+            if(item.cat === 'fabric') continue;
+            const isOut = item.stock <= 0;
+            readyDiv.innerHTML += `
+                <div class="product-card ${isOut ? 'out-of-stock' : ''}">
+                    <div class="stock-tag">${isOut ? 'نفذت' : 'متوفر: ' + item.stock}</div>
+                    <img src="${item.img}">
+                    <div style="font-size:12px; font-weight:bold; padding:5px;">${item.title}</div>
+                    <div style="color:green; font-weight:bold;">${item.price} ريال</div>
+                    <button onclick="addToCart('${id}')" style="width:90%; background:var(--gold); border:none; color:white; border-radius:5px; padding:5px; margin-top:5px; cursor:pointer;">
+                        ${isOut ? 'غير متوفر' : 'إضافة للطلب'}
+                    </button>
+                </div>`;
         }
     }
 
-    function addTailor(title, price) {
-        selectedTailorItems.push({title, price});
-        updateTailorList();
-        document.getElementById('fabricModal').style.display = 'none';
-        calcTotal();
+    function addToCart(id) {
+        const item = allProducts[id];
+        if(item.stock <= 0) return alert("عذراً، نفذت الكمية");
+        cart.push({ ...item, firebaseId: id });
+        updateCartDisplay();
     }
 
-    function updateTailorList() {
-        const list = document.getElementById('selected_fabrics_list');
-        list.innerHTML = selectedTailorItems.map((item, idx) => `
-            <div class="selected-item">
-                <b>ثوب تفصيل: ${item.title}</b> - ${item.price} ريال
-                <button onclick="selectedTailorItems.splice(${idx},1); updateTailorList(); calcTotal();" style="float:left; color:red; border:none; background:none; cursor:pointer;">حذف</button>
-            </div>
-        `).join('');
+    function updateCartDisplay() {
+        const list = document.getElementById('tailor_cart');
+        list.innerHTML = cart.map((item, idx) => `
+            <div class="cart-item">
+                <b>${item.title}</b> - ${item.price} ريال
+                <button onclick="cart.splice(${idx},1); updateCartDisplay();" style="float:left; color:red; border:none; background:none;">حذف</button>
+            </div>`).join('');
+        const total = cart.reduce((sum, i) => sum + parseInt(i.price), 0);
+        document.getElementById('final_total').innerText = total.toLocaleString();
     }
 
-    function addReady(title, price) {
-        selectedTailorItems.push({title: "جاهز: " + title, price});
-        updateTailorList();
-        calcTotal();
-    }
-
-    function calcTotal() {
-        grandTotal = selectedTailorItems.reduce((sum, item) => sum + parseInt(item.price), 0);
-        document.getElementById('final_total').innerText = grandTotal.toLocaleString();
+    function filterReady(cat, btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cards = document.querySelectorAll('.product-card');
+        // هنا يمكنك إضافة فلتر حقيقي بناءً على allProducts والـ Cat
     }
 
     function switchTab(t) {
@@ -198,39 +199,22 @@
 
     function openAdmin() { if(prompt("كلمة المرور:") === "1234") document.getElementById('adminPanel').style.display='flex'; }
     function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
-    function openFabricModal() { document.getElementById('fabricModal').style.display='flex'; }
 
     function submitOrder() {
         const name = document.getElementById('c_name').value;
-        const phone = document.getElementById('c_phone').value;
-        if(!name || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف");
+        if(!name || cart.length === 0) return alert("أكمل البيانات");
 
-        // تجميع المقاسات
-        const m = {
-            t: document.getElementById('m_height').value,
-            k: document.getElementById('m_shoulder').value,
-            y: document.getElementById('m_hand').value,
-            s: document.getElementById('m_chest').value,
-            r: document.getElementById('m_neck').value,
-            wy: document.getElementById('m_midhand').value,
-            kb: document.getElementById('m_cuff').value,
-            kh: document.getElementById('m_step').value
-        };
+        // تحديث المخزون في السحابة
+        cart.forEach(item => {
+            if(item.firebaseId && item.cat !== 'fabric') {
+                db.ref('products/' + item.firebaseId).update({ stock: item.stock - 1 });
+            }
+        });
 
-        let itemsText = selectedTailorItems.map(i => `- ${i.title} (${i.price} ريال)`).join('%0A');
+        const m = { t: document.getElementById('m_t').value, k: document.getElementById('m_k').value, y: document.getElementById('m_y').value, s: document.getElementById('m_s').value, r: document.getElementById('m_r').value, wy: document.getElementById('m_wy').value, kb: document.getElementById('m_kb').value, kh: document.getElementById('m_kh').value };
+        let itemsText = cart.map(i => `- ${i.title} (${i.price} ريال)`).join('%0A');
+        const message = `*طلب جديد - اليرموك*%0Aالعميل: ${name}%0A%0A*المقاسات:*%0Aطول: ${m.t} | كتف: ${m.k} | يد: ${m.y} | صدر: ${m.s}%0Aرقبة: ${m.r} | وسط: ${m.wy} | كبك: ${m.kb} | خطوة: ${m.kh}%0A%0A*الطلبات:*%0A${itemsText}%0A%0A*الإجمالي:* ${document.getElementById('final_total').innerText} ريال`;
         
-        const message = `*طلب جديد من متجر اليرموك*%0A` +
-                        `--------------------------%0A` +
-                        `*العميل:* ${name}%0A` +
-                        `*الهاتف:* ${phone}%0A%0A` +
-                        `*المقاسات (هنش):*%0A` +
-                        `- الطول: ${m.t} | الكتف: ${m.k}%0A` +
-                        `- اليد: ${m.y} | الصدر: ${m.s}%0A` +
-                        `- الرقبة: ${m.r} | وسط يد: ${m.wy}%0A` +
-                        `- الكبك: ${m.kb} | الخطوة: ${m.kh}%0A%0A` +
-                        `*الطلبات:*%0A${itemsText}%0A%0A` +
-                        `*الإجمالي النهائي:* ${grandTotal} ريال`;
-
         window.open(`https://wa.me/967773463560?text=${message}`);
     }
 </script>
