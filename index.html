@@ -1,11 +1,11 @@
-
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اليرموك للخياطة - المتجر المتكامل</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --white: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; direction: rtl; }
@@ -24,7 +24,6 @@
         .section { display: none; padding: 15px; }
         .section.active { display: block; }
 
-        /* شبكة المقاسات */
         .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 10px; }
         .measure-grid div { text-align: center; }
         .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; margin-bottom: 4px; }
@@ -48,10 +47,11 @@
         .pay-card { border: 1px solid #ddd; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; background: #fff; transition: 0.3s; }
         
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; }
-        .admin-content { background: #222; color: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; border: 2px solid var(--gold); }
+        .admin-content { background: #222; color: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; border: 2px solid var(--gold); max-height: 80vh; overflow-y: auto; }
         .admin-content input, .admin-content select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: none; }
 
-        .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; transition: 0.3s; }
+        .btn-send:hover { background: #3e2b25; }
         .settings-btn { position: fixed; bottom: 20px; left: 20px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 24px; z-index: 1000; }
     </style>
 </head>
@@ -78,14 +78,14 @@
     <div id="section_tailor" class="section active">
         <h4 style="margin:0 0 10px 0; color:var(--brown)">أولاً: مقاسات العميل (بالهنش)</h4>
         <div class="measure-grid">
-            <div><label>الطول</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الكتف</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>اليد</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الصدر</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الرقبة</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>وسط يد</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الكبك</label><input type="number" step="0.1" class="m-input"></div>
-            <div><label>الخطوة</label><input type="number" step="0.1" class="m-input"></div>
+            <div><label>الطول</label><input type="number" step="0.1" id="m_t" class="m-input"></div>
+            <div><label>الكتف</label><input type="number" step="0.1" id="m_k" class="m-input"></div>
+            <div><label>اليد</label><input type="number" step="0.1" id="m_y" class="m-input"></div>
+            <div><label>الصدر</label><input type="number" step="0.1" id="m_s" class="m-input"></div>
+            <div><label>الرقبة</label><input type="number" step="0.1" id="m_r" class="m-input"></div>
+            <div><label>وسط يد</label><input type="number" step="0.1" id="m_wy" class="m-input"></div>
+            <div><label>الكبك</label><input type="number" step="0.1" id="m_kb" class="m-input"></div>
+            <div><label>الخطوة</label><input type="number" step="0.1" id="m_kh" class="m-input"></div>
         </div>
 
         <button type="button" style="width:100%; padding:15px; background:#fff; border:2px dashed var(--gold); border-radius:12px; color:var(--gold); font-weight:bold; cursor:pointer;" onclick="openFabricModal()">+ إضافة ثوب تفصيل جديد</button>
@@ -99,9 +99,7 @@
             <button class="ready-type-btn" onclick="filterReady('coat_r', this)">أكوات</button>
             <button class="ready-type-btn" onclick="filterReady('shawl_r', this)">شيلان</button>
         </div>
-        <div id="ready_display" class="items-grid">
-            <p style="text-align:center; grid-column:1/-1; color:#999;">لا توجد منتجات جاهزة حالياً</p>
-        </div>
+        <div id="ready_display" class="items-grid"></div>
     </div>
 
     <div style="padding:15px; background:#fff; border-top:5px solid #eee;">
@@ -127,7 +125,7 @@
     <div style="background:var(--brown); color:white; padding:20px; text-align:center;">
         <h3 style="margin:0;">الإجمالي: <span id="final_total">0</span> ريال</h3>
     </div>
-    <button type="button" class="btn-send" onclick="submitOrder()">تأكيد الطلب النهائي</button>
+    <button type="button" class="btn-send" onclick="submitOrder()">تأكيد وإرسال الطلب سحابياً</button>
 </div>
 
 <div id="adminPanel" class="admin-panel">
@@ -158,9 +156,31 @@
 </div>
 
 <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAT4_kbAgDL8Jw5V2jRj3mqyD-lA84ECjY",
+        databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
     let db = { fabrics: [], ready: [] };
     let tempImg = ""; let receiptImg = "";
-    let readyCartTotal = 0;
+    let readyCartItems = []; 
+    let selectedTailorItems = [];
+
+    // Sync Data from Cloud
+    database.ref('products').on('value', (snapshot) => {
+        const data = snapshot.val();
+        db.fabrics = []; db.ready = [];
+        if(data) {
+            for(let id in data) {
+                if(data[id].cat === 'fabric') db.fabrics.push({id, ...data[id]});
+                else db.ready.push({id, ...data[id]});
+            }
+        }
+        filterReady('all');
+    });
 
     function openAdmin() { if(prompt("كلمة مرور الإدارة:") === "1234") document.getElementById('adminPanel').style.display='flex'; }
     function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
@@ -178,17 +198,10 @@
         const title = document.getElementById('adm_title').value;
         const oldP = document.getElementById('adm_old').value || 0;
         const newP = document.getElementById('adm_new').value;
+        if(!title || !newP || !tempImg) return alert("أكمل البيانات");
 
-        if (cat === 'logo') {
-            document.getElementById('store_logo').src = tempImg;
-        } else if (cat === 'fabric') {
-            db.fabrics.push({ title, newPrice: newP, img: tempImg });
-        } else {
-            db.ready.push({ cat, title, oldPrice: oldP, newPrice: newP, img: tempImg });
-        }
-        alert("تم التحديث بنجاح");
-        filterReady('all');
-        closeAdmin();
+        database.ref('products').push({ cat, title, oldPrice: oldP, newPrice: newP, img: tempImg })
+            .then(() => { alert("تم الحفظ سحابياً"); closeAdmin(); });
     }
 
     function openFabricModal() {
@@ -199,32 +212,36 @@
                 <div style="font-size:10px; margin-top:5px;">${f.title}</div>
                 <div style="font-size:10px; color:green;">${f.newPrice} ريال</div>
             </div>
-        `).join('') : '<p style="grid-column:1/-1;">ارفع أقمشة من الإدارة</p>';
+        `).join('') : '<p style="grid-column:1/-1;">لا يوجد أقمشة</p>';
         document.getElementById('fabricModal').style.display = 'flex';
     }
 
     function confirmFabricSelection(name, price, img) {
         const id = Date.now();
-        const card = document.createElement('div');
-        card.className = 'selected-thobe-card';
-        card.id = `thobe_${id}`;
-        card.innerHTML = `
-            <button type="button" class="remove-card" onclick="removeThobe(${id})">×</button>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <img src="${img}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">
-                <div><b>قماش: ${name}</b><br><span style="color:green;">${price} ريال</span></div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:10px;">
-                <select class="thobe-opt"><option>قلاب ملكي</option><option>فرنسي</option><option>صيني</option></select>
-                <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
-                <select class="thobe-opt"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
-                <select class="thobe-opt"><option>قطري</option><option>سعودي</option><option>كويتي</option></select>
-            </div>
-            <input type="hidden" class="item-price" value="${price}">
-        `;
-        document.getElementById('tailor_list').appendChild(card);
-        calcGrandTotal();
+        const item = { id, name, price, img, neck: 'قلاب ملكي', cuff: 'كبك قماش', pocket: 'كبس ظاهر', style: 'قطري' };
+        selectedTailorItems.push(item);
+        renderTailorList();
         document.getElementById('fabricModal').style.display = 'none';
+    }
+
+    function renderTailorList() {
+        const container = document.getElementById('tailor_list');
+        container.innerHTML = selectedTailorItems.map((item, index) => `
+            <div class="selected-thobe-card" id="thobe_${item.id}">
+                <button type="button" class="remove-card" onclick="removeTailorItem(${index})">×</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <img src="${item.img}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">
+                    <div><b>قماش: ${item.name}</b><br><span style="color:green;">${item.price} ريال</span></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:10px;">
+                    <select class="thobe-opt" onchange="selectedTailorItems[${index}].neck=this.value"><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>قلاب دائري</option><option>سادة مربع</option><option>صيني</option></select>
+                    <select class="thobe-opt" onchange="selectedTailorItems[${index}].cuff=this.value"><option>كبك قماش</option><option>كبك حشو</option><option>سادة بدون زرار</option></select>
+                    <select class="thobe-opt" onchange="selectedTailorItems[${index}].pocket=this.value"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
+                    <select class="thobe-opt" onchange="selectedTailorItems[${index}].style=this.value"><option>قطري</option><option>سعودي</option><option>كويتي</option><option>عماني</option></select>
+                </div>
+            </div>
+        `).join('');
+        calcGrandTotal();
     }
 
     function filterReady(type, btn) {
@@ -242,18 +259,26 @@
                     ${i.oldPrice > 0 ? `<span class="old-price">${i.oldPrice}</span>` : ''}
                     <span class="new-price">${i.newPrice} ريال</span>
                 </div>
-                <button onclick="addReadyToCart(${i.newPrice})" style="width:90%; margin-top:5px; background:var(--gold); border:none; color:white; border-radius:5px; font-size:11px; padding:5px; cursor:pointer;">إضافة للطلب</button>
+                <button onclick="addReadyToCart('${i.title}', ${i.newPrice})" style="width:90%; margin-top:5px; background:var(--gold); border:none; color:white; border-radius:5px; font-size:11px; padding:5px; cursor:pointer;">إضافة للطلب</button>
             </div>
-        `).join('') : '<p style="grid-column:1/-1;">لا توجد منتجات حالياً</p>';
+        `).join('') : '<p style="grid-column:1/-1; color:#999;">لا توجد منتجات</p>';
     }
 
-    function addReadyToCart(p) { readyCartTotal += parseInt(p); calcGrandTotal(); alert("تمت إضافة المنتج الجاهز"); }
-    function removeThobe(id) { document.getElementById(`thobe_${id}`).remove(); calcGrandTotal(); }
+    function addReadyToCart(title, price) {
+        readyCartItems.push({title, price});
+        calcGrandTotal();
+        alert("تمت إضافة: " + title);
+    }
+
+    function removeTailorItem(index) {
+        selectedTailorItems.splice(index, 1);
+        renderTailorList();
+    }
 
     function calcGrandTotal() {
-        let t = readyCartTotal;
-        document.querySelectorAll('.item-price').forEach(i => t += parseInt(i.value || 0));
-        document.getElementById('final_total').innerText = t.toLocaleString();
+        let total = readyCartItems.reduce((sum, item) => sum + parseInt(item.price), 0);
+        selectedTailorItems.forEach(item => total += parseInt(item.price));
+        document.getElementById('final_total').innerText = total.toLocaleString();
     }
 
     function selectPayment(m, d, el) {
@@ -261,28 +286,47 @@
         el.style.borderColor = 'var(--gold)'; el.style.background = '#fff9eb';
         document.getElementById('account_display').style.display = 'block';
         document.getElementById('account_number').innerText = d;
-        document.getElementById('selected_payment').value = m + " (" + d + ")";
+        document.getElementById('selected_payment').value = m;
         document.getElementById('receipt_section').style.display = 'block';
     }
 
     function submitOrder() {
         const name = document.getElementById('c_name').value;
-        const pay = document.getElementById('selected_payment').value;
         const total = document.getElementById('final_total').innerText;
-        if(!name || pay === "لم يتم التحديد" || total === "0") return alert("يرجى إكمال البيانات واختيار طريقة الدفع");
+        const payment = document.getElementById('selected_payment').value;
 
-        document.getElementById('app_body').innerHTML = `
-            <div style="text-align:center; padding:50px 20px;">
-                <h2 style="color:green;">✅ تم استلام طلبك!</h2>
-                <p>العميل: <b>${name}</b></p>
-                <div style="border:1px solid var(--gold); padding:20px; border-radius:15px; background:#fff9eb; margin:20px 0;">
-                    <p>الإجمالي: ${total} ريال</p>
-                    <p>الدفع: ${pay}</p>
-                    ${receiptImg ? `<img src="${receiptImg}" style="width:100px; border-radius:10px; margin-top:10px;">` : ''}
+        if(!name || total === "0" || payment === "لم يتم التحديد") return alert("يرجى إكمال البيانات والدفع");
+
+        const orderData = {
+            customer: name,
+            phone: document.getElementById('c_phone').value,
+            total: total,
+            paymentMethod: payment,
+            receipt: receiptImg,
+            measures: {
+                t: document.getElementById('m_t').value, k: document.getElementById('m_k').value,
+                y: document.getElementById('m_y').value, s: document.getElementById('m_s').value,
+                r: document.getElementById('m_r').value, wy: document.getElementById('m_wy').value,
+                kb: document.getElementById('m_kb').value, kh: document.getElementById('m_kh').value
+            },
+            tailorOrders: selectedTailorItems,
+            readyOrders: readyCartItems,
+            timestamp: new Date().toISOString()
+        };
+
+        database.ref('orders').push(orderData).then(() => {
+            document.getElementById('app_body').innerHTML = `
+                <div style="text-align:center; padding:50px 20px;">
+                    <h2 style="color:green;">✅ تم إرسال طلبك بنجاح!</h2>
+                    <p>شكراً لتعاملك مع <b>اليرموك للخياطة</b></p>
+                    <div style="border:1px solid var(--gold); padding:20px; border-radius:15px; background:#fff9eb; margin:20px 0;">
+                        <p>رقم الطلب سحابياً: <b>${Date.now()}</b></p>
+                        <p>الإجمالي: ${total} ريال</p>
+                    </div>
+                    <button onclick="location.reload()" style="padding:15px 30px; background:var(--brown); color:white; border:none; border-radius:10px; cursor:pointer;">العودة للمتجر</button>
                 </div>
-                <button onclick="location.reload()" style="padding:15px 30px; background:var(--brown); color:white; border:none; border-radius:10px;">العودة للمتجر</button>
-            </div>
-        `;
+            `;
+        });
     }
 </script>
 </body>
