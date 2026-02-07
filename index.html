@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة - الإصدار الكامل</title>
+    <title>اليرموك للخياطة - الإصدار المطور</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -20,12 +20,10 @@
         .section { display: none; padding: 15px; }
         .section.active { display: block; }
         
-        /* شبكة المقاسات */
         .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 10px; }
         .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; margin-bottom: 4px; }
-        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; }
+        .measure-grid input, .measure-grid select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; font-size: 12px; }
 
-        /* تصنيفات الجاهز */
         .ready-nav { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .cat-btn { padding: 8px 15px; border: 1px solid var(--gold); border-radius: 20px; background: white; white-space: nowrap; cursor: pointer; font-size: 12px; }
         .cat-btn.active { background: var(--brown); color: white; }
@@ -76,6 +74,46 @@
             <div><label>الكبك</label><input type="number" step="0.1" id="m_kb"></div>
             <div><label>الخطوة</label><input type="number" step="0.1" id="m_kh"></div>
         </div>
+
+        <h4 style="margin:15px 0 10px 0; color:var(--brown);">تفاصيل الخياطة:</h4>
+        <div class="measure-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div>
+                <label>نوع الرقبة</label>
+                <select id="t_neck">
+                    <option value="قلاب ملكي">قلاب ملكي</option>
+                    <option value="قلاب فرنسي">قلاب فرنسي</option>
+                    <option value="قلاب دائري">قلاب دائري</option>
+                    <option value="سادة مربع">سادة مربع</option>
+                    <option value="صيني">صيني</option>
+                </select>
+            </div>
+            <div>
+                <label>نوع الكبك</label>
+                <select id="t_cuff">
+                    <option value="كبك قماش">كبك قماش</option>
+                    <option value="كبك حشو">كبك حشو</option>
+                    <option value="سادة بدون زرار">سادة بدون زرار</option>
+                </select>
+            </div>
+            <div>
+                <label>نوع الجبازير</label>
+                <select id="t_pocket">
+                    <option value="كبس ظاهر">كبس ظاهر</option>
+                    <option value="زرار مخفي">زرار مخفي</option>
+                    <option value="سحاب VIP">سحاب VIP</option>
+                </select>
+            </div>
+            <div>
+                <label>نوع الخياط</label>
+                <select id="t_style">
+                    <option value="قطري">قطري</option>
+                    <option value="سعودي">سعودي</option>
+                    <option value="كويتي">كويتي</option>
+                    <option value="عماني">عماني</option>
+                </select>
+            </div>
+        </div>
+
         <button onclick="openFabricModal()" style="width:100%; padding:15px; border:2px dashed var(--gold); background:none; color:var(--gold); font-weight:bold; cursor:pointer; border-radius:12px;">+ اختر قماش للتفصيل</button>
         <div id="tailor_cart" style="margin-top:15px;"></div>
     </div>
@@ -152,9 +190,7 @@
         const desc = document.getElementById('adm_desc').value;
         const oldP = document.getElementById('adm_old').value || 0;
         const newP = document.getElementById('adm_new').value;
-        
         if(!title || !newP || !tempImg) return alert("أكمل البيانات والصورة");
-
         db.ref('products').push({ cat, title, desc, oldP, newP, img: tempImg }).then(() => {
             alert("تمت الإضافة بنجاح"); closeAdmin();
         });
@@ -164,23 +200,9 @@
         const readyDiv = document.getElementById('ready_display');
         const fabricDiv = document.getElementById('modal_fabric_list');
         readyDiv.innerHTML = ""; fabricDiv.innerHTML = "";
-
         for(let id in allData) {
             const item = allData[id];
-            const html = `
-                <div class="product-card">
-                    <img src="${item.img}">
-                    <div style="padding:5px;">
-                        <div style="font-weight:bold; font-size:12px;">${item.title}</div>
-                        <div style="font-size:10px; color:#666;">${item.desc}</div>
-                        <div>
-                            ${item.oldP > 0 ? `<span class="old-price">${item.oldP}</span>` : ''}
-                            <span class="new-price">${item.newP} ريال</span>
-                        </div>
-                        <button onclick="addToCart('${id}')" style="width:90%; background:var(--gold); color:white; border:none; border-radius:5px; margin-top:5px; cursor:pointer; padding:5px;">إضافة</button>
-                    </div>
-                </div>`;
-            
+            const html = `<div class="product-card"><img src="${item.img}"><div style="padding:5px;"><div style="font-weight:bold; font-size:12px;">${item.title}</div><div style="font-size:10px; color:#666;">${item.desc}</div><div>${item.oldP > 0 ? `<span class="old-price">${item.oldP}</span>` : ''}<span class="new-price">${item.newP} ريال</span></div><button onclick="addToCart('${id}')" style="width:90%; background:var(--gold); color:white; border:none; border-radius:5px; margin-top:5px; cursor:pointer; padding:5px;">إضافة</button></div></div>`;
             if(item.cat === 'fabric') fabricDiv.innerHTML += html;
             else readyDiv.innerHTML += html;
         }
@@ -195,12 +217,7 @@
 
     function updateCartDisplay() {
         const list = document.getElementById('tailor_cart');
-        list.innerHTML = cart.map((item, i) => `
-            <div class="selected-item">
-                <b>${item.title}</b> (${item.newP} ريال)
-                <button onclick="cart.splice(${i},1); updateCartDisplay();" style="float:left; color:red; border:none; background:none; cursor:pointer;">حذف</button>
-            </div>
-        `).join('');
+        list.innerHTML = cart.map((item, i) => `<div class="selected-item"><b>${item.title}</b> (${item.newP} ريال)<button onclick="cart.splice(${i},1); updateCartDisplay();" style="float:left; color:red; border:none; background:none; cursor:pointer;">حذف</button></div>`).join('');
         const total = cart.reduce((sum, item) => sum + parseInt(item.newP), 0);
         document.getElementById('final_total').innerText = total.toLocaleString();
     }
@@ -231,12 +248,13 @@
     function submitOrder() {
         const name = document.getElementById('c_name').value;
         const phone = document.getElementById('c_phone').value;
-        if(!name || cart.length === 0) return alert("أدخل اسمك واختر منتجاً واحداً على الأقل");
+        if(!name || cart.length === 0) return alert("أدخل اسمك واختر منتجاً");
 
         const m = { t: document.getElementById('m_t').value, k: document.getElementById('m_k').value, y: document.getElementById('m_y').value, s: document.getElementById('m_s').value, r: document.getElementById('m_r').value, wy: document.getElementById('m_wy').value, kb: document.getElementById('m_kb').value, kh: document.getElementById('m_kh').value };
+        const design = { neck: document.getElementById('t_neck').value, cuff: document.getElementById('t_cuff').value, pocket: document.getElementById('t_pocket').value, style: document.getElementById('t_style').value };
         
         let itemsText = cart.map(i => `- ${i.title} (${i.newP} ريال)`).join('%0A');
-        const message = `*طلب جديد - متجر اليرموك*%0A--------------------------%0A*العميل:* ${name}%0A*الهاتف:* ${phone}%0A%0A*المقاسات (هنش):*%0A- الطول: ${m.t} | الكتف: ${m.k}%0A- اليد: ${m.y} | الصدر: ${m.s}%0A- الرقبة: ${m.r} | وسط يد: ${m.wy}%0A- الكبك: ${m.kb} | الخطوة: ${m.kh}%0A%0A*الطلبات:*%0A${itemsText}%0A%0A*الإجمالي:* ${document.getElementById('final_total').innerText} ريال`;
+        const message = `*طلب جديد - اليرموك*%0A*العميل:* ${name}%0A*الهاتف:* ${phone}%0A%0A*المقاسات (هنش):*%0A- الطول: ${m.t} | الكتف: ${m.k}%0A- اليد: ${m.y} | الصدر: ${m.s}%0A- الرقبة: ${m.r} | وسط يد: ${m.wy}%0A- الكبك: ${m.kb} | الخطوة: ${m.kh}%0A%0A*تفاصيل التفصيل:*%0A- الرقبة: ${design.neck}%0A- الكبك: ${design.cuff}%0A- الجبازير: ${design.pocket}%0A- نوع الخياط: ${design.style}%0A%0A*الطلبات:*%0A${itemsText}%0A%0A*الإجمالي:* ${document.getElementById('final_total').innerText} ريال`;
         
         window.open(`https://wa.me/967773463560?text=${message}`);
     }
