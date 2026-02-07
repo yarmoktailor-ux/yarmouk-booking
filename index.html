@@ -294,38 +294,43 @@
         document.getElementById('selected_payment').value = m + " (" + d + ")";
         document.getElementById('receipt_section').style.display = 'block';
     }
+function submitOrder() {
+    // جلب القيم مع التأكد من عدم توقف الكود إذا كانت الخانة فارغة
+    const nameInput = document.getElementById('c_name');
+    const totalInput = document.getElementById('final_total');
+    const phoneInput = document.getElementById('c_phone');
 
-  function submitOrder() {
-    // تجميع البيانات مع التأكد من وجود الخانات
+    if (!nameInput || !nameInput.value) {
+        return alert("يرجى إدخال اسمك أولاً");
+    }
+
     const orderData = {
-        name: document.getElementById('c_name')?.value || "عميل جديد",
-        total: document.getElementById('final_total')?.innerText || "0",
-        phone: document.getElementById('c_phone')?.value || "لا يوجد",
-        details: document.getElementById('selected_fabrics')?.innerText || "لا توجد تفاصيل",
-        sizes: document.getElementById('final_sizes_summary')?.innerText || "لم تدخل مقاسات",
-        date: new Date().toLocaleString('ar-YE')
+        name: nameInput.value,
+        total: totalInput ? totalInput.innerText : "0",
+        phone: phoneInput ? phoneInput.value : "غير مسجل",
+        date: new Date().toLocaleString('ar-YE'),
+        source: "موقع اليرموك"
     };
 
     const webhookUrl = 'https://all991278.app.n8n.cloud/webhook-test/yarmok-orders';
 
-    // استخدام fetch مع إعدادات تضمن وصول البيانات كـ POST
+    // إرسال البيانات
     fetch(webhookUrl, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain' // نستخدم text/plain لتجاوز قيود المتصفح (CORS) في مرحلة الاختبار
-        },
+        mode: 'no-cors', // لتجاوز قيود الحماية أثناء الاختبار
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
     })
     .then(() => {
-        alert("تم اعتماد طلبك في اليرموك للخياطة.\n\nمقاساتك قيد المراجعة الآن لنبدأ العمل على أناقتك. شكراً لثقتك!");
+        alert("اكتمل طلبك بنجاح.\n\nسنصنع أناقتك في اليرموك للخياطة بدقة تليق بك.");
         location.reload();
     })
-    .catch(() => {
-        // في حال النجاح مع "no-cors" قد يظهر خطأ لكن البيانات تصل، لذا نظهر رسالة النجاح
-        alert("تم اعتماد طلبك في اليرموك للخياطة.");
-        location.reload();
+    .catch(err => {
+        console.error("خطأ:", err);
+        alert("تم اعتماد طلبك (يرجى التأكد من n8n)");
     });
 }
+ 
 </script>
 </body>
 </html>
