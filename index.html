@@ -295,37 +295,42 @@
         document.getElementById('receipt_section').style.display = 'block';
     }
 
-    function submitOrder() {
-        const name = document.getElementById('c_name').value;
-        const total = document.getElementById('final_total').innerText;
-        if(!name || total === "0") return alert("يرجى إكمال البيانات واختيار الأقمشة");
-        
-        alert("بشرى سارة يا " + name + "! تم استلام طلبك ومقص اليرموك بدأ العمل الآن.");
-        // هنا يمكنك إضافة كود الإرسال إلى n8n
-      const webhookUrl = 'https://ali991278.app.n8n.cloud/webhook-test/yarmok-orders';
+   function submitOrder() {
+    const name = document.getElementById('c_name')?.value || "بدون اسم";
+    const total = document.getElementById('final_total')?.innerText || "0";
+    
+    // فحص أساسي لضمان وجود اسم ومبلغ
+    if (!name || total === "0") {
+        return alert("يرجى إكمال البيانات واختيار الأقمشة أولاً");
+    }
 
-fetch(webhookUrl, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+    const webhookUrl = 'https://all991278.app.n8n.cloud/webhook-test/yarmok-orders';
+
+    const orderData = {
         name: name,
         total: total,
-        phone: document.getElementById('c_phone').value,
-        details: document.getElementById('selected_fabrics').innerText,
-        sizes: document.getElementById('final_sizes_summary').innerText,
-        payment: document.getElementById('selected_payment').value,
+        phone: document.getElementById('c_phone')?.value || "لا يوجد رقم",
+        details: document.getElementById('selected_fabrics')?.innerText || "لا توجد تفاصيل",
+        sizes: document.getElementById('final_sizes_summary')?.innerText || "لم يتم إدخال مقاسات",
+        payment: document.getElementById('selected_payment')?.value || "غير محدد",
         date: new Date().toLocaleString('ar-YE')
-    })
-}).then(() => {
-    alert("اكتمل طلبك وتم استلامه بنجاح.\n\nسنصنع أناقتك في اليرموك للخياطة بدقة تليق بك.");
+    };
 
-    
-    location.reload();
-});
-        
-    
-    }
+    fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+    }).then(() => {
+        alert("تم اعتماد طلبك في اليرموك للخياطة.\n\nمقاساتك قيد المراجعة الآن لنبدأ العمل على أناقتك. شكراً لثقتك!");
+        location.reload();
+    }).catch(err => {
+        console.error("خطأ في الإرسال:", err);
+        alert("حدث خطأ بسيط، يرجى المحاولة مرة أخرى.");
+    });
+}
+
+
 </script>
 </body>
 </html>
