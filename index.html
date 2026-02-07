@@ -3,111 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام اليرموك للخياطة - قاعدة البيانات</title>
+    <title>متجر اليرموك 1 - نظام الخياطة المتكامل</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <style>
-        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 10px; direction: rtl; }
-        .app-card { max-width: 500px; margin: auto; background: white; border-radius: 15px; border: 1px solid var(--gold); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .header { background: #fff; text-align: center; padding: 15px; border-bottom: 2px solid var(--gold); }
-        .tabs { display: flex; background: #f0f0f0; }
-        .tab-btn { flex: 1; padding: 12px; border: none; cursor: pointer; font-weight: bold; }
+        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; direction: rtl; }
+        .main-container { max-width: 600px; margin: auto; background: var(--white); border-radius: 20px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); background: #fff; }
+        .logo { width: 130px; }
+        
+        /* بيانات العميل */
+        .cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #fff9eb; }
+        .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; outline: none; }
+
+        /* التبويبات */
+        .main-tabs { display: flex; background: #eee; }
+        .tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; font-size: 16px; }
         .tab-btn.active { background: var(--gold); color: white; }
-        .content { padding: 15px; display: none; }
-        .content.active { display: block; }
-        .input-group { margin-bottom: 10px; }
-        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .measures-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: #fff9eb; padding: 10px; border-radius: 10px; }
-        .measures-grid input { width: 100%; text-align: center; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
-        .order-btn { width: 100%; padding: 15px; background: var(--brown); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .payment-box { background: #e8f5e9; padding: 10px; border-radius: 10px; border: 1px solid #2e7d32; margin-top: 10px; font-size: 13px; }
+
+        .section { display: none; padding: 15px; }
+        .section.active { display: block; }
+        
+        /* شبكة المقاسات */
+        .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #eee; }
+        .measure-grid div { text-align: center; }
+        .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; margin-bottom: 4px; }
+        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; }
+
+        /* خيارات الخياطة */
+        .tailor-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .tailor-options select { padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: #fdfbf7; font-size: 13px; }
+
+        /* قسم الدفع */
+        .payment-card { background: #e8f5e9; padding: 15px; border-radius: 12px; border: 1px solid #2e7d32; margin: 15px 0; }
+        .payment-card h4 { margin: 0 0 10px 0; color: #1b5e20; border-bottom: 1px solid #c8e6c9; padding-bottom: 5px; }
+        .wallet { background: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 5px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid #2e7d32; }
+
+        .btn-submit { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* المنتجات الجاهزة */
+        .ready-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .product-item { border: 1px solid #eee; border-radius: 15px; overflow: hidden; background: white; text-align: center; padding-bottom: 10px; }
+        .product-item img { width: 100%; height: 140px; object-fit: cover; }
     </style>
 </head>
 <body>
 
-<div class="app-card">
+<div class="main-container">
     <div class="header">
-        <h3 style="margin:0; color:var(--brown)">اليرموك للخياطة - طلب جديد</h3>
+        <img src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="logo">
+        <h2 style="margin:5px 0 0 0; color:var(--brown); font-size: 20px;">اليرموك للخياطة الرجالية</h2>
     </div>
 
-    <div class="tabs">
-        <button class="tab-btn active" id="tab1" onclick="showTab('tailor')">تفصيل جديد</button>
-        <button class="tab-btn" id="tab2" onclick="showTab('ready')">ثياب جاهزة</button>
+    <div class="cust-info">
+        <input type="text" id="cust_name" placeholder="اسم العميل الكامل">
+        <input type="tel" id="cust_phone" placeholder="رقم الجوال">
     </div>
 
-    <div id="tailor" class="content active">
-        <div class="input-group">
-            <input type="text" id="cust_name" placeholder="اسم العميل الكامل">
-        </div>
-        <div class="input-group">
-            <input type="tel" id="cust_phone" placeholder="رقم الهاتف">
-        </div>
-
-        <p style="font-weight:bold; font-size:14px; margin: 10px 0 5px;">المقاسات (هنش):</p>
-        <div class="measures-grid">
-            <input type="number" id="m_length" placeholder="طول">
-            <input type="number" id="m_shoulder" placeholder="كتف">
-            <input type="number" id="m_hand" placeholder="يد">
-            <input type="number" id="m_chest" placeholder="صدر">
-            <input type="number" id="m_neck" placeholder="رقبة">
-            <input type="number" id="m_waist" placeholder="وسط">
-            <input type="number" id="m_cuff" placeholder="كبك">
-            <input type="number" id="m_step" placeholder="خطوة">
-        </div>
-
-        <p style="font-weight:bold; font-size:14px; margin: 15px 0 5px;">تفاصيل الخياطة:</p>
-        <div class="measures-grid" style="grid-template-columns: 1fr 1fr;">
-            <select id="s_neck"><option>رقبة قلاب</option><option>رقبة سادة</option></select>
-            <select id="s_pocket"><option>جيب مخفي</option><option>جيب ظاهر</option></select>
-            <select id="s_cuff"><option>كبك مربع</option><option>سادة (بدون كبك)</option></select>
-            <select id="s_button"><option>زراير مخفي</option><option>زراير ظاهر</option></select>
-        </div>
-
-        <div class="payment-box">
-            <b>حسابات الدفع:</b><br>
-            كريمي: 12345678 | جوالي: 773463560
-        </div>
-
-        <button class="order-btn" onclick="saveOrder()">تأكيد وحفظ الطلب سحابياً</button>
+    <div class="main-tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'tailor_section')">قسم التفصيل</button>
+        <button class="tab-btn" onclick="openTab(event, 'ready_section')">الجاهز</button>
     </div>
 
-    <div id="ready" class="content">
-        <p style="text-align:center; color:#888;">سيتم عرض الثياب والأكوات والشيلان الجاهزة هنا من قاعدة البيانات.</p>
-        <div id="ready_list"></div>
+    <div id="tailor_section" class="section active">
+        <h4 style="margin:0 0 10px 0; color:var(--brown);">المقاسات المطلوبة (هنش):</h4>
+        <div class="measure-grid">
+            <div><label>الطول</label><input type="number" step="0.1" id="m_len"></div>
+            <div><label>الكتف</label><input type="number" step="0.1" id="m_sh"></div>
+            <div><label>اليد</label><input type="number" step="0.1" id="m_hand"></div>
+            <div><label>الصدر</label><input type="number" step="0.1" id="m_ch"></div>
+            <div><label>الرقبة</label><input type="number" step="0.1" id="m_neck"></div>
+            <div><label>وسط يد</label><input type="number" step="0.1" id="m_waist"></div>
+            <div><label>الكبك</label><input type="number" step="0.1" id="m_cuff"></div>
+            <div><label>الخطوة</label><input type="number" step="0.1" id="m_step"></div>
+        </div>
+
+        <h4 style="margin:15px 0 10px 0; color:var(--brown);">تفاصيل الخياطة:</h4>
+        <div class="tailor-options">
+            <select id="s_neck"><option>رقبة (قلاب)</option><option>رقبة (سادة)</option><option>رقبة (رسمي)</option></select>
+            <select id="s_cuff"><option>كبك (مربع)</option><option>كبك (دائري)</option><option>سادة بدون كبك</option></select>
+            <select id="s_pocket"><option>جيب (مخفي)</option><option>جيب (ظاهر)</option></select>
+            <select id="s_button"><option>زراير (مخفي)</option><option>زراير (ظاهر)</option></select>
+        </div>
+
+        <div class="payment-card">
+            <h4>حسابات الدفع (المحافظ):</h4>
+            <div class="wallet"><span>💰 كريمي:</span> <b>12345678</b></div>
+            <div class="wallet"><span>📱 جوالي:</span> <b>773463560</b></div>
+            <p style="font-size:11px; color:#555; margin:5px 0 0 0;">* يرجى إرسال صورة الإشعار بعد التحويل لتأكيد الطلب.</p>
+        </div>
+
+        <button class="btn-submit" onclick="sendOrder()">حفظ الطلب وتأكيده</button>
+    </div>
+
+    <div id="ready_section" class="section">
+        <div class="ready-grid" id="ready_display">
+            <p style="grid-column: 1/3; text-align: center; color: #888; padding: 20px;">جاري تحميل الأصناف الجاهزة...</p>
+        </div>
     </div>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك (من الصورة التي أرفقتها)
+    // تهيئة Firebase
     const firebaseConfig = {
+        apiKey: "AIzaSyAT4_kbAgDL8Jw5V2jRj3mqyD-lA84ECjY", // استبدلها بمفتاحك الخاص إذا تغير
         databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
 
-    function showTab(tabId) {
-        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+    // تبديل الأقسام
+    function openTab(evt, sectionName) {
+        document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.getElementById(sectionName).classList.add("active");
+        evt.currentTarget.classList.add("active");
     }
 
-    function saveOrder() {
+    // إرسال وحفظ الطلب
+    function sendOrder() {
         const name = document.getElementById('cust_name').value;
         const phone = document.getElementById('cust_phone').value;
 
-        if(!name || !phone) { alert("لطفاً أدخل الاسم والهاتف"); return; }
+        if(!name || !phone) return alert("يرجى إدخال الاسم ورقم الجوال أولاً!");
 
-        const orderData = {
+        const order = {
             customer: name,
             phone: phone,
-            timestamp: new Date().toLocaleString(),
+            date: new Date().toLocaleString(),
             measures: {
-                length: document.getElementById('m_length').value,
-                shoulder: document.getElementById('m_shoulder').value,
+                len: document.getElementById('m_len').value,
+                sh: document.getElementById('m_sh').value,
                 hand: document.getElementById('m_hand').value,
-                chest: document.getElementById('m_chest').value,
+                ch: document.getElementById('m_ch').value,
                 neck: document.getElementById('m_neck').value,
                 waist: document.getElementById('m_waist').value,
                 cuff: document.getElementById('m_cuff').value,
@@ -115,21 +146,41 @@
             },
             style: {
                 neck: document.getElementById('s_neck').value,
-                pocket: document.getElementById('s_pocket').value,
                 cuff: document.getElementById('s_cuff').value,
+                pocket: document.getElementById('s_pocket').value,
                 button: document.getElementById('s_button').value
-            }
+            },
+            status: "قيد الانتظار"
         };
 
-        // الحفظ في قاعدة بيانات Google Firebase
-        database.ref('orders').push(orderData).then(() => {
-            alert("✅ تم حفظ الطلب في قاعدة بيانات اليرموك بنجاح!");
-            // مسح الحقول بعد الحفظ
-            document.querySelectorAll('input').forEach(i => i.value = "");
-        }).catch((error) => {
-            alert("خطأ في الاتصال: " + error.message);
+        // الحفظ في Firebase (جوجل)
+        db.ref('orders').push(order).then(() => {
+            alert("✅ تم حفظ مقاساتك وطلبك في سجلات اليرموك بنجاح!");
+            
+            // فتح واتساب لإرسال إشعار سريع لك
+            let text = `*طلب جديد - اليرموك*%0Aالاسم: ${name}%0Aتم حفظ المقاسات في السحاب.`;
+            window.open(`https://wa.me/967773463560?text=${text}`);
         });
     }
+
+    // جلب المنتجات الجاهزة (اختياري)
+    db.ref('products').on('value', snap => {
+        const data = snap.val();
+        const display = document.getElementById('ready_display');
+        if(data) {
+            display.innerHTML = "";
+            for(let id in data) {
+                if(data[id].cat !== 'fabric') {
+                    display.innerHTML += `
+                    <div class="product-item">
+                        <img src="${data[id].img}">
+                        <p><b>${data[id].title}</b><br><span style="color:green">${data[id].newP} ريال</span></p>
+                        <button style="background:var(--gold); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="alert('تمت الإضافة')">إضافة للطلب</button>
+                    </div>`;
+                }
+            }
+        }
+    });
 </script>
 </body>
 </html>
