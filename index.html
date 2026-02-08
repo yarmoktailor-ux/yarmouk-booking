@@ -3,177 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة الرجالية - طلب تفصيل</title>
+    <title>اليرموك - صمم ثوبك</title>
     <style>
         :root {
-            --gold: #c5a059;
-            --dark-brown: #3e2723;
-            --light-bg: #fdfaf5;
+            --primary-gold: #d4a373; /* لون Manus الذهبي */
+            --deep-maroon: #2d0a10; /* اللون العنابي الغامق في خلفية Manus */
+            --off-white: #fdfaf5;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
-            color: var(--dark-brown);
+            font-family: 'Times New Roman', serif; /* طابع كلاسيكي فخم */
+            background-color: var(--off-white);
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-top: 5px solid var(--gold);
-        }
-
+        /* تنسيق الهيدر مثل Manus */
         .header {
-            text-align: center;
-            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
         }
 
-        .header h1 {
-            margin: 0;
-            color: var(--dark-brown);
-            font-size: 28px;
+        .logo { font-weight: bold; font-size: 24px; color: var(--deep-maroon); }
+
+        /* حاوية التصميم */
+        .design-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        .header p {
-            color: var(--gold);
-            margin-top: 5px;
-        }
+        h2 { text-align: center; color: var(--deep-maroon); border-bottom: 2px solid var(--primary-gold); padding-bottom: 10px; }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
+        .form-section { margin-bottom: 30px; }
+        
+        label { display: block; margin: 10px 0 5px; font-weight: bold; color: #555; }
 
         input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box; /* لضمان عدم خروج الحقول عن الحاوية */
+            border-radius: 5px;
+            margin-bottom: 15px;
             font-size: 16px;
         }
 
-        input:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 5px rgba(197, 160, 89, 0.3);
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--dark-brown);
+        /* زر الإرسال بنفس ستايل Manus */
+        .submit-btn {
+            background-color: var(--primary-gold);
             color: white;
+            padding: 18px;
             border: none;
-            border-radius: 8px;
+            width: 100%;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            border-radius: 5px;
             transition: 0.3s;
         }
 
-        button:hover {
-            background-color: #5d4037;
-        }
-
-        .footer-note {
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            margin-top: 20px;
-        }
+        .submit-btn:hover { background-color: var(--deep-maroon); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>اليرموك للخياطة الرجالية</h1>
-        <p>دقة الموعد.. وفخامة التفصيل</p>
-    </div>
+<div class="header">
+    <div class="logo">اليرموك ✂️</div>
+    <div style="background:var(--primary-gold); padding:5px 15px; border-radius:5px; color:#fff;">دخول</div>
+</div>
 
-    <form id="orderForm">
-        <div class="form-group">
-            <label>اسم العميل</label>
-            <input type="text" id="name" name="name" placeholder="أدخل اسمك الكامل" required>
-        </div>
+<div class="design-container">
+    <h2>التفصيل حسب الطلب</h2>
+    <p style="text-align: center; color: #888;">"نحن لا نخيط أثواباً، نحن نصنع هيبتك"</p>
+    
+    <form id="tailorForm">
+        <div class="form-section">
+            <label>الاسم الكريم (Customer)</label>
+            <input type="text" id="customer_name" required placeholder="سارة، عمر، إلخ..">
 
-        <div class="form-group">
-            <label>رقم الجوال</label>
-            <input type="tel" id="phone" name="phone" placeholder="05xxxxxxxx" required>
-        </div>
-
-        <div class="form-group">
-            <label>نوع القماش المفضل</label>
-            <select id="fabric" name="fabric">
-                <option value="ياباني">ياباني (سميراميس)</option>
-                <option value="سلك">سلك فخم</option>
-                <option value="قطن">قطن طبيعي</option>
-                <option value="مشروك">مشروك</option>
+            <label>نوع القماش (Fabric Choice)</label>
+            <select id="fabric_choice">
+                <option value="Blue linen">كتان أزرق (Blue linen)</option>
+                <option value="Grey wool">صوف رمادي (Grey wool)</option>
+                <option value="Black cotton">قطن أسود (Black cotton)</option>
+                <option value="Red silk">حرير أحمر (Red silk)</option>
+                <option value="White satin">ساتان أبيض (White satin)</option>
             </select>
+
+            <label>المقاسات (Measurements)</label>
+            <textarea id="measurements" rows="4" placeholder="الصدر: 40، الخصر: 34..."></textarea>
+            
+            <label>ملاحظات إضافية</label>
+            <input type="text" id="order_notes" placeholder="أي تفاصيل خاصة بالخياطة">
         </div>
 
-        <div class="form-group">
-            <label>المقاسات (إذا كانت متوفرة)</label>
-            <textarea id="measurements" name="measurements" rows="3" placeholder="طول الثوب، عرض الكتف، إلخ..."></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>ملاحظات إضافية (الرقبة، الأكمام)</label>
-            <input type="text" id="notes" name="notes" placeholder="مثلاً: كبكات، سحاب مخفي">
-        </div>
-
-        <button type="submit">إرسال الطلب للورشة</button>
+        <button type="submit" class="submit-btn">إرسال تفاصيل التصميم</button>
     </form>
-
-    <p class="footer-note">محل اليرموك - جودة تليق بك</p>
 </div>
 
 <script>
-    const form = document.getElementById('orderForm');
-    form.addEventListener('submit', async (e) => {
+    document.getElementById('tailorForm').onsubmit = async (e) => {
         e.preventDefault();
+        // تأكد من وضع رابط الـ Webhook الخاص بك هنا
+        const WEBHOOK_URL = 'رابط_n8n_الخاص_بك'; 
         
-        // ضع رابط الـ Webhook الخاص بك من n8n هنا
-        const WEBHOOK_URL = 'ضع_رابط_الويب_هوك_هنا';
-
-        const formData = {
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
-            fabric: document.getElementById('fabric').value,
+        const data = {
+            customer: document.getElementById('customer_name').value,
+            fabric: document.getElementById('fabric_choice').value,
             measurements: document.getElementById('measurements').value,
-            notes: document.getElementById('notes').value,
-            date: new Date().toLocaleString('ar-SA')
+            notes: document.getElementById('order_notes').value
         };
 
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                alert('تم استلام طلبك في محل اليرموك بنجاح! سنتواصل معك قريباً.');
-                form.reset();
-            } else {
-                alert('حدث خطأ، يرجى المحاولة لاحقاً');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('تعذر الاتصال بالنظام، تأكد من تشغيل n8n');
-        }
-    });
+        alert('جاري إرسال طلبك لورشة اليرموك...');
+        
+        // كود الإرسال الفعلي لـ n8n
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json'}
+        }).then(() => alert('تم الاستلام!'));
+    };
 </script>
 
 </body>
