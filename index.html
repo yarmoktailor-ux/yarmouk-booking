@@ -230,15 +230,18 @@
     function openAdmin() {
     let pass = prompt("أدخل كلمة المرور:");
     if (pass === "1234") {
+        // السطر الموجود مسبقاً لفتح اللوحة
         document.getElementById('adminPanel').style.display = 'flex';
         
-        // أضف السطر هنا ليتم إظهار أزرار الحذف بمجرد دخولك كمسؤول
+        // --- ضع السطر الجديد هنا ---
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        // ---------------------------
         
     } else {
         alert("كلمة مرور خاطئة!");
     }
 }
+
 
     function closeAdmin() {
     document.getElementById('adminPanel').style.display = 'none';
@@ -291,52 +294,54 @@ function saveToCloud() {
 
 // 3. دالة الجلب التلقائي (تعمل فور فتح الموقع)
 // دالة الجلب التلقائي المطورة مع ميزة الحذف
+// دالة الجلب التلقائي - النسخة الآمنة لضمان عمل كافة الأزرار
 database.ref('products').on('value', (snapshot) => {
-    const data = snapshot.val();
-    const fabricList = document.getElementById('modal_fabric_list'); // قائمة الأقمشة في المودال
-    const readyDisplay = document.getElementById('ready_display'); // عرض المنتجات الجاهزة
-    
-    db.fabrics = []; 
-    db.ready = [];
-    
-    if (fabricList) fabricList.innerHTML = '';
-    if (readyDisplay) readyDisplay.innerHTML = '';
+    try {
+        const data = snapshot.val();
+        const fabricList = document.getElementById('modal_fabric_list');
+        const readyDisplay = document.getElementById('ready_display');
+        
+        db.fabrics = []; 
+        db.ready = [];
+        
+        if (fabricList) fabricList.innerHTML = '';
+        if (readyDisplay) readyDisplay.innerHTML = '';
 
-    if (data) {
-        for (let id in data) {
-            const item = data[id];
-            item.s_id = id; // حفظ المعرف السحابي للحذف
+        if (data) {
+            for (let id in data) {
+                const item = data[id];
+                item.s_id = id;
 
-            if (item.cat === 'fabric') {
-                db.fabrics.push(item);
-                // إضافة القماش للمودال مع زر حذف (X)
-                if (fabricList) {
-                    fabricList.innerHTML += `
-                        <div style="border:1px solid #eee; padding:10px; position:relative; text-align:center;">
-                            <button onclick="deleteProduct('${id}')" style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">×</button>
-                            <img src="${item.img}" style="width:100%; height:80px; object-fit:cover; border-radius:5px;">
-                            <div style="font-size:12px; margin-top:5px;">${item.title}</div>
-                        </div>`;
-                }
-            } else {
-                db.ready.push(item);
-                // إضافة المنتج الجاهز (ثوب/كوت) مع زر حذف للآدمن
-                if (readyDisplay) {
-                    readyDisplay.innerHTML += `
-                        <div class="product-card" style="position:relative;">
-                             <button onclick="deleteProduct('${id}')" class="admin-only" style="display:none; position:absolute; top:5px; right:5px; background:rgba(255,0,0,0.7); color:white; border:none; padding:5px; border-radius:5px; cursor:pointer;">حذف</button>
-                             <img src="${item.img}">
-                             <div style="padding:10px;">
+                if (item.cat === 'fabric') {
+                    db.fabrics.push(item);
+                    if (fabricList) {
+                        fabricList.innerHTML += `
+                            <div style="border:1px solid #eee; padding:10px; position:relative; text-align:center;">
+                                <button onclick="deleteProduct('${id}')" style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; z-index:100;">×</button>
+                                <img src="${item.img}" style="width:100%; height:80px; object-fit:cover; border-radius:5px;">
+                                <div style="font-size:12px; margin-top:5px;">${item.title}</div>
+                            </div>`;
+                    }
+                } else {
+                    db.ready.push(item);
+                    if (readyDisplay) {
+                        readyDisplay.innerHTML += `
+                            <div class="product-card" style="position:relative;">
+                                 <button onclick="deleteProduct('${id}')" class="admin-only" style="display:none; position:absolute; top:5px; right:5px; background:red; color:white; border:none; padding:5px; border-radius:5px; cursor:pointer; z-index:100;">حذف</button>
+                                 <img src="${item.img}">
                                  <b>${item.title}</b><br>
-                                 <span style="color:var(--gold);">${item.newPrice} ريال</span>
-                                 <button onclick="addReadyToCart(${item.newPrice})" style="width:100%; background:var(--gold); border:none; color:white; padding:8px; margin-top:8px; border-radius:5px;">إضافة للطلب</button>
-                             </div>
-                        </div>`;
+                                 <span>${item.newPrice} ريال</span>
+                                 <button onclick="addReadyToCart(${item.newPrice})" style="width:100%; background:var(--gold); border:none; color:white; padding:8px; margin-top:5px; cursor:pointer;">إضافة</button>
+                            </div>`;
+                    }
                 }
             }
         }
+    } catch (e) {
+        console.error("خطأ في عرض البيانات السحابية: ", e);
     }
 });
+
 
 // دالة تنفيذ الحذف الفعلي من السحابة
 function deleteProduct(productId) {
