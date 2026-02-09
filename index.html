@@ -259,9 +259,17 @@
     }
 
     // 1. إعدادات الاتصال بالسحابة
+// إعدادات الربط الصحيحة لسحابة اليرموك
 const firebaseConfig = {
-    databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com"
+    databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/"
 };
+
+// تفعيل الاتصال (تأكد من وجود هذه الأسطر أيضاً)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const database = firebase.database();
+
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
