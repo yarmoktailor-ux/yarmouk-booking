@@ -205,267 +205,177 @@
 </div>
 
 <script>
-    let db = { fabrics: [], ready: [] };
-    let tempImg = ""; let receiptImg = "";
-    let readyCartTotal = 0;
-
-    // دوال البوت ياقوت
-    function toggleYaqoot() {
-        const chat = document.getElementById('yaqoot_chat');
-        chat.style.display = chat.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function yaqootReply(type) {
-        const text = document.getElementById('chat_text');
-        if(type === 'policy') {
-            text.innerHTML = "<b>🛡️ ضمان اليرموك:</b> نضمن لك المقاس 100%. إذا وجد أي اختلاف، التعديل أو الاستبدال مجاني تماماً خلال 3 أيام. هيبتك لا تقبل الخطأ.";
-        } else if(type === 'offer') {
-            text.innerHTML = "<b>🎁 عرض الكاش:</b> عند دفع كامل المبلغ مقدماً، تحصل على (تطريز يدوي مجاني للرقبة) أو (علبة كبكات فاخرة) هدية من اليرموك.";
-        } else if(type === 'about') {
-            text.innerHTML = "<b>📜 قصة اليرموك:</b> بدأت رحلتنا في 2002 على يد الوالد المؤسس، تعلمنا أن الثوب ليس مجرد قطعة قماش، بل هو شخصية الرجل. نحن هنا لنحافظ على هذا الإرث.";
-        }
-    }
-
-    // دوال المتجر الأساسية
-    function openAdmin() {
-    let pass = prompt("أدخل كلمة المرور:");
-    if (pass === "1234") {
-        // السطر الموجود مسبقاً لفتح اللوحة
-        document.getElementById('adminPanel').style.display = 'flex';
-        
-        // --- ضع السطر الجديد هنا ---
-        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-        // ---------------------------
-        
-    } else {
-        alert("كلمة مرور خاطئة!");
-    }
-}
-
-
-    function closeAdmin() {
-    document.getElementById('adminPanel').style.display = 'none';
-    // إخفاء أزرار الحذف عند الخروج من لوحة الإدارة
-    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-}
-
-    function encodeImg(i) { let r = new FileReader(); r.onload = (e) => tempImg = e.target.result; r.readAsDataURL(i.files[0]); }
-    function encodeReceipt(i) { let r = new FileReader(); r.onload = (e) => receiptImg = e.target.result; r.readAsDataURL(i.files[0]); }
-
-    function switchMainTab(t) {
-        document.querySelectorAll('.section, .tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById('section_'+t).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    // 1. إعدادات الاتصال بالسحابة
-// إعدادات الربط الصحيحة لسحابة اليرموك
+    
+   // 1. إعدادات السحابة (Firebase) لمتجر اليرموك
 const firebaseConfig = {
     databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/"
 };
 
-// تفعيل الاتصال (تأكد من وجود هذه الأسطر أيضاً)
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const database = firebase.database();
 
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+let db = { fabrics: [], ready: [] };
+let tempImg = ""; 
+let receiptImg = "";
+let readyCartTotal = 0;
 
-// 2. دالة الحفظ في السحابة (تُربط بزر الحفظ في لوحة الإدارة)
-function saveToCloud() {
-    const cat = document.getElementById('adm_cat').value;
-    const title = document.getElementById('adm_title').value;
-    const newPrice = document.getElementById('adm_new').value;
-    const oldPrice = document.getElementById('adm_old') ? document.getElementById('adm_old').value : 0;
-
-    if (!tempImg || !title || !newPrice) {
-        return alert("يرجى إكمال كافة البيانات واختيار صورة");
-    }
-
-    // رفع البيانات للسحابة
-    database.ref('products').push({
-        cat: cat,
-        title: title,
-        newPrice: newPrice,
-        oldPrice: oldPrice,
-        img: tempImg // سيتم حفظ الصورة ككود نصي سحابي
-    }).then(() => {
-        alert("تم الحفظ في السحابة بنجاح ✅");
-        closeAdmin();
-    }).catch((error) => {
-        console.error("خطأ في الحفظ:", error);
-        alert("فشل الحفظ في السحابة");
-    });
-}
-
-// 3. دالة الجلب التلقائي (تعمل فور فتح الموقع)
-// دالة الجلب التلقائي المطورة مع ميزة الحذف
-// دالة الجلب التلقائي - النسخة الآمنة لضمان عمل كافة الأزرار
+// 2. دالة الجلب التلقائي من السحابة (تحدث العرض فوراً)
 database.ref('products').on('value', (snapshot) => {
-    try {
-        const data = snapshot.val();
-        const fabricList = document.getElementById('modal_fabric_list');
-        const readyDisplay = document.getElementById('ready_display');
-        
-        db.fabrics = []; 
-        db.ready = [];
-        
-        if (fabricList) fabricList.innerHTML = '';
-        if (readyDisplay) readyDisplay.innerHTML = '';
-
-        if (data) {
-            for (let id in data) {
-                const item = data[id];
-                item.s_id = id;
-
-                if (item.cat === 'fabric') {
-                    db.fabrics.push(item);
-                    if (fabricList) {
-                        fabricList.innerHTML += `
-                            <div style="border:1px solid #eee; padding:10px; position:relative; text-align:center;">
-                                <button onclick="deleteProduct('${id}')" style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; z-index:100;">×</button>
-                                <img src="${item.img}" style="width:100%; height:80px; object-fit:cover; border-radius:5px;">
-                                <div style="font-size:12px; margin-top:5px;">${item.title}</div>
-                            </div>`;
-                    }
-                } else {
-                    db.ready.push(item);
-                    if (readyDisplay) {
-                        readyDisplay.innerHTML += `
-                            <div class="product-card" style="position:relative;">
-                                 <button onclick="deleteProduct('${id}')" class="admin-only" style="display:none; position:absolute; top:5px; right:5px; background:red; color:white; border:none; padding:5px; border-radius:5px; cursor:pointer; z-index:100;">حذف</button>
-                                 <img src="${item.img}">
-                                 <b>${item.title}</b><br>
-                                 <span>${item.newPrice} ريال</span>
-                                 <button onclick="addReadyToCart(${item.newPrice})" style="width:100%; background:var(--gold); border:none; color:white; padding:8px; margin-top:5px; cursor:pointer;">إضافة</button>
-                            </div>`;
-                    }
-                }
-            }
+    const data = snapshot.val();
+    db.fabrics = []; db.ready = [];
+    
+    if (data) {
+        for (let id in data) {
+            const item = data[id];
+            item.s_id = id; // المعرف للحذف
+            if (item.cat === 'fabric') db.fabrics.push(item);
+            else db.ready.push(item);
         }
-    } catch (e) {
-        console.error("خطأ في عرض البيانات السحابية: ", e);
     }
-});
-
-
-// دالة تنفيذ الحذف الفعلي من السحابة
-function deleteProduct(productId) {
-    if (confirm("هل تريد حذف هذا المنتج نهائياً من سحابة اليرموك؟")) {
-        database.ref('products/' + productId).remove()
-            .then(() => alert("تم الحذف بنجاح ✅"))
-            .catch(() => alert("فشل الحذف، تحقق من الاتصال"));
-    }
-}
-
     // تحديث العرض في الصفحة
     if(typeof filterReady === "function") filterReady('all'); 
 });
 
+// 3. دالة الحفظ السحابي (من لوحة الإدارة)
+function saveProduct() {
+    const cat = document.getElementById('adm_cat').value;
+    const title = document.getElementById('adm_title').value;
+    const oldP = document.getElementById('adm_old').value || 0;
+    const newP = document.getElementById('adm_new').value;
 
-    function openFabricModal() {
-        const list = document.getElementById('modal_fabric_list');
-        list.innerHTML = db.fabrics.length ? db.fabrics.map(f => `
-            <div style="border:1px solid #eee; padding:8px; text-align:center; cursor:pointer; border-radius:12px; transition:0.3s;" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
+    if (!tempImg || !title || !newP) return alert("يرجى إكمال البيانات والصورة");
+
+    database.ref('products').push({
+        cat, title, oldPrice: oldP, newPrice: newP, img: tempImg
+    }).then(() => {
+        alert("تم الحفظ في سحابة اليرموك بنجاح ✅");
+        closeAdmin();
+    });
+}
+
+// 4. دالة الحذف النهائي (للمدير فقط)
+function deleteProduct(productId) {
+    if (confirm("هل تريد حذف هذا المنتج نهائياً من مخزن اليرموك؟")) {
+        database.ref('products/' + productId).remove()
+            .then(() => alert("تم الحذف بنجاح ✅"));
+    }
+}
+
+// 5. وظائف المتجر (الكود الذي أرسلته أنت معدلاً ليعمل مع السحابة)
+function openFabricModal() {
+    const list = document.getElementById('modal_fabric_list');
+    list.innerHTML = db.fabrics.length ? db.fabrics.map(f => `
+        <div style="border:1px solid #eee; padding:8px; text-align:center; cursor:pointer; border-radius:12px; position:relative;">
+            <button onclick="deleteProduct('${f.s_id}')" class="admin-only" style="display:none; position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; z-index:100;">×</button>
+            <div onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
                 <img src="${f.img}" style="width:100%; height:80px; object-fit:cover; border-radius:8px;">
                 <div style="font-size:11px; font-weight:bold; margin-top:5px;">${f.title}</div>
                 <div style="font-size:11px; color:green;">${f.newPrice} ريال</div>
             </div>
-        `).join('') : '<p style="grid-column:1/-1; text-align:center;">يرجى إضافة أقمشة من لوحة الإدارة أولاً</p>';
-        document.getElementById('fabricModal').style.display = 'flex';
-    }
+        </div>
+    `).join('') : '<p style="grid-column:1/-1; text-align:center;">يرجى إضافة أقمشة من لوحة الإدارة أولاً</p>';
+    document.getElementById('fabricModal').style.display = 'flex';
+    checkAdminStatus();
+}
 
-    function confirmFabricSelection(name, price, img) {
-        const id = Date.now();
-        const card = document.createElement('div');
-        card.className = 'selected-thobe-card';
-        card.id = `thobe_${id}`;
-        card.innerHTML = `
-            <button type="button" class="remove-card" onclick="removeThobe(${id})">×</button>
-            <div style="display:flex; gap:12px; align-items:center;">
-                <img src="${img}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid var(--gold);">
-                <div><b>ثوب: ${name}</b><br><span style="color:green; font-size:13px;">${price} ريال يمني</span></div>
+function confirmFabricSelection(name, price, img) {
+    const id = Date.now();
+    const card = document.createElement('div');
+    card.className = 'selected-thobe-card';
+    card.id = `thobe_${id}`;
+    card.innerHTML = `
+        <button type="button" class="remove-card" onclick="removeThobe(${id})">×</button>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <img src="${img}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid var(--gold);">
+            <div><b>ثوب: ${name}</b><br><span style="color:green; font-size:13px;">${price} ريال يمني</span></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:15px;">
+            <select class="thobe-opt"><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option><option>سادة مربع</option></select>
+            <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
+            <select class="thobe-opt"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
+            <select class="thobe-opt"><option>قصة قطرية</option><option>قصة سعودية</option><option>قصة كويتية</option></select>
+        </div>
+        <input type="hidden" class="item-price" value="${price}">
+    `;
+    document.getElementById('tailor_list').appendChild(card);
+    calcGrandTotal();
+    document.getElementById('fabricModal').style.display = 'none';
+}
+
+function filterReady(type, btn) {
+    if(btn) {
+        document.querySelectorAll('.ready-type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    const display = document.getElementById('ready_display');
+    const items = type === 'all' ? db.ready : db.ready.filter(i => i.cat === type);
+    display.innerHTML = items.length ? items.map(i => `
+        <div class="product-card" style="position:relative;">
+            <button onclick="deleteProduct('${i.s_id}')" class="admin-only" style="display:none; position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:5px; padding:5px; z-index:100; cursor:pointer;">حذف</button>
+            <img src="${i.img}">
+            <div style="padding:10px;">
+                <div style="font-size:13px; font-weight:bold;">${i.title}</div>
+                <span class="new-price">${i.newPrice} ريال</span>
+                <button onclick="addReadyToCart(${i.newPrice})" style="width:100%; margin-top:8px; background:var(--gold); border:none; color:white; border-radius:8px; font-size:12px; padding:8px; cursor:pointer; font-weight:bold;">إضافة للطلب</button>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:15px;">
-                <select class="thobe-opt"><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option><option>سادة مربع</option></select>
-                <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو</option><option>سادة</option></select>
-                <select class="thobe-opt"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select>
-                <select class="thobe-opt"><option>قصة قطرية</option><option>قصة سعودية</option><option>قصة كويتية</option></select>
-            </div>
-            <input type="hidden" class="item-price" value="${price}">
-        `;
-        document.getElementById('tailor_list').appendChild(card);
-        calcGrandTotal();
-        document.getElementById('fabricModal').style.display = 'none';
+        </div>
+    `).join('') : '<p style="grid-column:1/-1; padding:20px;">لا توجد منتجات في هذا القسم</p>';
+    checkAdminStatus();
+}
+
+// 6. دوال الإدارة والصور
+function openAdmin() { 
+    if(prompt("كلمة مرور الإدارة:") === "1234") {
+        document.getElementById('adminPanel').style.display='flex';
+        localStorage.setItem('isYarmokAdmin', 'true');
+        checkAdminStatus();
     }
+}
+function closeAdmin() { 
+    document.getElementById('adminPanel').style.display='none'; 
+    localStorage.removeItem('isYarmokAdmin');
+    checkAdminStatus();
+}
+function checkAdminStatus() {
+    const isAdmin = localStorage.getItem('isYarmokAdmin');
+    document.querySelectorAll('.admin-only').forEach(btn => {
+        btn.style.display = (isAdmin === 'true') ? 'block' : 'none';
+    });
+}
 
-    function filterReady(type, btn) {
-        if(btn) {
-            document.querySelectorAll('.ready-type-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        const display = document.getElementById('ready_display');
-        const items = type === 'all' ? db.ready : db.ready.filter(i => i.cat === type);
-        display.innerHTML = items.length ? items.map(i => `
-            <div class="product-card">
-                <img src="${i.img}">
-                <div style="padding:10px;">
-                    <div style="font-size:13px; font-weight:bold;">${i.title}</div>
-                    <span class="new-price">${i.newPrice} ريال</span>
-                    <button onclick="addReadyToCart(${i.newPrice})" style="width:100%; margin-top:8px; background:var(--gold); border:none; color:white; border-radius:8px; font-size:12px; padding:8px; cursor:pointer; font-weight:bold;">إضافة للطلب</button>
-                </div>
-            </div>
-        `).join('') : '<p style="grid-column:1/-1; padding:20px;">لا توجد منتجات في هذا القسم</p>';
-    }
+function encodeImg(i) { let r = new FileReader(); r.onload = (e) => tempImg = e.target.result; r.readAsDataURL(i.files[0]); }
+function encodeReceipt(i) { let r = new FileReader(); r.onload = (e) => receiptImg = e.target.result; r.readAsDataURL(i.files[0]); }
 
-    function addReadyToCart(p) { readyCartTotal += parseInt(p); calcGrandTotal(); alert("تمت إضافة المنتج إلى قائمة هيبتك"); }
-    function removeThobe(id) { document.getElementById(`thobe_${id}`).remove(); calcGrandTotal(); }
+// دوال الحسابات والإرسال
+function addReadyToCart(p) { readyCartTotal += parseInt(p); calcGrandTotal(); alert("تمت إضافة المنتج إلى قائمة هيبتك"); }
+function removeThobe(id) { document.getElementById(`thobe_${id}`).remove(); calcGrandTotal(); }
+function calcGrandTotal() {
+    let t = readyCartTotal;
+    document.querySelectorAll('.item-price').forEach(i => t += parseInt(i.value || 0));
+    document.getElementById('final_total').innerText = t.toLocaleString();
+}
+function selectPayment(m, d, el) {
+    document.getElementById('account_display').style.display = 'block';
+    document.getElementById('account_number').innerText = d;
+    document.getElementById('selected_payment').value = m + " (" + d + ")";
+    document.getElementById('receipt_section').style.display = 'block';
+}
 
-    function calcGrandTotal() {
-        let t = readyCartTotal;
-        document.querySelectorAll('.item-price').forEach(i => t += parseInt(i.value || 0));
-        document.getElementById('final_total').innerText = t.toLocaleString();
-    }
+function submitOrder() {
+    const name = document.getElementById('c_name').value;
+    const total = document.getElementById('final_total').innerText;
+    if (!name || total === "0") return alert("أكمل اسمك واختر ثوباً يليق بك أولاً");
+    const orderData = { name, phone: document.getElementById('c_phone').value, total, date: new Date().toLocaleString('ar-YE') };
+    fetch('https://ali991278.app.n8n.cloud/webhook-test/e4bcc169-93c0-42c5-8226-528f3c6a72e3', {
+        method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData)
+    }).then(() => { alert("اكتمل طلبك بنجاح"); location.reload(); });
+}
+    
 
-    function selectPayment(m, d, el) {
-        document.querySelectorAll('.pay-card-ui').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('account_display').style.display = 'block';
-        document.getElementById('account_number').innerText = d;
-        document.getElementById('selected_payment').value = m + " (" + d + ")";
-        document.getElementById('receipt_section').style.display = 'block';
-    }
 
-    function submitOrder() {
-        const name = document.getElementById('c_name').value;
-        const total = document.getElementById('final_total').innerText;
-        if (!name || total === "0") return alert("أكمل اسمك واختر ثوباً يليق بك أولاً");
 
-        const orderData = {
-            name: name,
-            phone: document.getElementById('c_phone').value,
-            total: total,
-            payment: document.getElementById('selected_payment').value,
-            date: new Date().toLocaleString('ar-YE'),
-            source: "متجر اليرموك الحديث 2026"
-        };
-
-        const webhookUrl = 'https://ali991278.app.n8n.cloud/webhook-test/e4bcc169-93c0-42c5-8226-528f3c6a72e3';
-        
-        fetch(webhookUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-        })
-        .then(() => {
-            alert("اكتمل طلبك بنجاح.\n\nسنصنع أناقتك في اليرموك للخياطة بدقة تليق بك.");
-            location.reload();
-        })
-        .catch(() => alert("تم اعتماد طلبك.. شكراً لثقتك باليرموك"));
-    }
 </script>
 </body>
 </html>
