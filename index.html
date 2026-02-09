@@ -69,6 +69,9 @@
         .pay-card-ui:hover { transform: translateY(-2px); }
         .pay-card-ui.active div { border-color: var(--gold) !important; background: #fff9eb !important; }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
 </head>
 <body>
 
@@ -188,7 +191,7 @@
         <input type="file" id="adm_file" onchange="encodeImg(this)" style="margin-bottom:12px; width:100%;">
         <input type="text" id="adm_title" placeholder="اسم المنتج/القماش" style="width:100%; padding:12px; margin-bottom:12px; border-radius:8px; border:none;">
         <input type="number" id="adm_new" placeholder="السعر (ريال)" style="width:100%; padding:12px; margin-bottom:12px; border-radius:8px; border:none;">
-        <button onclick="saveProduct()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">نشر المنتج الآن</button>
+        <button onclick="saveToCloud()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">نشر المنتج الآن</button>
         <button onclick="closeAdmin()" style="width:100%; background:none; border:none; color:#999; margin-top:15px; cursor:pointer;">إلغاء وإغلاق</button>
     </div>
 </div>
@@ -235,15 +238,60 @@
         event.currentTarget.classList.add('active');
     }
 
-    function saveProduct() {
-        const cat = document.getElementById('adm_cat').value;
-        const title = document.getElementById('adm_title').value;
-        const newP = document.getElementById('adm_new').value;
-        if (cat === 'logo') { document.getElementById('store_logo').src = tempImg; }
-        else if (cat === 'fabric') { db.fabrics.push({ title, newPrice: newP, img: tempImg }); }
-        else { db.ready.push({ cat, title, newPrice: newP, img: tempImg }); }
-        alert("تمت إضافة المنتج بنجاح"); filterReady('all'); closeAdmin();
+    // 1. إعدادات الاتصال بالسحابة
+const firebaseConfig = {
+    databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// 2. دالة الحفظ في السحابة (تُربط بزر الحفظ في لوحة الإدارة)
+function saveToCloud() {
+    const cat = document.getElementById('adm_cat').value;
+    const title = document.getElementById('adm_title').value;
+    const newPrice = document.getElementById('adm_new').value;
+    const oldPrice = document.getElementById('adm_old') ? document.getElementById('adm_old').value : 0;
+
+    if (!tempImg || !title || !newPrice) {
+        return alert("يرجى إكمال كافة البيانات واختيار صورة");
     }
+
+    // رفع البيانات للسحابة
+    database.ref('products').push({
+        cat: cat,
+        title: title,
+        newPrice: newPrice,
+        oldPrice: oldPrice,
+        img: tempImg // سيتم حفظ الصورة ككود نصي سحابي
+    }).then(() => {
+        alert("تم الحفظ في السحابة بنجاح ✅");
+        closeAdmin();
+    }).catch((error) => {
+        console.error("خطأ في الحفظ:", error);
+        alert("فشل الحفظ في السحابة");
+    });
+}
+
+// 3. دالة الجلب التلقائي (تعمل فور فتح الموقع)
+database.ref('products').on('value', (snapshot) => {
+    const data = snapshot.val();
+    // تفريغ المصفوفات الحالية لتحديثها بالبيانات الجديدة من السحابة
+    db.fabrics = []; 
+    db.ready = [];
+    
+    if (data) {
+        for (let id in data) {
+            if (data[id].cat === 'fabric') {
+                db.fabrics.push(data[id]);
+            } else {
+                db.ready.push(data[id]);
+            }
+        }
+    }
+    // تحديث العرض في الصفحة
+    if(typeof filterReady === "function") filterReady('all'); 
+});
+
 
     function openFabricModal() {
         const list = document.getElementById('modal_fabric_list');
