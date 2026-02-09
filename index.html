@@ -3,41 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة - نسخة 2026 الاحترافية</title>
+    <title>اليرموك للخياطة - المتجر المتكامل</title>
     <style>
         :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --white: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; direction: rtl; }
-        .main-container { max-width: 600px; margin: auto; background: var(--white); border-radius: 20px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
-        .welcome-banner { background: var(--brown); color: white; padding: 15px; text-align: center; font-size: 13px; border-bottom: 2px solid var(--gold); }
-        .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); }
+        .main-container { max-width: 600px; margin: auto; background: var(--white); border-radius: 20px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
+        
+        /* رسائل الترحيب */
+        .welcome-banner { background: var(--brown); color: white; padding: 12px; text-align: center; font-size: 13px; border-bottom: 2px solid var(--gold); }
+        .heritage-box { padding: 15px; background: #fffdf5; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; color: #555; line-height: 1.6; }
+        
+        .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--gold); }
         .cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #fff9eb; }
         .cust-info input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box;}
+        
         .main-tabs { display: flex; background: #eee; }
         .tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: #eee; color: #666; }
         .tab-btn.active { background: var(--gold); color: white; }
         .section { display: none; padding: 15px; }
         .section.active { display: block; }
+
+        /* المقاسات */
         .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 10px; }
         .measure-grid label { font-size: 11px; color: var(--brown); font-weight: bold; display: block; margin-bottom: 4px; }
         .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; box-sizing: border-box; }
-        .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-        .settings-btn { position: fixed; bottom: 20px; left: 20px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 24px; z-index: 1000; }
+
+        /* ياقوت */
+        .yaqoot-box { background: #e3f2fd; border-right: 4px solid #1e88e5; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; }
+        
+        /* المنتجات */
+        .items-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .product-card { border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white; text-align: center; padding-bottom: 10px; position: relative; }
+        .product-card img { width: 100%; height: 120px; object-fit: cover; }
+        
         .selected-thobe-card { background: #fff9eb; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 15px; position: relative; }
         .remove-card { position: absolute; top: 10px; left: 10px; background: #ff4d4d; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
         .thobe-opt { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd; font-size: 12px; margin-top: 5px; background: white; }
+
+        /* الدفع */
+        .payment-box { padding: 15px; border: 1px solid #ddd; border-radius: 12px; margin-top: 15px; background: #fcfcfc; }
+        
+        .btn-send { width: 100%; padding: 18px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .settings-btn { position: fixed; bottom: 80px; left: 20px; background: var(--white); border: 1px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 20px; z-index: 1000; }
+        
         .overlay-panel { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center; }
-        .admin-input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
+        .admin-box { background:#222; color:white; padding:20px; border-radius:15px; width:90%; max-width:400px; border:2px solid var(--gold); }
+        .admin-input { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 6px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
         .del-badge { position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div class="welcome-banner">اليرموك للخياطة.. فخامة الماضي بروح المستقبل ✨</div>
+<div class="welcome-banner">أهلاً بك في اليرموك.. "إرث الوالد يرحب بك" ✨</div>
+<div class="heritage-box">
+    <strong>اليرموك.. خيطٌ من الماضي، ونسيجٌ للمستقبل</strong><br>
+    منذ 2002، نصنع هيبتك بدقة القياس وخبرة السنين.
+</div>
 
 <button class="settings-btn" onclick="openAdmin()">⚙️</button>
 
 <div class="main-container">
-    <div class="header"><h2 style="margin:0; color:var(--brown)">اليرموك الحديث</h2></div>
+    <div class="header">
+        <h2 style="margin:0; color:var(--brown)">اليرموك الحديث</h2>
+        <div id="yaqoot_msg" class="yaqoot-box">💎 <b>ياقوت:</b> أهلاً بك! يرجى إدخال اسمك ومقاساتك لنبدأ تفصيل أناقتك.</div>
+    </div>
+
     <div class="cust-info">
         <input type="text" id="c_name" placeholder="إسم العميل">
         <input type="tel" id="c_phone" placeholder="رقم الهاتف">
@@ -51,14 +81,14 @@
     <div id="section_tailor" class="section active">
         <h4 style="margin:0 0 10px 0; color:var(--brown)">📏 مقاسات العميل (بالهنش)</h4>
         <div class="measure-grid">
-            <div><label>الطول</label><input type="number" step="0.1" class="m-input" data-name="الطول"></div>
-            <div><label>الكتف</label><input type="number" step="0.1" class="m-input" data-name="الكتف"></div>
-            <div><label>اليد</label><input type="number" step="0.1" class="m-input" data-name="طول اليد"></div>
-            <div><label>الصدر</label><input type="number" step="0.1" class="m-input" data-name="وسع الصدر"></div>
-            <div><label>الرقبة</label><input type="number" step="0.1" class="m-input" data-name="الرقبة"></div>
-            <div><label>وسط يد</label><input type="number" step="0.1" class="m-input" data-name="وسط يد"></div>
-            <div><label>الكبك</label><input type="number" step="0.1" class="m-input" data-name="طول الكبك"></div>
-            <div><label>الخطوة</label><input type="number" step="0.1" class="m-input" data-name="وسع الخطوة(تحت)"></div>
+            <div><label>الطول</label><input type="number" step="0.1" class="m-input" data-name="طول"></div>
+            <div><label>الكتف</label><input type="number" step="0.1" class="m-input" data-name="كتف"></div>
+            <div><label>طول اليد</label><input type="number" step="0.1" class="m-input" data-name="يد"></div>
+            <div><label>وسع الصدر</label><input type="number" step="0.1" class="m-input" data-name="صدر"></div>
+            <div><label>الرقبة</label><input type="number" step="0.1" class="m-input" data-name="رقبة"></div>
+            <div><label>وسط اليد</label><input type="number" step="0.1" class="m-input" data-name="وسط يد"></div>
+            <div><label>طول الكبك</label><input type="number" step="0.1" class="m-input" data-name="كبك"></div>
+            <div><label>وسع الخطوة(تحت)</label><input type="number" step="0.1" class="m-input" data-name="خطوة"></div>
         </div>
         <button type="button" style="width:100%; padding:15px; background:#fff; border:2px dashed var(--gold); border-radius:12px; color:var(--gold); font-weight:bold; cursor:pointer;" onclick="openFabricModal()">+ إضافة ثوب تفصيل جديد</button>
         <div id="tailor_list" style="margin-top:15px;"></div>
@@ -68,6 +98,15 @@
         <div id="ready_display" class="items-grid"></div>
     </div>
 
+    <div class="payment-box">
+        <h4 style="margin:0 0 10px 0;">💳 وسيلة الدفع المفضلة:</h4>
+        <select id="selected_payment" class="thobe-opt" style="font-size:14px; padding:10px;">
+            <option value="كاش عند الاستلام">نقدًا (عند الاستلام)</option>
+            <option value="تحويل بنكي">تحويل بنكي (الكريمي/البسيري)</option>
+            <option value="محفظة جوال">محفظة جوال (M-Pesa/أخرى)</option>
+        </select>
+    </div>
+
     <div style="background:var(--brown); color:white; padding:20px; text-align:center;">
         <h3 style="margin:0;">الإجمالي: <span id="final_total">0</span> ريال</h3>
     </div>
@@ -75,18 +114,18 @@
 </div>
 
 <div id="adminPanel" class="overlay-panel">
-    <div style="background:#222; color:white; padding:20px; border-radius:15px; width:90%; max-width:400px; border:2px solid var(--gold);">
-        <h3 style="color:var(--gold)">إدارة المنتجات</h3>
+    <div class="admin-box">
+        <h3 style="color:var(--gold); margin-top:0;">إدارة مخزن اليرموك</h3>
         <select id="adm_cat" class="admin-input">
-            <option value="fabric">إضافة قماش تفصيل</option>
-            <option value="ready">ملابس جاهزة</option>
+            <option value="fabric">قماش تفصيل</option>
+            <option value="ready">منتج جاهز</option>
         </select>
         <input type="file" id="adm_file" class="admin-input" onchange="encodeImg(this)">
-        <input type="text" id="adm_title" class="admin-input" placeholder="إسم المنتج">
-        <textarea id="adm_desc" class="admin-input" placeholder="وصف المنتج"></textarea>
+        <input type="text" id="adm_title" class="admin-input" placeholder="اسم القماش/المنتج">
+        <textarea id="adm_desc" class="admin-input" placeholder="وصف المنتج (اختياري)"></textarea>
         <div style="display:flex; gap:5px;">
-            <input type="number" id="adm_old" class="admin-input" placeholder="السعر قبل الخصم">
-            <input type="number" id="adm_new" class="admin-input" placeholder="السعر بعد الخصم">
+            <input type="number" id="adm_old" class="admin-input" placeholder="السعر قبل">
+            <input type="number" id="adm_new" class="admin-input" placeholder="السعر بعد">
         </div>
         <button onclick="saveProduct()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ في الذاكرة</button>
         <button onclick="closeAdmin()" style="width:100%; background:none; border:none; color:#ccc; margin-top:10px; cursor:pointer;">إغلاق</button>
@@ -95,9 +134,9 @@
 
 <div id="fabricModal" class="overlay-panel">
     <div style="background:white; width:95%; max-width:400px; padding:20px; border-radius:15px;">
-        <h3 style="text-align:center;">اختر قماش التفصيل</h3>
+        <h3 style="text-align:center; color:var(--brown);">اختر القماش</h3>
         <div id="modal_fabric_list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-height:350px; overflow-y:auto;"></div>
-        <button onclick="document.getElementById('fabricModal').style.display='none'" style="width:100%; margin-top:15px; padding:10px; border:none; border-radius:8px;">إلغاء</button>
+        <button onclick="document.getElementById('fabricModal').style.display='none'" style="width:100%; margin-top:15px; padding:10px; border:none; border-radius:8px; background:#eee;">إلغاء</button>
     </div>
 </div>
 
@@ -114,15 +153,31 @@
 
     function openAdmin() { if(prompt("كلمة مرور الإدارة:") === "1234") document.getElementById('adminPanel').style.display='flex'; }
     function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
-    function encodeImg(i) { let r = new FileReader(); r.onload = (e) => tempImg = e.target.result; r.readAsDataURL(i.files[0]); }
+    
+    function encodeImg(i) { 
+        let r = new FileReader(); 
+        r.onload = (e) => { tempImg = e.target.result; }; 
+        if(i.files[0]) r.readAsDataURL(i.files[0]); 
+    }
 
     function saveProduct() {
-        const cat = document.getElementById('adm_cat').value;
         const title = document.getElementById('adm_title').value;
         const price = document.getElementById('adm_new').value;
-        if (!title || !price || !tempImg) return alert("اكمل البيانات والصورة");
+        const cat = document.getElementById('adm_cat').value;
 
-        const item = { id: Date.now(), title, desc: document.getElementById('adm_desc').value, oldPrice: document.getElementById('adm_old').value, newPrice: price, img: tempImg, cat };
+        if (!title || !price || !tempImg) {
+            alert("يرجى ملء الاسم والسعر واختيار صورة");
+            return;
+        }
+
+        const item = { 
+            id: Date.now(), title, 
+            desc: document.getElementById('adm_desc').value, 
+            oldPrice: document.getElementById('adm_old').value || "0", 
+            newPrice: price, 
+            img: tempImg, 
+            cat: cat 
+        };
         
         if(cat === 'fabric') db.fabrics.push(item);
         else db.ready.push(item);
@@ -131,12 +186,13 @@
         alert("✅ تم إضافة المنتج إلى الذاكرة بنجاح");
         
         if(confirm("هل تريد إضافة منتج آخر؟")) {
-            document.getElementById('adm_file').value = "";
+            // تصفير الحقول للإضافة التالية
             document.getElementById('adm_title').value = "";
             document.getElementById('adm_desc').value = "";
             document.getElementById('adm_old').value = "";
             document.getElementById('adm_new').value = "";
-            // الانتقال لمعرض الصور هو الضغط على زر الملف
+            document.getElementById('adm_file').value = "";
+            tempImg = "";
             document.getElementById('adm_file').click();
         } else {
             closeAdmin();
@@ -152,18 +208,18 @@
     function openFabricModal() {
         const list = document.getElementById('modal_fabric_list');
         document.getElementById('fabricModal').style.display = 'flex';
-        list.innerHTML = db.fabrics.map(f => `
-            <div style="border:1px solid #eee; padding:5px; text-align:center; border-radius:10px;" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
-                <img src="${f.img}" style="width:100%; height:70px; object-fit:cover; border-radius:5px;">
-                <div style="font-size:11px; font-weight:bold;">${f.title}</div>
+        list.innerHTML = db.fabrics.length ? db.fabrics.map(f => `
+            <div style="border:1px solid #eee; padding:5px; text-align:center; border-radius:10px; cursor:pointer;" onclick="confirmFabricSelection('${f.title}', ${f.newPrice}, '${f.img}')">
+                <img src="${f.img}" style="width:100%; height:80px; object-fit:cover; border-radius:5px;">
+                <div style="font-size:11px; font-weight:bold; margin-top:5px;">${f.title}</div>
                 <div style="font-size:10px; color:green;">${f.newPrice} ريال</div>
             </div>
-        `).join('') || 'لا توجد أقمشة حالياً';
+        `).join('') : '<p style="grid-column:1/-1; text-align:center;">لا توجد أقمشة في الذاكرة</p>';
     }
 
     function confirmFabricSelection(name, price, img) {
-        let color = prompt("أكتب اللون / أو رقم القماش:");
-        if(!color) return;
+        let colorInfo = prompt("يرجى اختيار اللون للقماش أو كتابة رقم القماش:");
+        if(!colorInfo) return;
 
         const id = Date.now();
         const card = document.createElement('div');
@@ -173,48 +229,62 @@
             <button type="button" class="remove-card" onclick="removeThobe(${id})">×</button>
             <div style="display:flex; gap:10px; align-items:center;">
                 <img src="${img}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
-                <div><b>قماش: ${name} (${color})</b><br><span style="color:green">${price} ريال</span></div>
+                <div><b>قماش: ${name} (${colorInfo})</b><br><span style="color:green; font-weight:bold;">${price} ريال</span></div>
             </div>
             
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
                 <div><label style="font-size:10px;">نوع الرقبة</label>
                 <select class="thobe-opt"><option>قلاب ملكي</option><option>قلاب فرنسي</option><option>قلاب دائري</option><option>سادة مربع</option><option>سادة دائري</option><option>صيني</option></select></div>
                 
                 <div><label style="font-size:10px;">نوع الكبك</label>
                 <select class="thobe-opt"><option>كبك قماش</option><option>كبك حشو مربع</option><option>كبك حشو دائري</option><option>سادة بدون زرار</option></select></div>
                 
-                <div><label style="font-size:10px;">نوع الجبزور</label>
+                <div><label style="font-size:10px;">الجبزور</label>
                 <select class="thobe-opt"><option>كبس ظاهر</option><option>زرار مخفي</option><option>سحاب VIP</option></select></div>
                 
-                <div><label style="font-size:10px;">نوع الخياطة</label>
+                <div><label style="font-size:10px;">ستايل الخياطة</label>
                 <select class="thobe-opt"><option>قطري</option><option>سعودي</option><option>عماني</option><option>كويتي</option></select></div>
             </div>
-            <textarea class="thobe-opt" placeholder="أضف ملاحظاتك الخاصة هنا (مثال: وسع الصدر قليلاً)" style="height:40px; margin-top:10px;"></textarea>
+            <textarea class="thobe-opt" placeholder="ملاحظات إضافية لهذا الثوب..." style="height:45px; margin-top:10px;"></textarea>
             <input type="hidden" class="item-price" value="${price}">
         `;
         document.getElementById('tailor_list').appendChild(card);
         calcGrandTotal();
         document.getElementById('fabricModal').style.display = 'none';
+        document.getElementById('yaqoot_msg').innerText = "💎 ياقوت: اختيار رائع! هل ترغب في إضافة ثوب آخر أم ننتقل للدفع؟";
     }
 
     function filterReady() {
         const display = document.getElementById('ready_display');
-        display.innerHTML = db.ready.map(i => `
-            <div class="product-card" style="border:1px solid #eee; border-radius:15px; text-align:center; padding-bottom:10px; position:relative;">
-                <button class="del-badge" onclick="deleteReady(${i.id})">×</button>
-                <img src="${i.img}" style="width:100%; height:130px; object-fit:cover; border-radius:15px 15px 0 0;">
+        display.innerHTML = db.ready.length ? db.ready.map(i => `
+            <div class="product-card">
+                <button class="del-badge" onclick="deleteItem('ready', ${i.id})">×</button>
+                <img src="${i.img}">
                 <div style="padding:5px; font-weight:bold; font-size:13px;">${i.title}</div>
-                <div style="font-size:10px; color:#777;">${i.desc}</div>
-                <div style="text-decoration:line-through; color:red; font-size:11px;">${i.oldPrice} ريال</div>
-                <div style="color:green; font-weight:bold;">${i.newPrice} ريال</div>
-                <button onclick="addReadyToCart(${i.newPrice}, '${i.title}')" style="width:90%; background:var(--gold); color:white; border:none; border-radius:5px; padding:5px; margin-top:5px; cursor:pointer;">إضافة</button>
+                <div style="font-size:10px; color:#888; padding:0 5px;">${i.desc}</div>
+                <div style="color:red; text-decoration:line-through; font-size:11px;">${i.oldPrice} ريال</div>
+                <div style="color:green; font-weight:bold; font-size:14px;">${i.newPrice} ريال</div>
+                <button onclick="addReadyToCart(${i.newPrice}, '${i.title}')" style="width:90%; background:var(--gold); color:white; border:none; border-radius:5px; padding:6px; margin:5px 0; cursor:pointer; font-weight:bold;">إضافة للطلب</button>
             </div>
-        `).join('') || '<p style="grid-column:1/-1;">لا توجد ملابس جاهزة</p>';
+        `).join('') : '<p style="grid-column:1/-1; text-align:center;">لا توجد منتجات جاهزة</p>';
     }
 
-    function addReadyToCart(p, name) { readyCartTotal += parseInt(p); readyCartItems.push(name); calcGrandTotal(); alert("تمت إضافة " + name); }
+    function addReadyToCart(p, name) { 
+        readyCartTotal += parseInt(p); 
+        readyCartItems.push(name); 
+        calcGrandTotal(); 
+        document.getElementById('yaqoot_msg').innerText = "💎 ياقوت: تم إضافة " + name + " لسلتك بنجاح.";
+    }
+
+    function deleteItem(type, id) {
+        if(confirm("حذف العنصر نهائياً؟")) {
+            if(type === 'ready') db.ready = db.ready.filter(x => x.id !== id);
+            else db.fabrics = db.fabrics.filter(x => x.id !== id);
+            syncStorage();
+        }
+    }
+
     function removeThobe(id) { document.getElementById(`thobe_${id}`).remove(); calcGrandTotal(); }
-    function deleteReady(id) { if(confirm("حذف؟")) { db.ready = db.ready.filter(x => x.id !== id); syncStorage(); } }
 
     function calcGrandTotal() {
         let t = readyCartTotal;
@@ -225,7 +295,12 @@
     function submitOrder() {
         const name = document.getElementById('c_name').value;
         const phone = document.getElementById('c_phone').value;
-        if (!name || !phone) return alert("ادخل اسمك ورقمك");
+        if (!name || !phone) return alert("يرجى تعبئة الاسم ورقم الهاتف لإكمال الطلب");
+
+        let measures = {};
+        document.querySelectorAll('.m-input').forEach(input => {
+            measures[input.getAttribute('data-name')] = input.value || "0";
+        });
 
         let tailorOrders = [];
         document.querySelectorAll('.selected-thobe-card').forEach(card => {
@@ -235,8 +310,12 @@
         });
 
         const orderData = { 
-            whatsapp: "967737039088", name, phone, 
-            tailor: tailorOrders, ready: readyCartItems, 
+            whatsapp: "967737039088", 
+            name, phone, 
+            measures,
+            tailor: tailorOrders, 
+            ready: readyCartItems, 
+            payment: document.getElementById('selected_payment').value,
             total: document.getElementById('final_total').innerText 
         };
 
@@ -244,7 +323,7 @@
             method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
         }).then(() => {
-            alert("اكتمل طلبك بنجاح في اليرموك!");
+            alert("✅ تم إرسال طلبك بنجاح إلى خياط اليرموك! ستصلك رسالة تأكيد عبر الواتساب قريباً.");
             location.reload();
         });
     }
