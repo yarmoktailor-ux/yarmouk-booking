@@ -3,231 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة - الإرث والأناقة</title>
+    <title>اليرموك الحديث - لوحة التحكم والطلب</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
     <style>
-        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --dark: #1a1a1a; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 0; direction: rtl; color: var(--dark); }
+        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 0; direction: rtl; }
         
         /* الهيدر */
-        .header { background: var(--brown); color: white; text-align: center; padding: 25px 10px; border-bottom: 4px solid var(--gold); }
-        #main_logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold); background: white; margin-bottom: 10px; cursor: pointer; }
+        .header { text-align: center; padding: 20px; background: #fff; border-bottom: 3px solid var(--gold); position: relative; }
+        #main_logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); }
+        .admin-trigger { position: absolute; top: 10px; left: 10px; background: var(--brown); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 12px; }
 
-        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 20px; }
+        
+        /* إدخال البيانات */
+        .section-title { color: var(--brown); border-right: 4px solid var(--gold); padding-right: 10px; margin: 20px 0 10px; }
+        .cust-data input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
 
-        /* بيانات العميل */
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .input-group input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        /* المقاسات */
+        .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .measure-grid input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
+        .measure-grid label { font-size: 11px; display: block; text-align: center; color: var(--brown); font-weight: bold; }
 
-        /* شبكة المقاسات */
-        .measure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .measure-grid div { text-align: center; }
-        .measure-grid input { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 5px; text-align: center; font-size: 12px; }
-        .measure-grid label { font-size: 10px; font-weight: bold; color: var(--brown); display: block; }
+        /* أزرار الإضافة */
+        .add-btn-large { width: 100%; padding: 18px; background: var(--white); border: 2px dashed var(--gold); color: var(--gold); border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 16px; margin: 10px 0; transition: 0.3s; }
+        .add-btn-large:hover { background: #fff9eb; }
+        
+        /* مودال المنتجات (المخفي) */
+        .product-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; overflow-y:auto; padding:20px; box-sizing:border-box; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .item-card { background: white; border-radius: 12px; overflow: hidden; text-align: center; padding-bottom: 10px; }
+        .item-card img { width: 100%; height: 160px; object-fit: cover; }
+        .price-tag { margin: 5px 0; }
+        .price-old { text-decoration: line-through; color: red; font-size: 12px; margin-left: 5px; }
+        .price-new { color: green; font-weight: bold; font-size: 15px; }
 
-        /* مربعات الدفع المصغرة */
-        .pay-row { display: flex; gap: 10px; margin: 15px 0; }
-        .bank-small { flex: 1; padding: 8px; border-radius: 10px; text-align: center; color: white; cursor: pointer; font-size: 11px; }
-        .k-box { background: #0056b3; }
-        .j-box { background: #f39c12; }
-        .acc-link { display: block; text-decoration: underline; font-weight: bold; margin-top: 3px; font-size: 12px; }
+        /* سلة المشتريات والتفصيل */
+        .cart-item { background: #fdfaf0; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 10px; }
+        .tailor-opts select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; font-size: 12px; }
 
-        /* المنتجات */
-        .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
-        .product-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--gold); }
-        .price-tag { color: #2e7d32; font-weight: bold; font-size: 15px; }
-        .old-price { color: #999; text-decoration: line-through; font-size: 12px; margin-left: 5px; }
+        /* لوحة الإدارة */
+        #adminPanel { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:10000; overflow-y:auto; padding: 20px; box-sizing: border-box; }
+        .admin-form { background: #f4f4f4; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .admin-form input, .admin-form select, .admin-form textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; }
 
-        /* زر الإضافة الكبير */
-        .action-btn { width: 100%; padding: 15px; background: white; border: 2px dashed var(--gold); color: var(--gold); border-radius: 12px; font-weight: bold; cursor: pointer; margin: 10px 0; }
-
-        /* الإجمالي والتأكيد */
-        .total-area { background: var(--brown); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-top: 20px; }
-        .confirm-btn { width: 100%; padding: 18px; background: #2e7d32; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: bold; margin-top: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-
-        /* ياقوت */
-        .yaqoot-btn { position: fixed; bottom: 15px; right: 15px; background: var(--dark); color: var(--gold); border: 2px solid var(--gold); border-radius: 50px; padding: 10px 18px; cursor: pointer; z-index: 100; font-size: 13px; }
-
-        /* الإدارة */
-        #adminPanel { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; padding:20px; overflow-y:auto; box-sizing: border-box; }
-        .admin-item { display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee; }
+        #final_box { margin-top:30px; text-align:center; background:var(--brown); color:white; padding:20px; border-radius:15px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <img src="" id="main_logo" onclick="location.reload()">
-    <h2 style="margin:5px 0; font-size: 20px;">الـيـرمـوك الـحـديث</h2>
-    <div style="font-size: 11px; color: var(--gold);">نصنع هيبتك بدقة الملي</div>
+    <button class="admin-trigger" onclick="checkAdmin()">⚙️ الإعدادات</button>
+    <img src="" id="main_logo" alt="الشعار">
+    <h2 id="store_name">اليرموك الحديث لخياطة الثياب</h2>
 </div>
 
 <div class="container">
-    <div class="card input-group">
-        <label style="font-weight:bold; color:var(--brown); font-size:14px;">بيانات العميل:</label>
-        <input type="text" id="c_name" placeholder="اسمك الكريم">
-        <input type="tel" id="c_phone" placeholder="رقم الواتساب">
-        
-        <div class="measure-grid">
-            <div><label>طول</label><input type="number" class="m-v"></div>
-            <div><label>كتف</label><input type="number" class="m-v"></div>
-            <div><label>يد</label><input type="number" class="m-v"></div>
-            <div><label>صدر</label><input type="number" class="m-v"></div>
-            <div><label>رقبة</label><input type="number" class="m-v"></div>
-            <div><label>وسط</label><input type="number" class="m-v"></div>
-            <div><label>كبك</label><input type="number" class="m-v"></div>
-            <div><label>خطوة</label><input type="number" class="m-v"></div>
-        </div>
+    <h4 class="section-title">👤 بيانات العميل</h4>
+    <div class="cust-data">
+        <input type="text" id="c_name" placeholder="اسم العميل الرباعي">
+        <input type="tel" id="c_phone" placeholder="رقم الهاتف">
     </div>
 
-    <button class="action-btn" onclick="openGallery('fabric')">➕ تصفح واختيار الأقمشة</button>
-    <button class="action-btn" onclick="openGallery('ready')">➕ تصفح الجاهز والشيلان</button>
-
-    <div id="cart_display"></div>
-
-    <div class="pay-row">
-        <div class="bank-small k-box" onclick="copy('3005374854')">
-            كريمي <span class="acc-link">3005374854</span>
-        </div>
-        <div class="bank-small j-box" onclick="copy('595720')">
-            جيب <span class="acc-link">595720</span>
-        </div>
+    <h4 class="section-title">📏 جدول المقاسات</h4>
+    <div class="measure-grid">
+        <div><label>طول</label><input type="number" id="m1"></div>
+        <div><label>كتف</label><input type="number" id="m2"></div>
+        <div><label>يد</label><input type="number" id="m3"></div>
+        <div><label>صدر</label><input type="number" id="m4"></div>
+        <div><label>رقبة</label><input type="number" id="m5"></div>
+        <div><label>وسط</label><input type="number" id="m6"></div>
+        <div><label>كبك</label><input type="number" id="m7"></div>
+        <div><label>خطوة</label><input type="number" id="m8"></div>
     </div>
 
-    <div class="total-area">
-        <div style="font-size: 13px; opacity: 0.8;">المبلغ الإجمالي:</div>
-        <h2 style="margin: 5px 0;"><span id="total_price">0</span> ريال</h2>
-    </div>
+    <h4 class="section-title">📦 اختيار المنتجات</h4>
+    <button class="add-btn-large" onclick="openProducts('fabric')">➕ إضافة قماش جديد</button>
+    <button class="add-btn-large" onclick="openProducts('ready')">➕ إضافة منتجات جاهزة (أكواد/شيلان)</button>
 
-    <button class="confirm-btn" onclick="sendOrder()">تأكيد هيبة الطلب (واتساب)</button>
+    <div id="cart_area"></div>
+
+    <div id="final_box">
+        <h3>الإجمالي: <span id="total_price">0</span> ريال</h3>
+        <button onclick="submitOrder()" style="width:100%; padding:15px; background:var(--gold); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">إرسال الطلب عبر الواتساب</button>
+    </div>
 </div>
 
-<div id="galleryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1500; overflow-y:auto; padding:20px; box-sizing:border-box;">
-    <div style="display:flex; justify-content:space-between; color:white; margin-bottom:15px;">
-        <h3 id="gallery_title">المعرض</h3>
-        <button onclick="closeGallery()" style="background:red; color:white; border:none; padding:8px 15px; border-radius:8px;">إغلاق ×</button>
+<div id="productModal" class="product-modal">
+    <div style="display:flex; justify-content:space-between; color:white; margin-bottom:20px;">
+        <h3>المعرض</h3>
+        <button onclick="closeProducts()" style="background:red; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">إغلاق X</button>
     </div>
-    <div id="gallery_items"></div>
+    <div id="product_list" class="product-grid"></div>
 </div>
 
 <div id="adminPanel">
-    <h3 style="text-align:center; color:var(--brown);">⚙️ إعدادات اليرموك</h3>
-    <div class="card">
-        <h4>تغيير الشعار:</h4>
-        <input type="file" onchange="updateLogo(this)">
+    <h2 style="text-align:center;">⚙️ إعدادات المتجر</h2>
+    <div class="admin-form">
+        <h4>🖼️ شعار المحل</h4>
+        <input type="file" onchange="uploadLogo(this)">
     </div>
-    <div class="card">
-        <h4>إضافة منتج/قماش:</h4>
-        <select id="adm_cat"><option value="fabric">قماش</option><option value="ready">جاهز</option></select>
-        <input type="text" id="adm_name" placeholder="الاسم" style="width:100%; margin:5px 0;">
-        <input type="number" id="adm_old" placeholder="السعر قبل" style="width:100%; margin:5px 0;">
-        <input type="number" id="adm_new" placeholder="السعر بعد" style="width:100%; margin:5px 0;">
-        <textarea id="adm_desc" placeholder="وصف القماش" style="width:100%; margin:5px 0;"></textarea>
-        <input type="file" id="adm_file" onchange="encode(this)" style="margin:10px 0;">
-        <button onclick="save()" style="width:100%; background:green; color:white; padding:10px; border:none;">حفظ المنتج</button>
+    <div class="admin-form">
+        <h4>📦 إضافة منتج جديد</h4>
+        <select id="adm_cat">
+            <option value="fabric">أقمشة</option>
+            <option value="ready">منتجات جاهزة</option>
+        </select>
+        <input type="file" onchange="encodeImg(this)">
+        <input type="text" id="adm_name" placeholder="الاسم">
+        <textarea id="adm_desc" placeholder="وصف القماش/المنتج"></textarea>
+        <input type="number" id="adm_old" placeholder="السعر قبل">
+        <input type="number" id="adm_new" placeholder="السعر بعد">
+        <button onclick="saveProduct()" style="width:100%; background:green; color:white; padding:10px; border:none; border-radius:5px;">حفظ في المعرض</button>
     </div>
-    <div id="admin_list"></div>
-    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; padding:10px;">خروج</button>
+    <div id="admin_items_list"></div>
+    <button onclick="closeAdmin()" style="width:100%; padding:15px; background:#666; color:white; border:none; border-radius:10px;">إغلاق</button>
 </div>
 
-<div class="yaqoot-btn" onclick="alert('💎 ياقوت: نحن نهتم بأدق تفاصيلك لضمان إطلالة تليق بمقامك.')">✨ ياقوت</div>
-<button onclick="checkAdm()" style="position:fixed; bottom:5px; left:5px; opacity:0.1; background:none; border:none;">⚙️</button>
-
 <script>
+// --- تكوين Firebase ---
 const firebaseConfig = { databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/" };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-let items = [];
+let allProducts = [];
 let cart = [];
 let tempImg = "";
 
-// المزامنة
-db.ref('settings/logo').on('value', s => document.getElementById('main_logo').src = s.val());
-db.ref('products').on('value', s => {
-    items = [];
+// مزامنة البيانات
+database.ref('settings/logo').on('value', s => { document.getElementById('main_logo').src = s.val() || ''; });
+database.ref('products').on('value', s => {
+    allProducts = [];
     const data = s.val();
-    if(data) for(let id in data) items.push({...data[id], id});
-    renderAdmin();
+    if(data) for(let id in data) allProducts.push({...data[id], id});
+    renderAdminList();
 });
 
-function copy(t) { navigator.clipboard.writeText(t); alert("تم نسخ: " + t); }
+// وظائف الإدارة
+function checkAdmin() { if(prompt("كلمة المرور:") === "1234") document.getElementById('adminPanel').style.display='block'; }
+function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
+function uploadLogo(i) {
+    const reader = new FileReader();
+    reader.onload = (e) => database.ref('settings/logo').set(e.target.result);
+    reader.readAsDataURL(i.files[0]);
+}
+function encodeImg(i) {
+    const reader = new FileReader();
+    reader.onload = (e) => tempImg = e.target.result;
+    reader.readAsDataURL(i.files[0]);
+}
+function saveProduct() {
+    const name = document.getElementById('adm_name').value;
+    const cat = document.getElementById('adm_cat').value;
+    const desc = document.getElementById('adm_desc').value;
+    const oldP = document.getElementById('adm_old').value;
+    const newP = document.getElementById('adm_new').value;
+    if(!tempImg || !name || !newP) return alert("البيانات ناقصة");
+    database.ref('products').push({ name, cat, desc, oldP, newP, img: tempImg })
+    .then(() => { alert("تم الحفظ"); tempImg=""; });
+}
 
-function openGallery(cat) {
-    const box = document.getElementById('gallery_items');
-    const filtered = items.filter(i => i.cat === cat);
-    box.innerHTML = filtered.map(i => `
-        <div class="product-card" onclick="addToCart('${i.id}')">
-            <img src="${i.img}">
-            <div style="padding:10px; text-align:center;">
-                <b style="display:block;">${i.name}</b>
-                <small style="color:#666;">${i.desc || ''}</small>
-                <div style="margin-top:5px;">
-                    <span class="old-price">${i.old || ''}</span>
-                    <span class="price-tag">${i.new} ريال</span>
+// عرض المنتجات (داخل الزر)
+function openProducts(cat) {
+    const list = document.getElementById('product_list');
+    const filtered = allProducts.filter(p => p.cat === cat);
+    list.innerHTML = filtered.map(p => `
+        <div class="item-card">
+            <img src="${p.img}">
+            <div style="padding:10px;">
+                <b>${p.name}</b>
+                <p style="font-size:11px; color:#666;">${p.desc}</p>
+                <div class="price-tag">
+                    <span class="price-old">${p.oldP}</span>
+                    <span class="price-new">${p.newP} ريال</span>
                 </div>
-                <button style="margin-top:10px; background:var(--gold); color:white; border:none; padding:5px 15px; border-radius:5px;">اختيار هذا</button>
+                <button onclick="addToCart('${p.id}')" style="width:100%; background:var(--gold); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">إضافة للسلة</button>
             </div>
         </div>
     `).join('');
-    document.getElementById('galleryModal').style.display = 'block';
+    document.getElementById('productModal').style.display = 'block';
 }
 
-function closeGallery() { document.getElementById('galleryModal').style.display = 'none'; }
+function closeProducts() { document.getElementById('productModal').style.display = 'none'; }
 
 function addToCart(id) {
-    const item = items.find(x => x.id === id);
-    cart.push(item);
+    const p = allProducts.find(x => x.id === id);
+    cart.push({...p});
     renderCart();
-    closeGallery();
+    closeProducts();
 }
 
 function renderCart() {
-    const display = document.getElementById('cart_display');
-    display.innerHTML = cart.map((c, idx) => `
-        <div style="background:#fff; border:1px solid #ddd; padding:10px; border-radius:10px; margin-top:5px; display:flex; align-items:center;">
-            <img src="${c.img}" style="width:50px; height:50px; border-radius:5px; margin-left:10px;">
-            <div style="flex:1;"><b>${c.name}</b><br><small>${c.new} ريال</small></div>
-            <button onclick="cart.splice(${idx},1); renderCart();" style="background:red; color:white; border:none; border-radius:50%; width:25px; height:25px;">×</button>
+    const area = document.getElementById('cart_area');
+    area.innerHTML = cart.map((p, idx) => `
+        <div class="cart-item">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${p.img}" style="width:40px; height:40px; border-radius:5px;">
+                    <b>${p.name} - ${p.newP} ريال</b>
+                </div>
+                <button onclick="cart.splice(${idx},1); renderCart();" style="color:red; background:none; border:none; font-weight:bold;">حذف</button>
+            </div>
+            ${p.cat === 'fabric' ? `
+            <div class="tailor-opts">
+                <select><option>الخياطة: سعودي</option><option>قطري</option><option>كويتي</option><option>عماني</option></select>
+                <select><option>الرقبة: قلاب ملكي</option><option>قلاب فرنسي</option><option>صيني</option></select>
+                <select><option>الكبك: قماش</option><option>حشو</option><option>سادة</option></select>
+                <select><option>الجبسور: زرار مخفي</option><option>كبس ظاهر</option><option>سحاب</option><option>VIP</option></select>
+            </div>` : ''}
         </div>
     `).join('');
-    let total = cart.reduce((s, i) => s + parseInt(i.new), 0);
-    document.getElementById('total_price').innerText = total.toLocaleString();
+    document.getElementById('total_price').innerText = cart.reduce((s, i) => s + parseInt(i.newP), 0);
 }
 
-function sendOrder() {
+function submitOrder() {
     const name = document.getElementById('c_name').value;
     if(!name || cart.length === 0) return alert("أكمل البيانات");
-    alert(`✨ تم استلام طلبك بنجاح يا ${name} ✨\n\nشكراً لاختيارك اليرموك، سننتقل الآن للواتساب.`);
-    window.open(`https://wa.me/9677XXXXXXXX?text=طلب جديد من العميل: ${name}`);
+    let msg = `*طلب جديد من اليرموك الحديث*%0A👤 العميل: ${name}%0A💰 الإجمالي: ${document.getElementById('total_price').innerText} ريال%0A%0A📦 الأصناف: %0A`;
+    cart.forEach(i => msg += `- ${i.name}%0A`);
+    window.open(`https://wa.me/9677XXXXXXXX?text=${msg}`);
 }
 
-// سكريبت الإدارة
-function checkAdm() { if(prompt("Pass:") === "1234") document.getElementById('adminPanel').style.display='block'; }
-function updateLogo(input) {
-    const r = new FileReader();
-    r.onload = e => db.ref('settings/logo').set(e.target.result);
-    r.readAsDataURL(input.files[0]);
-}
-function encode(input) {
-    const r = new FileReader();
-    r.onload = e => tempImg = e.target.result;
-    r.readAsDataURL(input.files[0]);
-}
-function save() {
-    const n = document.getElementById('adm_name').value;
-    const o = document.getElementById('adm_old').value;
-    const nw = document.getElementById('adm_new').value;
-    const c = document.getElementById('adm_cat').value;
-    const d = document.getElementById('adm_desc').value;
-    db.ref('products').push({name:n, old:o, new:nw, cat:c, desc:d, img:tempImg}).then(() => alert("تم الحفظ!"));
-}
-function renderAdmin() {
-    document.getElementById('admin_list').innerHTML = items.map(i => `
-        <div class="admin-item">
-            <span>${i.name}</span>
-            <button onclick="db.ref('products/${i.id}').remove()" style="background:red; color:white;">حذف</button>
+function renderAdminList() {
+    const list = document.getElementById('admin_items_list');
+    list.innerHTML = allProducts.map(p => `
+        <div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;">
+            <span>${p.name}</span>
+            <button onclick="database.ref('products/${p.id}').remove()" style="color:red;">حذف</button>
         </div>
     `).join('');
 }
