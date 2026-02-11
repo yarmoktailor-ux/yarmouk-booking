@@ -1,338 +1,199 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اليرموك للخياطة | إرثٌ من الفخامة</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
-    <style>
-        :root { --gold: #d4af37; --brown: #5d4037; --bg: #fdfbf7; --white: #ffffff; --dark: #1a1a1a; --soft-gold: #fcf9f0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; direction: rtl; color: var(--dark); }
-        
-        /* الهيدر الجديد الفاخر */
-        .royal-header { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png'); background-size: cover; background-position: center; color: white; text-align: center; padding: 60px 20px; border-bottom: 4px solid var(--gold); }
-        .logo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--gold); background: white; padding: 5px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        
-        .main-container { max-width: 600px; margin: -40px auto 20px; background: var(--white); border-radius: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.15); overflow: hidden; position: relative; z-index: 10; }
-        
-        .hero-text { padding: 25px; text-align: center; background: var(--soft-gold); border-bottom: 1px solid #eee; }
-        .hero-text h1 { color: var(--brown); margin: 0; font-size: 22px; }
-        .hero-text p { font-size: 14px; color: #666; line-height: 1.7; }
+import React, { useState, useEffect } from 'react';
+import { MessageCircle, ShoppingCart, Ruler, MapPin, Send, User, ChevronDown } from 'lucide-react';
 
-        .main-tabs { display: flex; background: #f0f0f0; border-bottom: 2px solid var(--gold); }
-        .tab-btn { flex: 1; padding: 18px; border: none; cursor: pointer; font-weight: bold; font-size: 15px; color: #888; transition: 0.3s; }
-        .tab-btn.active { background: white; color: var(--brown); border-top: 3px solid var(--gold); }
+// --- الألوان المعتمدة لمحل اليرموك ---
+const colors = {
+  navy: '#001F3F',
+  gold: '#D4AF37',
+  marble: '#F5F5F5'
+};
 
-        .section { display: none; padding: 20px; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+const App = () => {
+  const [activeTab, setActiveTab] = useState('store');
+  const [showChat, setShowChat] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
-        /* الأيقونات التسويقية */
-        .features-strip { display: flex; justify-content: space-around; padding: 15px; background: white; border-bottom: 1px solid #eee; text-align: center; font-size: 10px; }
-        .feat-item img { width: 30px; margin-bottom: 5px; }
-
-        /* تصميم الكروت */
-        .items-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .product-card { border: 1px solid #f0e6d2; border-radius: 15px; overflow: hidden; background: white; transition: 0.3s; position: relative; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 160px; object-fit: cover; }
-        
-        /* ياقوت المطور */
-        .yaqoot-btn { position: fixed; bottom: 30px; left: 20px; background: var(--dark); color: var(--gold); border: 2px solid var(--gold); border-radius: 50px; padding: 12px 20px; cursor: pointer; z-index: 1000; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
-        .yaqoot-chat { display: none; position: fixed; bottom: 90px; left: 20px; width: 300px; height: 450px; background: white; border: 2px solid var(--gold); border-radius: 20px; z-index: 1001; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden; flex-direction: column; }
-
-        /* صفحة من نحن والضمان */
-        .content-page { font-size: 14px; line-height: 1.8; color: #444; }
-        .content-page h3 { color: var(--brown); border-right: 4px solid var(--gold); padding-right: 10px; }
-
-        .btn-send { width: 100%; padding: 20px; background: var(--brown); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; margin-top: 15px; cursor: pointer; transition: 0.3s; }
-        .btn-send:hover { background: var(--dark); }
-
-        .preview-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:30000; justify-content:center; align-items:center; flex-direction:column; padding: 20px; }
-        .qty-btn { background: var(--gold); color: white; border: none; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-size: 18px; }
-    </style>
-</head>
-<body>
-
-<div class="royal-header">
-    <img src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="logo">
-    <h2 style="margin:0; font-size: 28px; letter-spacing: 2px;">الـيـرمـوك</h2>
-    <div style="color: var(--gold); font-style: italic; margin-top: 5px;">في اليرموك، نحن لا نخيط أثواباً، نحن نصنع هيبتك.</div>
-</div>
-
-<div class="main-container">
-    <div class="hero-text">
-        <h1>اليرموك.. خيطٌ من الماضي، ونسيجٌ للمستقبل</h1>
-        <p>في عام 2002، وضع الوالد -رحمه الله- الحجر الأساس لمحل اليرموك، ليصيغ بمقصّه وخبرته مفهوماً جديداً للأناقة. اليوم، نواصل المسيرة لنصل إليك أينما كنت.</p>
-    </div>
-
-    <div class="features-strip">
-        <div class="feat-item">🛡️<br>ضمان 100%</div>
-        <div class="feat-item">🚀<br>تصلك مكوية</div>
-        <div class="feat-item">📏<br>دقة بالملي</div>
-        <div class="feat-item">🎁<br>باقة البركة</div>
-    </div>
-
-    <div class="main-tabs">
-        <button class="tab-btn active" onclick="switchTab('tailor', this)">التفصيل الخاص</button>
-        <button class="tab-btn" onclick="switchTab('ready', this)">الجاهز الفاخر</button>
-        <button class="tab-btn" onclick="switchTab('about', this)">من نحن</button>
-    </div>
-
-    <div id="tab_tailor" class="section" style="display:block;">
-        <div style="background:#fff9eb; padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid #f0e6d2;">
-            <h4 style="margin:0 0 10px 0;">📏 مقاساتك (هيبة المظهر تبدأ بدقة القياس):</h4>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">
-                <div><label style="font-size:10px;">طول</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">كتف</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">يد</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">صدر</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">رقبة</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">وسط</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">كبك</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
-                <div><label style="font-size:10px;">خطوة</label><input type="number" class="m-input" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd;"></div>
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans text-right" dir="rtl">
+      
+      {/* --- الهيدر (Navigation) --- */}
+      <nav className="bg-[#001F3F] text-white p-4 shadow-xl sticky top-0 z-50 border-b-2 border-[#D4AF37]">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <div className="text-2xl font-bold tracking-widest text-[#D4AF37]">الـيـرمـوك للـخـيـاطـة</div>
+          <div className="hidden md:flex gap-8">
+            <button onClick={() => setActiveTab('store')} className="hover:text-[#D4AF37] transition">الأقمشة</button>
+            <button onClick={() => setActiveTab('measure')} className="hover:text-[#D4AF37] transition">المقاسات</button>
+            <button className="hover:text-[#D4AF37] transition">طلباتي</button>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <ShoppingCart className="cursor-pointer hover:text-[#D4AF37]" />
+              {cartCount > 0 && <span className="absolute -top-2 -right-2 bg-red-600 text-xs rounded-full px-1.5">{cartCount}</span>}
             </div>
+            <User className="cursor-pointer border border-[#D4AF37] rounded-full p-1" />
+          </div>
         </div>
-        <h3 style="font-size:16px;">اختر القماش وابدأ رحلة الأناقة:</h3>
-        <div id="fabric_display" class="items-grid"></div>
-        <div id="tailor_cart" style="margin-top:20px;"></div>
-    </div>
+      </nav>
 
-    <div id="tab_ready" class="section">
-        <p style="font-size:13px; color:#666;">كل قطعة تصل إليك مكوية ومعلقة بعناية فائقة، نستخدم أفضل الأقمشة العالمية.</p>
-        <div id="ready_display" class="items-grid"></div>
-        <div id="ready_cart" style="margin-top:20px;"></div>
-    </div>
+      {/* --- المحتوى الرئيسي --- */}
+      <main className="max-w-6xl mx-auto py-10 px-4">
+        {activeTab === 'store' && <StoreSection addToCart={() => setCartCount(cartCount + 1)} />}
+        {activeTab === 'measure' && <MeasurementSection />}
+      </main>
 
-    <div id="tab_about" class="section content-page">
-        <h3>إرثٌ من الفخامة والاحترافية</h3>
-        <p>بدأت الحكاية في عام 2002.. لم يكن مجرد محل خياطة، بل مدرسة في فن الأناقة الراقية. نحن نؤمن أن الفخامة حق لكل من يقدر الجودة.</p>
-        <div style="background:var(--soft-gold); padding:15px; border-radius:15px;">
-            <b>قيمنا:</b>
-            <ul style="padding-right:20px; margin:5px 0;">
-                <li>الجودة: أفضل الأقمشة العالمية.</li>
-                <li>الدقة: كل غرزة تُخاط بعناية فائقة.</li>
-                <li>الضمان: رضاك هو خيطنا الأول.</li>
+      {/* --- المساعد الذكي (AI Chatbot) --- */}
+      <div className="fixed bottom-6 left-6 z-50">
+        {!showChat ? (
+          <button 
+            onClick={() => setShowChat(true)}
+            className="bg-[#D4AF37] text-[#001F3F] p-4 rounded-full shadow-2xl hover:scale-110 transition flex items-center gap-2 font-bold"
+          >
+            <MessageCircle /> مساعد اليرموك
+          </button>
+        ) : (
+          <ChatWindow close={() => setShowChat(false)} />
+        )}
+      </div>
+
+      {/* --- الفوتر --- */}
+      <footer className="bg-[#001F3F] text-white py-10 mt-20 border-t-4 border-[#D4AF37]">
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div>
+            <h3 className="text-[#D4AF37] font-bold text-xl mb-4">عن اليرموك</h3>
+            <p className="text-gray-300">متخصصون في أرقى الأقمشة الرجالية اليابانية والخياطة التقليدية بدقة متناهية منذ سنوات.</p>
+          </div>
+          <div>
+            <h3 className="text-[#D4AF37] font-bold text-xl mb-4">روابط سريعة</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li>• سياسة الخصوصية</li>
+              <li>• شروط الاستخدام</li>
+              <li>• تتبع الشحنة</li>
             </ul>
-        </div>
-    </div>
-
-    <div id="payment_section" style="padding:20px; border-top:5px solid #eee;">
-        <h4 style="margin:0 0 10px 0;">💳 خيارات الدفع (ادفع بثقة):</h4>
-        
-        <div style="background: #e8f5e9; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 12px; color: #2e7d32; display: none;" id="deposit_alert"></div>
-
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <label style="flex:1; border:1px solid var(--gold); padding:10px; border-radius:10px; text-align:center; cursor:pointer; background:#fffdf5;">
-                <input type="radio" name="p_type" value="full" checked onchange="updateTotals()"> 
-                <span style="font-size:12px; font-weight:bold;">كامل (خصم 20%)</span>
-            </label>
-            <label style="flex:1; border:1px solid #ddd; padding:10px; border-radius:10px; text-align:center; cursor:pointer;">
-                <input type="radio" name="p_type" value="part" onchange="updateTotals()"> 
-                <span style="font-size:12px; font-weight:bold;">عربون جزئي</span>
-            </label>
-        </div>
-
-        <div style="background:#f9f9f9; padding:15px; border-radius:15px; font-size:13px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span>🏦 بنك الكريمي: <b>3005374854</b></span>
-                <button onclick="copy('3005374854')" style="border:none; background:var(--gold); color:white; border-radius:5px; padding:2px 8px;">نسخ</button>
+          </div>
+          <div>
+            <h3 className="text-[#D4AF37] font-bold text-xl mb-4">موقعنا</h3>
+            <div className="flex items-center gap-2 text-gray-300">
+              <MapPin size={18} /> اليمن - صنعاء - الأصبحي - الفرع الرئيسي
             </div>
-            <div style="display:flex; justify-content:space-between;">
-                <span>📱 محفظة جيب: <b>595720</b></span>
-                <button onclick="copy('595720')" style="border:none; background:var(--gold); color:white; border-radius:5px; padding:2px 8px;">نسخ</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+// --- مكون المتجر (Store) ---
+const StoreSection = ({ addToCart }) => {
+  const products = [
+    { id: 1, name: 'قطن ياباني فاخر', price: 350, img: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=400' },
+    { id: 2, name: 'سلك سميراميس الأصلي', price: 420, img: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=400' },
+    { id: 3, name: 'قماش شتوي صوف 100%', price: 550, img: 'https://images.unsplash.com/photo-1588444833098-42056294371a?auto=format&fit=crop&q=80&w=400' },
+  ];
+
+  return (
+    <div>
+      <h2 className="text-3xl font-bold text-[#001F3F] mb-8 border-r-4 border-[#D4AF37] pr-4">تشكيلة الأقمشة الفاخرة</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {products.map(p => (
+          <div key={p.id} className="bg-white rounded-xl overflow-hidden shadow-lg border hover:border-[#D4AF37] transition">
+            <img src={p.img} alt={p.name} className="w-full h-56 object-cover" />
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-[#001F3F]">{p.name}</h3>
+              <p className="text-gray-500 mb-4 font-semibold text-lg">{p.price} ر.س</p>
+              <div className="space-y-2 mb-4">
+                 <select className="w-full p-2 border rounded text-sm"><option>ياقة قلاب (سعودي)</option><option>ياقة سادة</option></select>
+                 <select className="w-full p-2 border rounded text-sm"><option>كم كبك</option><option>كم سادة</option></select>
+              </div>
+              <button 
+                onClick={addToCart}
+                className="w-full bg-[#001F3F] text-white py-2 rounded-lg hover:bg-[#D4AF37] transition font-bold"
+              >
+                إضافة للتفصيل
+              </button>
             </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- مكون المقاسات (Measurements) ---
+const MeasurementSection = () => {
+  const [type, setType] = useState('standard');
+  const sizes = { S: 52, M: 54, L: 56, XL: 58, XXL: 60 };
+
+  return (
+    <div className="bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto border-t-8 border-[#001F3F]">
+      <h2 className="text-2xl font-bold text-[#001F3F] mb-6 flex items-center gap-2">
+        <Ruler className="text-[#D4AF37]" /> تحديد المقاس (بالبوصة)
+      </h2>
+      <div className="flex bg-gray-100 p-1 rounded-xl mb-8">
+        <button onClick={() => setType('standard')} className={`flex-1 py-2 rounded-lg transition ${type === 'standard' ? 'bg-white shadow text-[#D4AF37] font-bold' : ''}`}>مقاس جاهز</button>
+        <button onClick={() => setType('custom')} className={`flex-1 py-2 rounded-lg transition ${type === 'custom' ? 'bg-white shadow text-[#D4AF37] font-bold' : ''}`}>مقاس مخصص</button>
+      </div>
+
+      {type === 'standard' ? (
+        <div className="grid grid-cols-5 gap-3">
+          {Object.entries(sizes).map(([label, length]) => (
+            <button key={label} className="border-2 border-gray-200 py-4 rounded-xl hover:border-[#D4AF37] text-center group transition">
+              <div className="font-bold text-xl group-hover:text-[#D4AF37]">{label}</div>
+              <div className="text-xs text-gray-400 font-arabic">طول {length}</div>
+            </button>
+          ))}
         </div>
-        
-        <div style="margin-top:15px;">
-            <label style="font-size:12px;">📸 إرفاق إيصال التحويل:</label>
-            <input type="file" id="receipt" style="width:100%; margin-top:5px;">
+      ) : (
+        <div className="grid grid-cols-2 gap-4 animate-fade-in">
+          {['الطول', 'الكتف', 'الصدر', 'الكم', 'الرقبة'].map(label => (
+            <div key={label}>
+              <label className="block text-sm font-bold text-gray-700 mb-1">{label}</label>
+              <input type="number" placeholder="0.0" className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-[#D4AF37] outline-none" />
+            </div>
+          ))}
         </div>
-
-        <div style="background:var(--brown); color:white; padding:25px; text-align:center; border-radius:20px; margin-top:20px;">
-            <div style="font-size:14px; opacity:0.8;">الإجمالي المطلوب الآن:</div>
-            <h2 style="margin:5px 0;"><span id="final_price">0</span> ريال</h2>
-            <div id="savings_text" style="font-size:11px; color:var(--gold);"></div>
-            <input type="text" id="cust_name" placeholder="أدخل اسمك الكريم هنا..." style="width:100%; padding:12px; border-radius:10px; border:none; margin-top:15px; text-align:center;">
-            <button class="btn-send" onclick="confirmOrder()">تأكيد الطلب عبر واتساب</button>
-        </div>
+      )}
+      <button className="w-full mt-10 bg-[#D4AF37] text-[#001F3F] py-4 rounded-xl font-bold text-lg hover:shadow-lg transition">حفظ المقاسات في ملفي</button>
     </div>
-</div>
+  );
+};
 
-<div class="yaqoot-btn" onclick="toggleYaqoot()">✨ ياقوت اليرموك</div>
-<div id="yaqoot_chat" class="yaqoot-chat">
-    <div style="background:var(--brown); color:white; padding:15px; font-weight:bold; display:flex; justify-content:space-between;">
-        <span>💎 ياقوت - مساعدك الذكي</span>
-        <span onclick="toggleYaqoot()" style="cursor:pointer">×</span>
+// --- نافذة المساعد الذكي (Chat Window) ---
+const ChatWindow = ({ close }) => {
+  const [msgs, setMsgs] = useState([{ text: "أهلاً بك في محل اليرموك، أنا مساعدك الذكي. هل تبحث عن قماش صيفي أم شتوي؟", isAi: true }]);
+  const [input, setInput] = useState('');
+
+  const send = () => {
+    if(!input) return;
+    setMsgs([...msgs, { text: input, isAi: false }, { text: "أبشر، جاري البحث في أرشيف الأقمشة لدينا...", isAi: true }]);
+    setInput('');
+  };
+
+  return (
+    <div className="bg-white w-80 h-96 rounded-2xl shadow-2xl flex flex-col border-2 border-[#D4AF37] overflow-hidden animate-slide-up">
+      <div className="bg-[#001F3F] p-4 text-white flex justify-between items-center">
+        <span className="font-bold">مساعد اليرموك الذكي</span>
+        <button onClick={close} className="text-gray-400 hover:text-white">✕</button>
+      </div>
+      <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50">
+        {msgs.map((m, i) => (
+          <div key={i} className={`p-2 rounded-lg max-w-[80%] text-sm ${m.isAi ? 'bg-white border-r-4 border-[#D4AF37] self-start' : 'bg-[#001F3F] text-white self-end mr-auto'}`}>
+            {m.text}
+          </div>
+        ))}
+      </div>
+      <div className="p-3 border-t flex gap-2 bg-white">
+        <input 
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && send()}
+          placeholder="اسأل الخبير..." 
+          className="flex-1 bg-gray-100 p-2 rounded-lg text-sm outline-none" 
+        />
+        <button onClick={send} className="bg-[#D4AF37] p-2 rounded-lg text-[#001F3F]"><Send size={18} /></button>
+      </div>
     </div>
-    <div id="chat_messages" style="flex:1; padding:15px; overflow-y:auto; background:#fdfbf7; font-size:13px;">
-        <div style="background:#eee; padding:10px; border-radius:10px; margin-bottom:10px;">
-            مرحباً بك في عائلة اليرموك! 👋 أنا ياقوت، مساعدك الشخصي. كيف أخدم أناقتك اليوم؟
-        </div>
-    </div>
-    <div style="padding:10px; display:flex; gap:5px; border-top:1px solid #eee;">
-        <input type="text" id="chat_input" placeholder="اسأل عن المقاسات أو الأقمشة..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd;">
-        <button onclick="askYaqoot()" style="background:var(--gold); color:white; border:none; border-radius:50%; width:40px; height:40px;">◀</button>
-    </div>
-</div>
+  );
+};
 
-<div id="previewModal" class="preview-modal">
-    <img id="previewImg" style="max-width:90%; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-    <h3 id="previewTitle" style="color:white; margin-top:15px;"></h3>
-    <p id="previewPrice" style="color:var(--gold); font-weight:bold;"></p>
-    <div style="display:flex; gap:10px; margin-top:15px;">
-        <button id="addBtn" style="padding:12px 30px; background:var(--gold); color:white; border:none; border-radius:10px; font-weight:bold;">إضافة للسلة</button>
-        <button onclick="closePreview()" style="padding:12px 30px; background:#444; color:white; border:none; border-radius:10px;">إغلاق</button>
-    </div>
-</div>
-
-<script>
-// --- تهيئة Firebase ---
-const firebaseConfig = { databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/" };
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-
-let products = [];
-let cart = [];
-
-// مزامنة المنتجات
-database.ref('products').on('value', snap => {
-    const data = snap.val();
-    products = [];
-    if(data) for(let id in data) products.push({...data[id], id});
-    renderDisplay();
-});
-
-function renderDisplay() {
-    const fabDiv = document.getElementById('fabric_display');
-    const readyDiv = document.getElementById('ready_display');
-    fabDiv.innerHTML = ""; readyDiv.innerHTML = "";
-    products.forEach(p => {
-        const html = `
-            <div class="product-card" onclick="openPreview('${p.id}')">
-                <img src="${p.img}">
-                <div style="padding:10px; text-align:center;">
-                    <div style="font-weight:bold; font-size:13px;">${p.name}</div>
-                    <div style="color:green; font-weight:bold;">${p.price} ريال</div>
-                </div>
-            </div>`;
-        if(p.cat === 'fabric') fabDiv.innerHTML += html; else readyDiv.innerHTML += html;
-    });
-}
-
-function openPreview(id) {
-    const p = products.find(x => x.id === id);
-    document.getElementById('previewImg').src = p.img;
-    document.getElementById('previewTitle').innerText = p.name;
-    document.getElementById('previewPrice').innerText = p.price + " ريال";
-    document.getElementById('addBtn').onclick = () => { addToCart(p); closePreview(); };
-    document.getElementById('previewModal').style.display = "flex";
-}
-function closePreview() { document.getElementById('previewModal').style.display = "none"; }
-
-function addToCart(p) {
-    const exist = cart.find(x => x.id === p.id);
-    if(exist) exist.qty++; else cart.push({...p, qty: 1});
-    updateTotals();
-}
-
-function updateTotals() {
-    const tailorCart = document.getElementById('tailor_cart');
-    const readyCart = document.getElementById('ready_cart');
-    tailorCart.innerHTML = ""; readyCart.innerHTML = "";
-    
-    let subtotal = 0;
-    cart.forEach((item, idx) => {
-        subtotal += (item.price * item.qty);
-        const html = `
-            <div style="background:#f9f9f9; padding:10px; border-radius:10px; margin-bottom:5px; display:flex; align-items:center; border:1px solid #eee;">
-                <span style="flex:1; font-size:12px;">${item.name}</span>
-                <button onclick="changeQty(${idx}, -1)" class="qty-btn">-</button>
-                <span style="margin:0 10px;">${item.qty}</span>
-                <button onclick="changeQty(${idx}, 1)" class="qty-btn">+</button>
-                <span style="margin-right:15px; font-weight:bold; color:green;">${item.price * item.qty}</span>
-            </div>`;
-        if(item.cat === 'fabric') tailorCart.innerHTML += html; else readyCart.innerHTML += html;
-    });
-
-    const pType = document.querySelector('input[name="p_type"]:checked').value;
-    let final = subtotal;
-    let depositAlert = document.getElementById('deposit_alert');
-    let savingsText = document.getElementById('savings_text');
-
-    if(pType === 'full' && subtotal > 0) {
-        let disc = subtotal * 0.20;
-        final = subtotal - disc;
-        savingsText.innerText = `وفرت الآن: ${disc.toLocaleString()} ريال (خصم الدفع الكامل)`;
-        depositAlert.style.display = "none";
-    } else if(pType === 'part' && subtotal > 0) {
-        savingsText.innerText = "";
-        depositAlert.style.display = "block";
-        if(subtotal >= 100000) {
-            final = subtotal * 0.20;
-            depositAlert.innerText = "فواتير النخبة (>100ألف): ادفع 20% عربون لبدء العمل.";
-        } else if(subtotal >= 20000) {
-            final = subtotal * 0.50;
-            depositAlert.innerText = "فواتير متوسطة: ادفع 50% عربون لبدء العمل.";
-        } else {
-            final = subtotal;
-            depositAlert.innerText = "للطلبات الصغيرة: يرجى دفع كامل المبلغ لبدء العمل.";
-        }
-    }
-    document.getElementById('final_price').innerText = final.toLocaleString();
-}
-
-function changeQty(idx, delta) {
-    cart[idx].qty += delta;
-    if(cart[idx].qty < 1) cart.splice(idx, 1);
-    updateTotals();
-}
-
-function switchTab(id, btn) {
-    document.querySelectorAll('.section').forEach(s => s.style.display = "none");
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab_'+id).style.display = "block";
-    btn.classList.add('active');
-}
-
-function copy(t) { navigator.clipboard.writeText(t); alert("تم نسخ الرقم بنجاح"); }
-
-function toggleYaqoot() {
-    const chat = document.getElementById('yaqoot_chat');
-    chat.style.display = chat.style.display === "flex" ? "none" : "flex";
-}
-
-function askYaqoot() {
-    const inp = document.getElementById('chat_input');
-    const msg = inp.value.trim();
-    if(!msg) return;
-    
-    const chat = document.getElementById('chat_messages');
-    chat.innerHTML += `<div style="background:var(--gold); color:white; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-end; margin-right:20px;">${msg}</div>`;
-    inp.value = "";
-
-    setTimeout(() => {
-        let reply = "سؤال رائع! ياقوت هنا لمساعدتك. بخصوص استفسارك، نحن نضمن الجودة والدقة. يمكنك أيضاً تجربة أخذ المقاس من أفضل ثوب لديك لضمان الراحة.";
-        if(msg.includes("مقاس")) reply = "📏 لاختيار المقاس: يمكنك قياس أفضل ثوب لديك بالمتر، أو اتباع دليلنا (طول، كتف، صدر) وسأقوم أنا وفريق اليرموك بمراجعتها خلفك.";
-        if(msg.includes("قماش")) reply = "🧶 لدينا أرقى الأقمشة: الصوف الإنجليزي للفخامة، والقطن السويسري للصيف، وكلها بضمان اليرموك.";
-        chat.innerHTML += `<div style="background:#eee; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-start;">${reply}</div>`;
-        chat.scrollTop = chat.scrollHeight;
-    }, 800);
-}
-
-function confirmOrder() {
-    const name = document.getElementById('cust_name').value;
-    const final = document.getElementById('final_price').innerText;
-    if(!name || cart.length === 0) return alert("فضلاً، اختر منتجاتك وأدخل اسمك الكريم.");
-    
-    let details = "";
-    cart.forEach(item => details += `- ${item.name} (${item.qty} قطعة)%0A`);
-    
-    const msg = `*طلب جديد من اليرموك 2026*%0A👤 العميل: ${name}%0A📦 الطلبات:%0A${details}💰 المبلغ المحول: ${final} ريال%0A✅ سيتم إرسال صورة الإيصال الآن.`;
-    window.open(`https://wa.me/9677XXXXXXXX?text=${msg}`);
-}
-</script>
-</body>
-</html>
-
+export default App;
+            
