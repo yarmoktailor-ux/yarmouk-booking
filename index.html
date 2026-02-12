@@ -3,138 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خياط اليرموك - المنصة الإدارية</title>
+    <title>خياط اليرموك - إرث الفخامة منذ 2002</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --dark: #0a0a0a; }
-        .gold-border { border: 2px solid var(--gold); }
+        :root { --gold: #d4af37; --navy: #011627; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #fdfdfd; }
+        .gold-bg { background-color: var(--gold); }
+        .navy-bg { background-color: var(--navy); }
         .gold-text { color: var(--gold); }
-        .bg-gold { background-color: var(--gold); }
+        .card-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        @media print { .no-print { display: none !important; } #invoice { display: block !important; } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
+<body class="text-gray-800">
 
-    <header class="bg-black text-white p-6 text-center border-b-4 border-gold-500">
-        <div id="logo_display" class="mb-4 flex justify-center">
-            <img id="current_logo" src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" class="h-24 w-auto rounded-lg shadow-lg">
+    <header class="navy-bg text-white py-10 px-4 text-center border-b-4 border-yellow-600 no-print">
+        <div class="mb-4">
+            <img id="main_logo" src="https://i.ibb.co/C3YFp0k7/688339f4-1296-48c0-bc66-3be039832675.png" alt="Logo" class="h-28 mx-auto rounded-full border-2 border-yellow-600 shadow-2xl">
         </div>
-        <h1 class="text-3xl font-bold gold-text">خياط اليرموك الحديث</h1>
-        <p class="text-sm mt-2 opacity-80">فخامة التفصيل الرجالي منذ 2002</p>
+        <h1 class="text-3xl font-bold gold-text mb-2">خياط اليرموك الحديث</h1>
+        <p class="text-sm opacity-75">متخصصون في الثيابات الرجالية الراقية منذ 2002</p>
     </header>
 
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        
-        <div class="flex space-x-2 space-x-reverse mb-6 overflow-x-auto pb-2">
-            <button onclick="showSection('shop')" class="tab-btn active bg-black text-white px-6 py-2 rounded-full">المتجر</button>
-            <button onclick="showSection('tailor')" class="tab-btn bg-white border border-gray-300 px-6 py-2 rounded-full">طلب تفصيل</button>
-            <button onclick="showSection('admin')" class="tab-btn bg-white border border-gray-300 px-6 py-2 rounded-full">⚙️ الإدارة</button>
-        </div>
+    <nav class="flex justify-center gap-2 py-4 bg-white sticky top-0 z-50 shadow-sm no-print overflow-x-auto">
+        <button onclick="switchTab('home')" class="tab-btn px-6 py-2 rounded-full navy-bg text-white font-bold">الرئيسية</button>
+        <button onclick="switchTab('tailor')" class="tab-btn px-6 py-2 rounded-full border border-gray-200 hover:bg-gray-100">تفصيل جديد</button>
+        <button onclick="switchTab('admin')" class="tab-btn px-6 py-2 rounded-full border border-gray-200 hover:bg-gray-100">لوحة الإدارة</button>
+    </nav>
 
-        <section id="shop" class="content-section">
-            <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="bg-gold w-2 h-8 ml-3 inline-block"></span> الأقمشة والجاهز</h2>
-            <div id="products_grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="container mx-auto max-w-4xl p-4">
+
+        <section id="home-section" class="tab-content">
+            <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-8 text-center">
+                <p class="font-bold text-yellow-800">🎁 عرض الثقة: ادفع كاش واحصل على خصم 30% وشال فاخر هدية!</p>
+            </div>
+            
+            <h2 class="text-xl font-bold mb-6 flex items-center"><i class="fas fa-cut ml-2 gold-text"></i> الأقمشة والمنتجات</h2>
+            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 </div>
         </section>
 
-        <section id="tailor" class="content-section hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-2xl font-bold mb-6 gold-text">📏 جدول المقاسات (بالهنش)</h2>
+        <section id="tailor-section" class="tab-content hidden bg-white p-6 rounded-2xl card-shadow border">
+            <h2 class="text-2xl font-bold mb-6 gold-text border-b pb-2">📏 قياسات الثوب (بالهنش - Inch)</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div><label class="block text-xs mb-1">الطول</label><input type="number" step="0.1" class="w-full border p-2 rounded" id="m_height"></div>
-                <div><label class="block text-xs mb-1">الكتف</label><input type="number" step="0.1" class="w-full border p-2 rounded" id="m_shoulder"></div>
-                <div><label class="block text-xs mb-1">اليد</label><input type="number" step="0.1" class="w-full border p-2 rounded" id="m_arm"></div>
-                <div><label class="block text-xs mb-1">الرقبة</label><input type="number" step="0.1" class="w-full border p-2 rounded" id="m_neck"></div>
-                <div><label class="block text-xs mb-1">الصدر</label><input type="number" step="0.1" class="w-full border p-2 rounded" id="m_chest"></div>
-                <div><label class="block text-xs mb-1">الوسع</label><input type="number" step="0.1" class="w-full border p-2 rounded" id="m_wide"></div>
+                <div><label class="text-xs font-bold">اسم العميل</label><input type="text" id="c_name" class="w-full border-b-2 p-2 focus:border-yellow-600 outline-none"></div>
+                <div><label class="text-xs font-bold">الطول</label><input type="number" step="0.1" id="m_len" class="w-full border-b-2 p-2 outline-none"></div>
+                <div><label class="text-xs font-bold">الكتف</label><input type="number" step="0.1" id="m_sh" class="w-full border-b-2 p-2 outline-none"></div>
+                <div><label class="text-xs font-bold">اليد</label><input type="number" step="0.1" id="m_hand" class="w-full border-b-2 p-2 outline-none"></div>
+                <div><label class="text-xs font-bold">الرقبة</label><input type="number" step="0.1" id="m_neck" class="w-full border-b-2 p-2 outline-none"></div>
+                <div><label class="text-xs font-bold">الصدر</label><input type="number" step="0.1" id="m_chest" class="w-full border-b-2 p-2 outline-none"></div>
+                <div><label class="text-xs font-bold">الوسع</label><input type="number" step="0.1" id="m_wide" class="w-full border-b-2 p-2 outline-none"></div>
+                <div><label class="text-xs font-bold">الكبك</label><input type="number" step="0.1" id="m_cuff" class="w-full border-b-2 p-2 outline-none"></div>
             </div>
-            <button onclick="window.print()" class="w-full bg-black text-white py-4 rounded-xl font-bold">إصدار فاتورة الطلب للطباعة</button>
+
+            <h3 class="font-bold mb-4">🎨 خيارات التصميم</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <select id="s_neck" class="p-3 bg-gray-50 rounded-lg border">
+                    <option>رقبة قلاب (سعودي)</option><option>رقبة جباذير</option><option>سحاب مخفي</option>
+                </select>
+                <select id="s_hand" class="p-3 bg-gray-50 rounded-lg border">
+                    <option>كم سادة</option><option>كم كبك</option><option>كم مطاط</option>
+                </select>
+                <select id="s_btn" class="p-3 bg-gray-50 rounded-lg border">
+                    <option>أزرار ظاهرة</option><option>كبس مخفي</option>
+                </select>
+            </div>
+
+            <button onclick="printInvoice()" class="w-full navy-bg text-white py-4 rounded-xl font-bold shadow-lg hover:bg-black transition no-print">إصدار فاتورة التفصيل وطباعتها</button>
         </section>
 
-        <section id="admin" class="content-section hidden bg-gray-100 p-6 rounded-2xl border-2 border-dashed border-gray-400">
-            <h2 class="text-xl font-bold mb-4">إضافة منتج أو قماش جديد</h2>
-            <input type="text" id="new_title" placeholder="اسم الثوب أو القماش" class="w-full mb-3 p-3 rounded border">
-            <input type="number" id="new_price" placeholder="السعر (ريال)" class="w-full mb-3 p-3 rounded border">
-            <input type="file" id="new_image" accept="image/*" class="w-full mb-4 p-2 bg-white rounded">
-            <button onclick="addProduct()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">حفظ ونشر في الموقع</button>
-            
-            <hr class="my-8">
-            <h2 class="text-xl font-bold mb-4">تغيير شعار الموقع</h2>
-            <input type="file" onchange="updateLogo(this)" class="w-full p-2 bg-white rounded">
+        <section id="admin-section" class="tab-content hidden bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-300">
+            <h2 class="font-bold text-xl mb-6">⚙️ إدارة المتجر (خاص بالمالك)</h2>
+            <div class="space-y-4 bg-white p-4 rounded-xl shadow-sm">
+                <input type="text" id="p_name" placeholder="اسم المنتج/القماش" class="w-full border p-3 rounded-lg">
+                <input type="number" id="p_price" placeholder="السعر بالريال" class="w-full border p-3 rounded-lg">
+                <input type="file" id="p_file" class="w-full" onchange="encodeImage(this)">
+                <button onclick="saveProduct()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">نشر في المتجر</button>
+            </div>
+            <div class="mt-10">
+                <h3 class="font-bold mb-3">تحديث الشعار:</h3>
+                <input type="file" onchange="updateLogo(this)" class="p-2 bg-white rounded border w-full">
+            </div>
         </section>
 
     </div>
 
-    <div class="fixed bottom-6 left-6 bg-black text-white p-4 rounded-2xl shadow-2xl flex items-center space-x-4 space-x-reverse">
-        <span class="text-sm opacity-70">الإجمالي:</span>
-        <span id="total_price" class="text-xl font-bold gold-text">0</span>
-        <span class="text-xs">ريال</span>
+    <div id="yaqoot" class="fixed bottom-6 left-6 z-50 no-print">
+        <button onclick="toggleChat()" class="gold-bg text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-2xl border-2 border-white animate-bounce">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="chat-box" class="hidden absolute bottom-20 left-0 w-72 bg-white rounded-2xl shadow-2xl border-2 border-yellow-600 overflow-hidden">
+            <div class="gold-bg p-3 text-white font-bold flex justify-between">
+                <span>ياقوت - مساعد اليرموك</span>
+                <button onclick="toggleChat()">×</button>
+            </div>
+            <div id="chat-msgs" class="h-48 overflow-y-auto p-3 text-sm space-y-2 bg-gray-50">
+                مرحباً بك! أنا ياقوت.. هل تريد الاستفسار عن (المقاسات، الضمان، أو طريقة الدفع)؟
+            </div>
+            <div class="p-2 border-t">
+                <input type="text" id="chat-in" placeholder="اسألني..." class="w-full p-2 text-xs border rounded">
+            </div>
+        </div>
+    </div>
+
+    <div id="invoice" class="hidden p-10 bg-white">
+        <div class="text-center border-b-2 border-black pb-4 mb-6">
+            <h1 class="text-2xl font-bold">فاتورة تفصيل - خياط اليرموك</h1>
+            <p>تأسس عام 2002 - ثقة تتوارثها الأجيال</p>
+        </div>
+        <div class="grid grid-cols-2 gap-10 mb-10">
+            <div>
+                <h4 class="font-bold underline mb-2">بيانات العميل:</h4>
+                <p>الاسم: <span id="inv_name"></span></p>
+                <p>التاريخ: <span id="inv_date"></span></p>
+            </div>
+            <div class="text-left">
+                <h4 class="font-bold underline mb-2">بيانات التفصيل (للمعلم):</h4>
+                <div id="inv_measures" class="text-sm"></div>
+            </div>
+        </div>
+        <div class="border-2 border-black p-4 text-center">
+            <h2 class="text-xl font-bold">الإجمالي: <span id="inv_total"></span> ريال</h2>
+            <p class="text-xs mt-2">نضمن لك دقة المقاس والضمان الذهبي لمدة سنة على الخياطة</p>
+        </div>
     </div>
 
     <script>
-        let products = JSON.parse(localStorage.getItem('yarmouk_products')) || [];
+        let products = JSON.parse(localStorage.getItem('y_products')) || [];
+        let currentFile = "";
 
-        function showSection(id) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(id + '-section').classList.remove('hidden');
         }
 
-        function updateLogo(input) {
+        function encodeImage(input) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('current_logo').src = e.target.result;
-                localStorage.setItem('yarmouk_site_logo', e.target.result);
-            };
+            reader.onload = (e) => currentFile = e.target.result;
             reader.readAsDataURL(input.files[0]);
         }
 
-        function addProduct() {
-            const title = document.getElementById('new_title').value;
-            const price = document.getElementById('new_price').value;
-            const file = document.getElementById('new_image').files[0];
-
-            if (!title || !price || !file) return alert("يرجى إكمال كافة البيانات والصورة");
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const product = { id: Date.now(), title, price, img: e.target.result };
-                products.push(product);
-                localStorage.setItem('yarmouk_products', JSON.stringify(products));
-                renderProducts();
-                alert("تمت الإضافة بنجاح!");
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function deleteProduct(id) {
-            products = products.filter(p => p.id !== id);
-            localStorage.setItem('yarmouk_products', JSON.stringify(products));
-            renderProducts();
+        function saveProduct() {
+            const name = document.getElementById('p_name').value;
+            const price = document.getElementById('p_price').value;
+            if(!name || !price || !currentFile) return alert("أكمل بيانات المنتج");
+            products.push({ id: Date.now(), name, price, img: currentFile });
+            localStorage.setItem('y_products', JSON.stringify(products));
+            location.reload();
         }
 
         function renderProducts() {
-            const grid = document.getElementById('products_grid');
-            grid.innerHTML = products.map(p => `
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 p-4">
-                    <img src="${p.img}" class="w-full h-64 object-cover rounded-xl mb-4">
-                    <h3 class="font-bold text-lg mb-1">${p.title}</h3>
-                    <p class="gold-text font-bold mb-4">${p.price} ريال</p>
-                    <div class="flex gap-2">
-                        <button onclick="addToCart(${p.price})" class="flex-1 bg-black text-white py-2 rounded-lg text-sm">إضافة للسلة</button>
-                        <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm">حذف</button>
+            const list = document.getElementById('product-list');
+            list.innerHTML = products.map(p => `
+                <div class="bg-white rounded-2xl overflow-hidden card-shadow border">
+                    <img src="${p.img}" class="w-full h-56 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg">${p.name}</h3>
+                        <p class="gold-text font-bold mb-4">${p.price} ريال</p>
+                        <div class="flex gap-2">
+                            <button class="flex-1 navy-bg text-white py-2 rounded-lg text-sm">إضافة للسلة</button>
+                            <button onclick="deleteP(${p.id})" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        let total = 0;
-        function addToCart(price) {
-            total += parseInt(price);
-            document.getElementById('total_price').innerText = total;
+        function deleteP(id) {
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('y_products', JSON.stringify(products));
+            renderProducts();
         }
 
-        // عند التشغيل
-        if (localStorage.getItem('yarmouk_site_logo')) {
-            document.getElementById('current_logo').src = localStorage.getItem('yarmouk_site_logo');
+        function updateLogo(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('main_logo').src = e.target.result;
+                localStorage.setItem('y_logo', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
         }
+
+        function toggleChat() { document.getElementById('chat-box').classList.toggle('hidden'); }
+
+        function printInvoice() {
+            const name = document.getElementById('c_name').value;
+            if(!name) return alert("سجل اسم العميل أولاً");
+            
+            document.getElementById('inv_name').innerText = name;
+            document.getElementById('inv_date').innerText = new Date().toLocaleDateString('ar-SA');
+            document.getElementById('inv_measures').innerHTML = `
+                الطول: ${document.getElementById('m_len').value} | 
+                الكتف: ${document.getElementById('m_sh').value} | 
+                اليد: ${document.getElementById('m_hand').value} | 
+                الرقبة: ${document.getElementById('m_neck').value}
+            `;
+            window.print();
+        }
+
+        // Load Defaults
+        if(localStorage.getItem('y_logo')) document.getElementById('main_logo').src = localStorage.getItem('y_logo');
         renderProducts();
     </script>
 </body>
