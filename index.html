@@ -165,21 +165,33 @@
 </div>
 
 <script>
-// --- تهيئة Firebase ---
-const firebaseConfig = { databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/" };
+// --- تهيئة Firebase المصححة لمحل اليرموك ---
+const firebaseConfig = { 
+    apiKey: "AIzaSyAT4_kbAgDL8Jw5V2jRj3mqyD-lA84ECjY", // المفتاح الذي زودتني به
+    databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/",
+    authDomain: "alyarmok-store-default-rtdb.firebaseapp.com",
+    projectId: "alyarmok-store-default-rtdb"
+};
+
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 let products = [];
 let cart = [];
 
-// جلب المنتجات
+// جلب المنتجات (تأكد أن القواعد في Firebase تسمح بالقراءة)
 database.ref('products').on('value', snap => {
     const data = snap.val();
     products = [];
-    if(data) for(let id in data) products.push({...data[id], id});
+    if(data) {
+        for(let id in data) products.push({...data[id], id});
+    }
     renderDisplay();
+}, error => {
+    console.error("خطأ في جلب البيانات: ", error);
+    alert("نواجه مشكلة في الاتصال بقاعدة البيانات. تأكد من إعدادات الحماية في Firebase.");
 });
+
 
 function renderDisplay() {
     const fabDiv = document.getElementById('fabric_display');
