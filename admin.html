@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة اليرموك | إضافة منتجات</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; text-align: center; }
+        .admin-box { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid #d4af37; }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background: #5d4037; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1a1a1a; }
+        .item-list { margin-top: 30px; text-align: right; }
+        .item { background: #fff; padding: 10px; margin: 5px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h2>🪡 إضافة منتج جديد (اليرموك)</h2>
+    <input type="text" id="p_name" placeholder="اسم القماش أو الثياب (مثلاً: سلك ياباني)">
+    <input type="number" id="p_price" placeholder="السعر (بالريال)">
+    <input type="text" id="p_img" placeholder="رابط صورة المنتج (رابط مباشر)">
+    <select id="p_cat">
+        <option value="fabric">تفصيل وأقمشة</option>
+        <option value="ready">جاهز فاخر</option>
+    </select>
+    <button onclick="saveToFirebase()">إضافة للمتجر</button>
+</div>
+
+<div class="admin-box item-list" id="items_list">
+    <h3>📦 المنتجات الحالية:</h3>
+    </div>
+
+<script>
+    // إعدادات Firebase (نفس التي استخدمناها في الموقع الرئيسي)
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAT4_kbAgDL8Jw5V2jRj3mqyD-lA84ECjY", // المفتاح الخاص بك
+        databaseURL: "https://alyarmok-store-default-rtdb.firebaseio.com/",
+        projectId: "alyarmok-store-default-rtdb"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    function saveToFirebase() {
+        const name = document.getElementById('p_name').value;
+        const price = document.getElementById('p_price').value;
+        const img = document.getElementById('p_img').value;
+        const cat = document.getElementById('p_cat').value;
+
+        if(!name || !price || !img) return alert("يرجى ملء كافة الحقول");
+
+        const newRef = database.ref('products').push();
+        newRef.set({ name, price: parseInt(price), img, cat })
+        .then(() => {
+            alert("تمت الإضافة بنجاح!");
+            location.reload();
+        });
+    }
+
+    // عرض وحذف المنتجات
+    database.ref('products').on('value', snap => {
+        const listDiv = document.getElementById('items_list');
+        listDiv.innerHTML = "<h3>📦 المنتجات الحالية:</h3>";
+        snap.forEach(child => {
+            const p = child.val();
+            listDiv.innerHTML += `
+                <div class="item">
+                    <span>${p.name} - ${p.price} ريال</span>
+                    <button onclick="deleteItem('${child.key}')" style="width:auto; padding:5px; background:red;">حذف</button>
+                </div>`;
+        });
+    });
+
+    function deleteItem(id) {
+        if(confirm("هل أنت متأكد من حذف هذا المنتج؟")) {
+            database.ref('products/' + id).remove();
+        }
+    }
+</script>
+</body>
+</html>
