@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة اليرموك | إضافة منتجات</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; padding: 20px; text-align: center; color: #333; }
@@ -37,11 +37,9 @@
 
 <div class="admin-box item-list" id="items_list">
     <h3>📦 المنتجات المتوفرة حالياً:</h3>
-    <div id="loader">جاري تحميل المنتجات...</div>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بمشروعك (yarmouk-booking)
     const firebaseConfig = {
         apiKey: "AIzaSyDMpGKS3hm7FqFI8twabti1aHAqksvSZME",
         authDomain: "yarmouk-booking.firebaseapp.com",
@@ -49,12 +47,13 @@
         storageBucket: "yarmouk-booking.firebasestorage.app",
         messagingSenderId: "390432143096",
         appId: "1:390432143096:web:7f2c676919dc4536fd6d0d",
-        measurementId: "G-GTZMRJC541"
+        measurementId: "G-GTZMRJC541",
+        // تم وضع الرابط الخاص بك هنا بنجاح
+        databaseURL: "https://yarmouk-booking-default-rtdb.firebaseio.com/" 
     };
 
-    // تشغيل Firebase
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const database = firebase.database();
     const storage = firebase.storage();
 
     async function saveProduct() {
@@ -70,44 +69,44 @@
         btn.innerText = "جاري الرفع...";
 
         try {
-            // 1. رفع الصورة إلى Storage
+            // 1. رفع الصورة إلى Storage من الاستوديو
             const storageRef = storage.ref('products/' + Date.now() + "_" + file.name);
             const snapshot = await storageRef.put(file);
             const imgUrl = await snapshot.ref.getDownloadURL();
 
-            // 2. حفظ البيانات في Firestore
-            await db.collection("products").add({
+            // 2. حفظ البيانات في Realtime Database
+            const newProductRef = database.ref('products').push();
+            await newProductRef.set({
                 name: name,
                 price: parseInt(price),
                 img: imgUrl,
                 cat: cat,
-                isVisible: true, // متاح افتراضياً
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                isVisible: true
             });
 
             alert("تمت إضافة المنتج بنجاح!");
             location.reload();
         } catch (error) {
             console.error(error);
-            alert("حدث خطأ أثناء الرفع");
+            alert("حدث خطأ! تأكد من تفعيل وضع Test Mode في Firebase Rules");
             btn.disabled = false;
             btn.innerText = "نشر المنتج في المتجر";
         }
     }
 
-    // عرض المنتجات وإدارة الحذف والإخفاء
-    db.collection("products").orderBy("createdAt", "desc").onSnapshot(snap => {
+    // عرض وحذف وإخفاء المنتجات
+    database.ref('products').on('value', snap => {
         const listDiv = document.getElementById('items_list');
         listDiv.innerHTML = "<h3>📦 المنتجات المتوفرة حالياً:</h3>";
         
-        snap.forEach(doc => {
-            const p = doc.data();
-            const id = doc.id;
+        snap.forEach(child => {
+            const p = child.val();
+            const id = child.key;
             const itemClass = p.isVisible ? 'item' : 'item hidden-item';
             
             listDiv.innerHTML += `
                 <div class="${itemClass}">
-                    <img src="${p.img}" alt="ثوب">
+                    <img src="${p.img}" alt="منتج">
                     <div style="flex-grow:1">
                         <strong>${p.name}</strong><br>
                         <span>${p.price} ريال</span>
@@ -118,18 +117,15 @@
                     </div>
                 </div>`;
         });
-        if(snap.empty) listDiv.innerHTML += "<p>لا توجد منتجات حالياً</p>";
     });
 
-    // وظيفة الإخفاء (التي طلبتها)
     async function toggleVisibility(id, currentStatus) {
-        await db.collection("products").doc(id).update({ isVisible: !currentStatus });
+        await database.ref('products/' + id).update({ isVisible: !currentStatus });
     }
 
-    // وظيفة الحذف
     async function deleteProduct(id) {
         if(confirm("هل تريد حذف هذا المنتج نهائياً من محل اليرموك؟")) {
-            await db.collection("products").doc(id).delete();
+            await database.ref('products/' + id).remove();
         }
     }
 </script>
