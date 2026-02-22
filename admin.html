@@ -23,7 +23,7 @@
 
 <div class="admin-box">
     <h2>🪡 إدارة منتجات اليرموك</h2>
-    <p>أضف ثياب أو أقمشة جديدة للمتجر</p>
+    <p>أضف ثياب أو أقمشة جديدة للمتجر ✨</p>
     <input type="text" id="p_name" placeholder="اسم القماش أو الثياب">
     <input type="number" id="p_price" placeholder="السعر (بالريال)">
     <p style="text-align: right; font-size: 0.8em; margin-bottom: 0;">اختر صورة المنتج من الاستوديو:</p>
@@ -32,11 +32,12 @@
         <option value="fabric">تفصيل وأقمشة رجالية</option>
         <option value="ready">ثياب جاهزة فاخرة</option>
     </select>
-    <button id="uploadBtn" onclick="saveProduct()">نشر المنتج في المتجر</button>
+    <button id="uploadBtn" onclick="saveProduct()">نشر المنتج في المتجر 🚀</button>
 </div>
 
 <div class="admin-box item-list" id="items_list">
     <h3>📦 المنتجات المتوفرة حالياً:</h3>
+    <div id="loadingStatus">جاري تحميل المنتجات...</div>
 </div>
 
 <script>
@@ -48,31 +49,46 @@
         messagingSenderId: "390432143096",
         appId: "1:390432143096:web:7f2c676919dc4536fd6d0d",
         measurementId: "G-GTZMRJC541",
-        // تم وضع الرابط الخاص بك هنا بنجاح
         databaseURL: "https://yarmouk-booking-default-rtdb.firebaseio.com/"
-        storageBucket: "yarmouk-booking.firebasestorage.app"
     };
 
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const storage = firebase.storage();
-// كود جلب المنتجات وعرضها تلقائياً عند فتح الصفحة
-database.ref('products').on('value', (snapshot) => {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = ''; // تنظيف القائمة قبل العرض الجديد
-    
-    snapshot.forEach((childSnapshot) => {
-        const product = childSnapshot.val();
-        // هنا يتم بناء شكل المنتج في الصفحة
-        productList.innerHTML += `
-            <div class="product-item">
-                <img src="${product.imageUrl}" width="100">
-                <p>${product.name} - ${product.price} ريال</p>
-            </div>
-        `;
+
+    // دالة جلب المنتجات (تحديث تلقائي)
+    database.ref('products').on('value', snap => {
+        const listDiv = document.getElementById('items_list');
+        const loadingStatus = document.getElementById('loadingStatus');
+        if(loadingStatus) loadingStatus.remove();
+        
+        listDiv.innerHTML = "<h3>📦 المنتجات المتوفرة حالياً:</h3>";
+        
+        if (!snap.exists()) {
+            listDiv.innerHTML += "<p style='text-align:center'>لا توجد منتجات حالياً</p>";
+            return;
+        }
+
+        snap.forEach(child => {
+            const p = child.val();
+            const id = child.key;
+            const itemClass = p.isVisible ? 'item' : 'item hidden-item';
+            
+            listDiv.innerHTML += `
+                <div class="${itemClass}">
+                    <img src="${p.img || 'https://via.placeholder.com/50'}" alt="منتج">
+                    <div style="flex-grow:1">
+                        <strong>${p.name}</strong><br>
+                        <span>${p.price} ريال</span>
+                    </div>
+                    <div>
+                        <button onclick="toggleVisibility('${id}', ${p.isVisible})" style="width:auto; padding:5px 10px; background:#f0ad4e; font-size:12px;">${p.isVisible ? 'إخفاء' : 'إظهار'}</button>
+                        <button onclick="deleteProduct('${id}')" style="width:auto; padding:5px 10px; background:#d9534f; font-size:12px;">حذف</button>
+                    </div>
+                </div>`;
+        });
     });
-});
-    
+
     async function saveProduct() {
         const name = document.getElementById('p_name').value;
         const price = document.getElementById('p_price').value;
@@ -86,62 +102,40 @@ database.ref('products').on('value', (snapshot) => {
         btn.innerText = "جاري الرفع...";
 
         try {
-            // 1. رفع الصورة إلى Storage من الاستوديو
+            // 1. رفع الصورة
             const storageRef = storage.ref('products/' + Date.now() + "_" + file.name);
             const snapshot = await storageRef.put(file);
             const imgUrl = await snapshot.ref.getDownloadURL();
 
-            // 2. حفظ البيانات في Realtime Database
-            const newProductRef = database.ref('products').push();
-            await newProductRef.set({
+            // 2. حفظ البيانات
+            await database.ref('products').push({
                 name: name,
                 price: parseInt(price),
                 img: imgUrl,
                 cat: cat,
-                isVisible: true
+                isVisible: true,
+                createdAt: Date.now()
             });
 
-            alert("تمت إضافة المنتج بنجاح!");
-            location.reload();
+            alert("تمت إضافة المنتج بنجاح! 🎉");
+            document.getElementById('p_name').value = '';
+            document.getElementById('p_price').value = '';
+            document.getElementById('p_file').value = '';
         } catch (error) {
             console.error(error);
-            alert("حدث خطأ! تأكد من تفعيل وضع Test Mode في Firebase Rules");
+            alert("حدث خطأ! تأكد من تفعيل وضع Test Mode في Firebase Storage Rules");
+        } finally {
             btn.disabled = false;
             btn.innerText = "نشر المنتج في المتجر";
         }
     }
-
-    // عرض وحذف وإخفاء المنتجات
-    database.ref('products').on('value', snap => {
-        const listDiv = document.getElementById('items_list');
-        listDiv.innerHTML = "<h3>📦 المنتجات المتوفرة حالياً:</h3>";
-        
-        snap.forEach(child => {
-            const p = child.val();
-            const id = child.key;
-            const itemClass = p.isVisible ? 'item' : 'item hidden-item';
-            
-            listDiv.innerHTML += `
-                <div class="${itemClass}">
-                    <img src="${p.img}" alt="منتج">
-                    <div style="flex-grow:1">
-                        <strong>${p.name}</strong><br>
-                        <span>${p.price} ريال</span>
-                    </div>
-                    <div>
-                        <button onclick="toggleVisibility('${id}', ${p.isVisible})" style="width:auto; padding:5px 10px; background:#f0ad4e;">${p.isVisible ? 'إخفاء' : 'إظهار'}</button>
-                        <button onclick="deleteProduct('${id}')" style="width:auto; padding:5px 10px; background:#d9534f;">حذف</button>
-                    </div>
-                </div>`;
-        });
-    });
 
     async function toggleVisibility(id, currentStatus) {
         await database.ref('products/' + id).update({ isVisible: !currentStatus });
     }
 
     async function deleteProduct(id) {
-        if(confirm("هل تريد حذف هذا المنتج نهائياً من محل اليرموك؟")) {
+        if(confirm("هل تريد حذف هذا المنتج نهائياً؟")) {
             await database.ref('products/' + id).remove();
         }
     }
